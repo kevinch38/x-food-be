@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.x_food.util.PagingUtil;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,7 +29,14 @@ public class UserController {
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "accountID") String sortBy
+            @RequestParam(required = false, defaultValue = "accountID") String sortBy,
+            @RequestParam(required = false) String accountID,
+            @RequestParam(required = false) String accountEmail,
+            @RequestParam(required = false) String ktpID,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) LocalDate dateOfBirth
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
@@ -38,6 +47,13 @@ public class UserController {
                 .size(size)
                 .direction(direction)
                 .sortBy(sortBy)
+                .accountID(accountID)
+                .accountEmail(accountEmail)
+                .ktpID(ktpID)
+                .phoneNumber(phoneNumber)
+                .firstName(firstName)
+                .lastName(lastName)
+                .dateOfBirth(dateOfBirth)
                 .build();
         Page<UserResponse> users = userService.getAll(request);
 

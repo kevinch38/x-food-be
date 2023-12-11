@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -55,7 +56,7 @@ class UserServiceImplTest {
                 .otpID("7")
                 .build();
         Page<User> userPage = new PageImpl<>(List.of(user));
-        Mockito.when(userRepository.findAll(Mockito.isA(Pageable.class))).thenReturn(userPage);
+        Mockito.when(userRepository.findAll(Mockito.isA(Specification.class),Mockito.isA(Pageable.class))).thenReturn(userPage);
 
         Page<UserResponse> actual = userService.getAll(searchUserRequest);
 

@@ -60,7 +60,7 @@ class UserControllerTest {
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .firstName("A")
                 .lastName("B")
-                .dateOfBirth(LocalDate.of(2001,10,28))
+                .dateOfBirth(LocalDate.of(2001,10,28).toString())
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .balanceID("5")
                 .loyaltyPointID("6")

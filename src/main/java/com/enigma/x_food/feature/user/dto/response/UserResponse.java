@@ -23,7 +23,7 @@ public class UserResponse {
     private Timestamp createdAt;
     private String firstName;
     private String lastName;
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
     private Timestamp updatedAt;
     private String balanceID;
     private String loyaltyPointID;
