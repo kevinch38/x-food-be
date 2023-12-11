@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.user.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,10 +21,12 @@ public class UserResponse {
     private String accountEmail;
     private String phoneNumber;
     private String pinID;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
     private String firstName;
     private String lastName;
     private String dateOfBirth;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;
     private String balanceID;
     private String loyaltyPointID;
