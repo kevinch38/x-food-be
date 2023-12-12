@@ -86,6 +86,15 @@ public class UserServiceImpl implements UserService {
         return users.map(this::mapToResponse);
     }
 
+    @Override
+    public UserResponse getById(String id) {
+        log.info("Start getOneById");
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+        log.info("End getOneById");
+        return mapToResponse(user);
+    }
+
     private UserResponse mapToResponse(User user) {
         return UserResponse.builder()
                 .accountID(user.getAccountID())
