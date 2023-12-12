@@ -3,6 +3,7 @@ package com.enigma.x_food.controller;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.feature.user.UserService;
+import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.shared.ErrorController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,7 +75,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(result -> {
-                    ErrorController.CommonResponse<List<UserResponse>> response = objectMapper.readValue(
+                    CommonResponse<List<UserResponse>> response = objectMapper.readValue(
                             result.getResponse().getContentAsString(),
                             new TypeReference<>() {}
                     );

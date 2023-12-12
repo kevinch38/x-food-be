@@ -39,14 +39,14 @@ class PinControllerTest {
                 .pin("2")
                 .accountID("3")
                 .build();
-        PinResponse pinResponse = PinResponse.builder()
+        PinResponse promotionResponse = PinResponse.builder()
                 .pinID("1")
                 .pin("2")
                 .accountID("3")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        Mockito.when(pinService.createNew(pin)).thenReturn(pinResponse);
+        Mockito.when(pinService.createNew(pin)).thenReturn(promotionResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/pins")
                         .content(objectMapper.writeValueAsString(pin))

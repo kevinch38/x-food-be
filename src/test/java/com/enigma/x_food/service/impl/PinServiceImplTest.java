@@ -41,7 +41,7 @@ class PinServiceImplTest {
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        PinResponse pinResponse = PinResponse.builder()
+        PinResponse promotionResponse = PinResponse.builder()
                 .pinID("1")
                 .pin("2")
                 .accountID("3")
