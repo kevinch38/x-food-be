@@ -22,7 +22,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/register",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNewUser(@RequestBody NewUserRequest request) {
         UserResponse userResponse = userService.createNew(request);
         CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()

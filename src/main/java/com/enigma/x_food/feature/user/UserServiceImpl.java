@@ -48,8 +48,8 @@ public class UserServiceImpl implements UserService {
                     .firstName(request.getFirstName())
                     .lastName(request.getLastName())
                     .dateOfBirth(LocalDate.of(1970,1,1))
-                    .balanceID(request.getBalanceID())
-                    .loyaltyPointID(request.getLoyaltyPointID())
+                    .balanceID("")
+                    .loyaltyPointID("")
                     .otpID("")
                     .build();
             userRepository.saveAndFlush(user);

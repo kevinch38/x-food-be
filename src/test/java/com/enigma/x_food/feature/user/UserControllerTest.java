@@ -1,5 +1,7 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.user.User;
+import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.feature.user.UserService;
@@ -36,6 +38,43 @@ class UserControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
+
+    @Test
+    void createUser() throws Exception{
+        NewUserRequest request = NewUserRequest.builder()
+                .accountEmail("a")
+                .phoneNumber("a")
+                .pinID("abc")
+                .firstName("a")
+                .lastName("a")
+                .build();
+        UserResponse userResponse = UserResponse.builder()
+                .accountEmail("a")
+                .phoneNumber("a")
+                .pinID("abc")
+                .firstName("a")
+                .lastName("a")
+                .dateOfBirth(LocalDate.of(1970,1,1).toString())
+                .balanceID("a")
+                .loyaltyPointID("a")
+                .otpID("")
+                .build();
+
+        Mockito.when(userService.createNew(request)).thenReturn(userResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/users")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.status().isCreated())
+                .andDo(result -> {
+                    CommonResponse<UserResponse> response = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            new TypeReference<>() {}
+                    );
+                    Assertions.assertEquals(201, response.getStatusCode());
+                    Assertions.assertEquals("a",response.getData().getAccountEmail());
+                });
+    }
 
     @Test
     void getAllUser() throws Exception {
@@ -81,6 +120,40 @@ class UserControllerTest {
                     );
                     Assertions.assertEquals(200, response.getStatusCode());
                     Assertions.assertEquals("1",response.getData().get(0).getAccountID());
+                });
+    }
+
+    @Test
+    void getUserById() throws Exception {
+        String id = "1";
+        UserResponse userResponse = UserResponse.builder()
+                .accountID("1")
+                .ktpID("2")
+                .accountEmail("Email")
+                .phoneNumber("3")
+                .pinID("4")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .firstName("A")
+                .lastName("B")
+                .dateOfBirth(LocalDate.of(2001,10,28).toString())
+                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .balanceID("5")
+                .loyaltyPointID("6")
+                .otpID("7")
+                .build();
+
+        Mockito.when(userService.getById(Mockito.any())).thenReturn(userResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/"+id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(result -> {
+                    CommonResponse<UserResponse> response = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            new TypeReference<>() {}
+                    );
+                    Assertions.assertEquals(200, response.getStatusCode());
+                    Assertions.assertEquals("1",response.getData().getAccountID());
                 });
     }
 
