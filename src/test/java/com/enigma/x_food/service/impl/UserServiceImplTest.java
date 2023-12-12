@@ -44,8 +44,6 @@ class UserServiceImplTest {
                 .pinID("abc")
                 .firstName("a")
                 .lastName("a")
-                .balanceID("a")
-                .loyaltyPointID("a")
                 .build();
         User user = User.builder()
                 .accountEmail("a")

@@ -47,8 +47,6 @@ class UserControllerTest {
                 .pinID("abc")
                 .firstName("a")
                 .lastName("a")
-                .balanceID("a")
-                .loyaltyPointID("a")
                 .build();
         UserResponse userResponse = UserResponse.builder()
                 .accountEmail("a")
