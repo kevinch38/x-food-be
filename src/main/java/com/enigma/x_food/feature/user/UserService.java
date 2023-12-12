@@ -9,4 +9,5 @@ import org.springframework.data.domain.Page;
 public interface UserService {
     UserResponse createNew(NewUserRequest request);
     Page<UserResponse> getAll(SearchUserRequest request);
+    UserResponse getById(String id);
 }
