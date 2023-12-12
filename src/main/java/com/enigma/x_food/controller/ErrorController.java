@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.pin.controller;
+package com.enigma.x_food.controller;
 
 import com.enigma.x_food.feature.pin.dto.response.CommonResponse;
 import org.springframework.http.HttpStatus;

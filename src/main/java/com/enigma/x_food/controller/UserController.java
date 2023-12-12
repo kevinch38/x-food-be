@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.user.controller;
+package com.enigma.x_food.controller;
 
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.CommonResponse;
