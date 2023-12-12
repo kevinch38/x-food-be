@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.pin.dto.response;
+package com.enigma.x_food.shared;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,19 +1,16 @@
-package com.enigma.x_food.controller;
+package com.enigma.x_food.feature.user;
 
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
-import com.enigma.x_food.feature.user.dto.response.CommonResponse;
-import com.enigma.x_food.feature.user.dto.response.PagingResponse;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
-import com.enigma.x_food.feature.user.service.UserService;
+import com.enigma.x_food.shared.PagingResponse;
+import com.enigma.x_food.shared.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.x_food.util.PagingUtil;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 

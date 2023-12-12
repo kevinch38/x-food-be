@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.pin.entity;
+package com.enigma.x_food.feature.pin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
