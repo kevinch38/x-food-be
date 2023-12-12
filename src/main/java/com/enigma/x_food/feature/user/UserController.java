@@ -5,6 +5,7 @@ import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.shared.ErrorController;
+import com.enigma.x_food.shared.PagingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/register",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNewUser(@RequestBody NewUserRequest request) {
         UserResponse userResponse = userService.createNew(request);
         CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
@@ -68,14 +69,14 @@ public class UserController {
                 .build();
         Page<UserResponse> users = userService.getAll(request);
 
-        ErrorController.PagingResponse pagingResponse = ErrorController.PagingResponse.builder()
+        PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
                 .size(size)
                 .count(users.getTotalElements())
                 .totalPages(users.getTotalPages())
                 .build();
 
-        ErrorController.CommonResponse<List<UserResponse>> response = ErrorController.CommonResponse.<List<UserResponse>>builder()
+        CommonResponse<List<UserResponse>> response = CommonResponse.<List<UserResponse>>builder()
                 .message("successfully get all user")
                 .statusCode(HttpStatus.OK.value())
                 .data(users.getContent())

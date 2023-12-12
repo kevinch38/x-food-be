@@ -18,6 +18,4 @@ public class NewUserRequest {
     private String pinID;
     private String firstName;
     private String lastName;
-    private String balanceID;
-    private String loyaltyPointID;
 }
