@@ -18,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Timestamp;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -34,9 +32,7 @@ public class PinServiceImpl implements PinService {
             log.info("Start createNew");
             validationUtil.validate(request);
             Pin pin = Pin.builder()
-                    .pin(bCryptUtil.hashPassword(request.getPin()))
-                    .createdAt(new Timestamp(System.currentTimeMillis()))
-                    .updatedAt(new Timestamp(System.currentTimeMillis()))
+                    .pin(bCryptUtil.hash(request.getPin()))
                     .accountID(request.getAccountID())
                     .build();
             pinRepository.saveAndFlush(pin);

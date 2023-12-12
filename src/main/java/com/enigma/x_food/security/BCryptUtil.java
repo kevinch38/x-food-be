@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class BCryptUtil {
     private final PasswordEncoder passwordEncoder;
-    public String hashPassword(String plainText) {
+    public String hash(String plainText) {
         return passwordEncoder.encode(plainText);
     }
 }

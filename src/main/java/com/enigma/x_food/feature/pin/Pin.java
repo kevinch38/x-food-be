@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.pin;
 
+import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "Pin")
-public class Pin {
+public class Pin extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
@@ -26,12 +27,6 @@ public class Pin {
 
     @Column(name = "pin", nullable = false, length = 64)
     private String pin;
-
-    @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Timestamp updatedAt;
 
     @Column(name = "account_id", nullable = false, unique = true)
     private String accountID;
