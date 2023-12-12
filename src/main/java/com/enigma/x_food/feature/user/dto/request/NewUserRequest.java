@@ -5,12 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class NewUserRequest {
-    private String name;
+    private String accountEmail;
     private String phoneNumber;
-    private String userCredentialId;
+    private String pinID;
+    private String firstName;
+    private String lastName;
 }

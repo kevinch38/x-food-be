@@ -1,5 +1,6 @@
-package com.enigma.x_food.feature.user.entity;
+package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "Account")
-public class User {
+public class User extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
@@ -36,9 +37,6 @@ public class User {
     @Column(name = "pin_id", nullable = false)
     private String pinID;
 
-    @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
-
     @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;
 
@@ -48,8 +46,6 @@ public class User {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
-    @Column(name = "updated_at", nullable = false)
-    private Timestamp updatedAt;
 
     @Column(name = "balance_id", nullable = false)
     private String balanceID;

@@ -1,19 +1,19 @@
-package com.enigma.x_food.controller;
+package com.enigma.x_food.feature.user;
 
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
-import com.enigma.x_food.feature.user.dto.response.CommonResponse;
-import com.enigma.x_food.feature.user.dto.response.PagingResponse;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
-import com.enigma.x_food.feature.user.service.UserService;
+import com.enigma.x_food.shared.CommonResponse;
+import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
+import com.enigma.x_food.shared.ErrorController;
+import com.enigma.x_food.shared.PagingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.x_food.util.PagingUtil;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,6 +23,18 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @PostMapping(path = "/register",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createNewUser(@RequestBody NewUserRequest request) {
+        UserResponse userResponse = userService.createNew(request);
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+                .message("successfully create new user")
+                .statusCode(HttpStatus.CREATED.value())
+                .data(userResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
 
     @GetMapping
     public ResponseEntity<?> getAllUser(
@@ -71,6 +83,19 @@ public class UserController {
                 .paging(pagingResponse)
                 .build();
 
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getUserById(@PathVariable String id) {
+        UserResponse userResponse = userService.getById(id);
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+                .message("successfully get user")
+                .statusCode(HttpStatus.OK.value())
+                .data(userResponse)
+                .build();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
