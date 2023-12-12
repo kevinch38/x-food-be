@@ -2,9 +2,9 @@ package com.enigma.x_food.service.impl;
 
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
-import com.enigma.x_food.feature.user.entity.User;
-import com.enigma.x_food.feature.user.repository.UserRepository;
-import com.enigma.x_food.feature.user.service.UserService;
+import com.enigma.x_food.feature.user.User;
+import com.enigma.x_food.feature.user.UserRepository;
+import com.enigma.x_food.feature.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;

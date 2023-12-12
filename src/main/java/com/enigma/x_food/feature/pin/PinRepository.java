@@ -1,6 +1,6 @@
-package com.enigma.x_food.feature.pin.repository;
+package com.enigma.x_food.feature.pin;
 
-import com.enigma.x_food.feature.pin.entity.Pin;
+import com.enigma.x_food.feature.pin.Pin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

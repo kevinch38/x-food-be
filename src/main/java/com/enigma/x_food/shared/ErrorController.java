@@ -1,6 +1,5 @@
-package com.enigma.x_food.feature.pin.controller;
+package com.enigma.x_food.shared;
 
-import com.enigma.x_food.feature.pin.dto.response.CommonResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,21 +1,13 @@
-package com.enigma.x_food.feature.pin.controller;
+package com.enigma.x_food.feature.pin;
 
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
-import com.enigma.x_food.feature.pin.dto.request.SearchPinRequest;
-import com.enigma.x_food.feature.pin.dto.response.CommonResponse;
-import com.enigma.x_food.feature.pin.dto.response.PagingResponse;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
-import com.enigma.x_food.feature.pin.service.PinService;
-import com.enigma.x_food.util.PagingUtil;
+import com.enigma.x_food.shared.CommonResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/pins")

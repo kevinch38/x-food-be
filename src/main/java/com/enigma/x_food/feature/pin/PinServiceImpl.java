@@ -1,11 +1,8 @@
-package com.enigma.x_food.feature.pin.service.impl;
+package com.enigma.x_food.feature.pin;
 
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
-import com.enigma.x_food.feature.pin.service.PinService;
 import com.enigma.x_food.feature.pin.dto.request.SearchPinRequest;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
-import com.enigma.x_food.feature.pin.entity.Pin;
-import com.enigma.x_food.feature.pin.repository.PinRepository;
 import com.enigma.x_food.security.BCryptUtil;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
