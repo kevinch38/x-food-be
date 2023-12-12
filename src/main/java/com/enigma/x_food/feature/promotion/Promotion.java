@@ -30,7 +30,7 @@ public class Promotion extends BaseEntity {
     @Column(name = "max_redeem", nullable = false, length = 11)
     private Integer maxRedeem;
     @Column(name = "promotion_value", nullable = false, length = 11)
-    private String promotionValue;
+    private Integer promotionValue;
     @Column(name = "promotion_description", nullable = false, length = 150)
     private String promotionDescription;
     @Column(name = "promotion_name", nullable = false, length = 100)

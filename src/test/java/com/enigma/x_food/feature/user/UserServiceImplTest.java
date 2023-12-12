@@ -1,4 +1,4 @@
-package com.enigma.x_food.service.impl;
+package com.enigma.x_food.feature.user;
 
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;

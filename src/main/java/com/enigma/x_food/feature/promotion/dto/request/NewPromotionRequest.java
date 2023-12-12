@@ -20,8 +20,8 @@ public class NewPromotionRequest {
     private Double cost;
     @NotNull(message = "Max redeem ID cannot be empty")
     private Integer maxRedeem;
-    @NotBlank(message = "Promotion value cannot be empty")
-    private String promotionValue;
+    @NotNull(message = "Promotion value cannot be empty")
+    private Integer promotionValue;
     @NotBlank(message = "Promotion description cannot be empty")
     private String promotionDescription;
     @NotBlank(message = "Promotion name cannot be empty")

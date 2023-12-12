@@ -17,7 +17,7 @@ public class PromotionResponse {
     private String merchantID;
     private Double cost;
     private Integer maxRedeem;
-    private String promotionValue;
+    private Integer promotionValue;
     private String promotionDescription;
     private String promotionName;
     private Integer quantity;
