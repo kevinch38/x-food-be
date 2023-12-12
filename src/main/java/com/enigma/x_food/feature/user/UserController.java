@@ -4,7 +4,6 @@ import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
-import com.enigma.x_food.shared.ErrorController;
 import com.enigma.x_food.shared.PagingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -69,7 +68,7 @@ public class UserController {
                 .build();
         Page<UserResponse> users = userService.getAll(request);
 
-        PagingResponse pagingResponse = PagingResponse.builder()
+       PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
                 .size(size)
                 .count(users.getTotalElements())
