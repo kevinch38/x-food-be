@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MerchantController {
     private final MerchantService merchantService;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNewPin(@RequestBody NewMerchantRequest request) {
+    public ResponseEntity<?> createNewMerchant(@RequestBody NewMerchantRequest request) {
         MerchantResponse merchantResponse = merchantService.createNew(request);
         CommonResponse<MerchantResponse> response = CommonResponse.<MerchantResponse>builder()
                 .message("successfully create new merchant")
