@@ -1,10 +1,10 @@
-package com.enigma.x_food.feature.user.service.impl;
+package com.enigma.x_food.feature.user;
 
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
-import com.enigma.x_food.feature.user.repository.UserRepository;
+import com.enigma.x_food.feature.user.UserRepository;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
-import com.enigma.x_food.feature.user.entity.User;
-import com.enigma.x_food.feature.user.service.UserService;
+import com.enigma.x_food.feature.user.User;
+import com.enigma.x_food.feature.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

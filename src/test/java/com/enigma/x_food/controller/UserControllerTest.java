@@ -1,9 +1,9 @@
 package com.enigma.x_food.controller;
 
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
-import com.enigma.x_food.feature.user.dto.response.CommonResponse;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
-import com.enigma.x_food.feature.user.service.UserService;
+import com.enigma.x_food.feature.user.UserService;
+import com.enigma.x_food.shared.ErrorController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -75,7 +74,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(result -> {
-                    CommonResponse<List<UserResponse>> response = objectMapper.readValue(
+                    ErrorController.CommonResponse<List<UserResponse>> response = objectMapper.readValue(
                             result.getResponse().getContentAsString(),
                             new TypeReference<>() {}
                     );

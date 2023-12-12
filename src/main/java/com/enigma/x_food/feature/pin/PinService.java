@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.pin.service;
+package com.enigma.x_food.feature.pin;
 
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;

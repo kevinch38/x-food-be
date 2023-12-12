@@ -1,6 +1,9 @@
-package com.enigma.x_food.feature.pin.controller;
+package com.enigma.x_food.shared;
 
-import com.enigma.x_food.feature.pin.dto.response.CommonResponse;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,5 +30,27 @@ public class ErrorController {
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class CommonResponse<T> {
+        private String message;
+        private Integer statusCode;
+        private T data;
+        private PagingResponse paging;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class PagingResponse {
+        private Integer totalPages;
+        private Long count;
+        private Integer page;
+        private Integer size;
     }
 }

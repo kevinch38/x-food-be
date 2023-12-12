@@ -1,11 +1,9 @@
 package com.enigma.x_food.controller;
 
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
-import com.enigma.x_food.feature.pin.dto.request.SearchPinRequest;
-import com.enigma.x_food.feature.pin.dto.response.CommonResponse;
+import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
-import com.enigma.x_food.feature.pin.entity.Pin;
-import com.enigma.x_food.feature.pin.service.PinService;
+import com.enigma.x_food.feature.pin.PinService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
@@ -17,15 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.List;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
