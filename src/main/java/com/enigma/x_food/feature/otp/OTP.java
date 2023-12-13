@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.pin;
+package com.enigma.x_food.feature.otp;
 
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.*;
@@ -12,12 +12,16 @@ import javax.persistence.*;
 @SuperBuilder
 @Data
 @Entity
-@Table(name = "Pin")
-public class Pin extends BaseEntity {
+@Table(name = "OTP")
+public class OTP extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
-    private String pinID;
+    private String otpID;
 
-    @Column(name = "pin", nullable = false, length = 64)
-    private String pin;}
+    @Column(name = "otp", nullable = false, length = 64)
+    private String otp;
+
+    @Column(name = "account_id", nullable = false, unique = true, length = 36)
+    private String accountID;
+}

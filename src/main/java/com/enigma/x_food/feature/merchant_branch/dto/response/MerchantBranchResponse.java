@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.pin.dto.response;
+package com.enigma.x_food.feature.merchant_branch.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -12,11 +12,16 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PinResponse {
-    private String pinID;
-    private String pin;
+public class MerchantBranchResponse {
+    private String branchID;
+    private String merchantID;
+    private String branchName;
+    private String address;
+    private String timezone;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;
+    private String branchWorkingHoursID;
+    private String cityID;
 }

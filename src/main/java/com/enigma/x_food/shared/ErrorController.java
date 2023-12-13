@@ -1,9 +1,6 @@
 package com.enigma.x_food.shared;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +13,7 @@ import javax.validation.ConstraintViolationException;
 public class ErrorController {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> responseStatusException(ResponseStatusException e){
-        CommonResponse commonResponse = CommonResponse.builder()
+       CommonResponse commonResponse = CommonResponse.builder()
                 .message(e.getReason())
                 .statusCode(e.getRawStatusCode())
                 .build();
