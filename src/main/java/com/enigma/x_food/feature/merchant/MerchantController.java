@@ -1,8 +1,7 @@
-package com.enigma.x_food.controller;
+package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
-import com.enigma.x_food.feature.merchant.service.MerchantService;
 import com.enigma.x_food.feature.pin.dto.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

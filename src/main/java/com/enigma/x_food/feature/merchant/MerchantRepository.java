@@ -1,6 +1,5 @@
-package com.enigma.x_food.feature.merchant.repository;
+package com.enigma.x_food.feature.merchant;
 
-import com.enigma.x_food.feature.merchant.entity.Merchant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

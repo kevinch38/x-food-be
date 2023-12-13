@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.merchant.entity;
+package com.enigma.x_food.feature.merchant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

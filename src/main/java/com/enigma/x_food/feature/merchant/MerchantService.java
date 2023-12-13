@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.merchant.service;
+package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;

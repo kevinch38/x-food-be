@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.merchant_branch.service;
+package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;

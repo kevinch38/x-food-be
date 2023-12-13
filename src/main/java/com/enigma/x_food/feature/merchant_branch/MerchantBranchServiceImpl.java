@@ -1,11 +1,8 @@
-package com.enigma.x_food.feature.merchant_branch.service.impl;
+package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
-import com.enigma.x_food.feature.merchant_branch.entity.MerchantBranch;
-import com.enigma.x_food.feature.merchant_branch.repository.MerchantBranchRepository;
-import com.enigma.x_food.feature.merchant_branch.service.MerchantBranchService;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
