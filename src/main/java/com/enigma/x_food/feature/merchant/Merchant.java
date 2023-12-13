@@ -2,10 +2,7 @@ package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.shared.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -16,8 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "Merchant")
 public class Merchant extends BaseEntity {
@@ -43,6 +39,6 @@ public class Merchant extends BaseEntity {
     private String merchantStatusID;
     @Column(name = "notes", length = 150)
     private String notes;
-    @OneToMany(mappedBy = "merchant")
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MerchantBranch> merchantBranches;
 }

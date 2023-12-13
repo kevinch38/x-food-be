@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
+import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,28 @@ public class MerchantServiceImpl implements MerchantService {
                 .build();
         merchantRepository.saveAndFlush(merchant);
         return mapToResponse(merchant);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public MerchantResponse update(UpdateMerchantRequest request) {
+        validationUtil.validate(request);
+        Merchant merchant = findByIdOrThrowException(request.getMerchantID());
+
+        Merchant updated = Merchant.builder()
+                .merchantID(merchant.getMerchantID())
+                .joinDate(merchant.getJoinDate())
+                .merchantName(request.getMerchantName())
+                .picName(request.getPicName())
+                .picNumber(request.getPicNumber())
+                .picEmail(request.getPicEmail())
+                .merchantDescription(request.getMerchantDescription())
+                .adminID(merchant.getAdminID())
+                .merchantStatusID(request.getMerchantStatusID())
+                .notes(request.getNotes())
+                .build();
+
+        return mapToResponse(merchantRepository.saveAndFlush(updated));
     }
 
     @Override

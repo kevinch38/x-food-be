@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.promotion;
 
 import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
 import com.enigma.x_food.shared.CommonResponse;
@@ -79,6 +80,32 @@ public class PromotionController {
                 .paging(pagingResponse)
                 .build();
 
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updatePromotion(@RequestBody UpdatePromotionRequest request) {
+        PromotionResponse promotionResponse =promotionService.update(request);
+        CommonResponse<PromotionResponse> response = CommonResponse.<PromotionResponse>builder()
+                .message("successfully update promotion")
+                .statusCode(HttpStatus.OK.value())
+                .data(promotionResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePromotionById(@PathVariable String id) {
+        promotionService.deleteById(id);
+        CommonResponse<?> response = CommonResponse.builder()
+                .message("successfully update promotion")
+                .statusCode(HttpStatus.OK.value())
+                .data("OK")
+                .build();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);

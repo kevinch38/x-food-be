@@ -1,10 +1,7 @@
 package com.enigma.x_food.feature.promotion;
 import com.enigma.x_food.shared.BaseEntity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -14,8 +11,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "Promotion")
 public class Promotion extends BaseEntity {

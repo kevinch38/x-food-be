@@ -1,6 +1,5 @@
 package com.enigma.x_food.feature.promotion.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +13,9 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NewPromotionRequest {
+public class UpdatePromotionRequest {
+    @NotBlank(message = "Promotion ID cannot be empty")
+    private String promotionID;
     @NotBlank(message = "Merchant ID cannot be empty")
     private String merchantID;
     @NotNull(message = "Cost cannot be empty")
@@ -33,5 +34,7 @@ public class NewPromotionRequest {
     private Timestamp expiredDate;
     @NotBlank(message = "Promotion status ID cannot be empty")
     private String promotionStatusID;
+    @NotNull(message = "Updated at cannot be empty")
+    private Timestamp updatedAt;
     private String notes;
 }

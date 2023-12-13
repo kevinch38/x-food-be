@@ -2,10 +2,7 @@ package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.shared.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -14,8 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "Merchant_Branch")
 public class MerchantBranch extends BaseEntity {
@@ -24,7 +20,7 @@ public class MerchantBranch extends BaseEntity {
     @GeneratedValue(generator = "uuid")
     private String branchID;
     @JoinColumn(name = "merchant_id", nullable = false)
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Merchant merchant;
     @Column(name = "merchant_name", nullable = false, length = 100)
     private String branchName;
