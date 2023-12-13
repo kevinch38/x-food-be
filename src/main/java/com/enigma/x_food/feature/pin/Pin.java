@@ -20,8 +20,4 @@ public class Pin extends BaseEntity {
     private String pinID;
 
     @Column(name = "pin", nullable = false, length = 64)
-    private String pin;
-
-    @Column(name = "account_id", nullable = false, unique = true)
-    private String accountID;
-}
+    private String pin;}

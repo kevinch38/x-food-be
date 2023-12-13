@@ -6,6 +6,7 @@ import com.enigma.x_food.feature.pin.dto.response.PinResponse;
 import org.springframework.data.domain.Page;
 
 public interface PinService {
-    PinResponse createNew(NewPinRequest request);
-    Page<PinResponse> getAll(SearchPinRequest request);
+    Pin createNew(NewPinRequest request);
+    PinResponse update(UpdatePinRequest request);
+    PinResponse getById(String id);
 }
