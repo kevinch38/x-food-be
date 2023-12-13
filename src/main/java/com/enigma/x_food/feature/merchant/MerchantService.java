@@ -7,5 +7,7 @@ import org.springframework.data.domain.Page;
 
 public interface MerchantService {
     MerchantResponse createNew(NewMerchantRequest request);
+    MerchantResponse findById(String id);
     Page<MerchantResponse> getAll(SearchMerchantRequest request);
+
 }

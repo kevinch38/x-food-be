@@ -2,7 +2,7 @@ package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
-import com.enigma.x_food.feature.pin.dto.response.CommonResponse;
+import com.enigma.x_food.shared.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

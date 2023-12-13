@@ -5,10 +5,11 @@ import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 
@@ -23,46 +24,51 @@ public class MerchantServiceImpl implements MerchantService {
     public MerchantResponse createNew(NewMerchantRequest request) {
         validationUtil.validate(request);
         Merchant merchant = Merchant.builder()
-                .merchantID(generateRandomId())
+                .joinDate(request.getJoinDate())
                 .merchantName(request.getMerchantName())
-                .merchantDescription(request.getMerchantDescription())
-                .notes(request.getNotes())
-                .joinDate(new Timestamp(System.currentTimeMillis()))
                 .picName(request.getPicName())
                 .picNumber(request.getPicNumber())
                 .picEmail(request.getPicEmail())
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .merchantDescription(request.getMerchantDescription())
+                .adminID("")
+                .merchantStatusID(request.getMerchantStatusID())
+                .notes(request.getNotes())
                 .build();
         merchantRepository.saveAndFlush(merchant);
-        return mapToReponse(merchant);
-
+        return mapToResponse(merchant);
     }
 
+    @Override
+    public MerchantResponse findById(String id) {
+        validationUtil.validate(id);
+        return mapToResponse(findByIdOrThrowException(id));
+    }
 
     @Override
     public Page<MerchantResponse> getAll(SearchMerchantRequest request) {
         return null;
     }
 
-    private MerchantResponse mapToReponse(Merchant merchant) {
+    private MerchantResponse mapToResponse(Merchant merchant) {
         return MerchantResponse.builder()
                 .merchantID(merchant.getMerchantID())
-                .merchantName(merchant.getMerchantName())
-                .merchantDescription(merchant.getMerchantDescription())
-                .notes(merchant.getNotes())
-                .picName(merchant.getPicName())
-                .picEmail(merchant.getPicEmail())
-                .picNumber(merchant.getPicNumber())
                 .joinDate(merchant.getJoinDate())
-                .merchantStatusID("status")
-                .merchantStatusID("1")
+                .merchantName(merchant.getMerchantName())
+                .picName(merchant.getPicName())
+                .picNumber(merchant.getPicNumber())
+                .picEmail(merchant.getPicEmail())
+                .merchantDescription(merchant.getMerchantDescription())
+                .adminId(merchant.getAdminID())
                 .createdAt(merchant.getCreatedAt())
                 .updatedAt(merchant.getUpdatedAt())
+                .merchantStatusID(merchant.getMerchantStatusID())
+                .notes(merchant.getNotes())
                 .build();
     }
 
-    private static String generateRandomId() {
-        return RandomStringUtils.randomNumeric(6);
+    private Merchant findByIdOrThrowException(String id) {
+        return merchantRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Merchant not found")
+        );
     }
 }
