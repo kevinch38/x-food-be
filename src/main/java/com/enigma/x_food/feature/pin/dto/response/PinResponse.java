@@ -14,8 +14,6 @@ import java.time.LocalDate;
 @Builder
 public class PinResponse {
     private String pinID;
-    private String pin;
     private Timestamp createdAt;
     private Timestamp updatedAt;
-    private String accountID;
 }

@@ -1,7 +1,11 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.pin.Pin;
+import com.enigma.x_food.feature.pin.PinService;
+import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
+import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.feature.user.UserRepository;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
@@ -33,9 +37,9 @@ import java.util.List;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PinService pinService;
 
     private final BCryptUtil bCryptUtil;
-
     private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
@@ -44,11 +48,12 @@ public class UserServiceImpl implements UserService {
         try {
             log.info("Start createNew");
             validationUtil.validate(request);
+            Pin pin = pinService.createNew(NewPinRequest.builder().pin("").build());
             User user = User.builder()
                     .ktpID("")
                     .accountEmail(request.getAccountEmail())
+                    .pin(pin)
                     .phoneNumber(request.getPhoneNumber())
-                    .pinID(request.getPinID())
                     .firstName(request.getFirstName())
                     .lastName(request.getLastName())
                     .dateOfBirth(LocalDate.of(1970,1,1))
@@ -89,11 +94,45 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getById(String id) {
         log.info("Start getOneById");
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+        User user = findByIdOrThrowNotFound(id);
         log.info("End getOneById");
         return mapToResponse(user);
     }
+
+    @Override
+    public User getUserById(String id) {
+        return (findByIdOrThrowNotFound(id));
+    }
+
+    @Override
+    public UserResponse update(UpdateUserRequest request) {
+        try {
+            log.info("Start update");
+            validationUtil.validate(request);
+            User user = findByIdOrThrowNotFound(request.getAccountID());
+            user.setKtpID(request.getKtpID());
+            user.setAccountEmail(request.getAccountEmail());
+            user.setPhoneNumber(request.getPhoneNumber());
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setDateOfBirth(request.getDateOfBirth());
+            userRepository.saveAndFlush(user);
+            log.info("End update");
+            return mapToResponse(user);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Error update: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "user already exist");
+        }
+    }
+
+    @Override
+    public void deleteById(String id) {
+        log.info("Start deleteById");
+        User user = findByIdOrThrowNotFound(id);
+        userRepository.delete(user);
+        log.info("End deleteById");
+    }
+
 
     private UserResponse mapToResponse(User user) {
         return UserResponse.builder()
@@ -101,7 +140,7 @@ public class UserServiceImpl implements UserService {
                 .ktpID(user.getKtpID())
                 .accountEmail(user.getAccountEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .pinID(user.getPinID())
+                .pinID(user.getPin().getPinID())
                 .createdAt(user.getCreatedAt())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
@@ -111,6 +150,11 @@ public class UserServiceImpl implements UserService {
                 .loyaltyPointID(user.getLoyaltyPointID())
                 .otpID(user.getOtpID())
                 .build();
+    }
+
+    private User findByIdOrThrowNotFound(String id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
     }
 
     private Specification<User> getUserSpecification(SearchUserRequest request) {

@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,8 +35,9 @@ public class User extends BaseEntity {
     @Column(name = "phone_number", nullable = false, length = 15)
     private String phoneNumber;
 
-    @Column(name = "pin_id", nullable = false)
-    private String pinID;
+    @OneToOne
+    @JoinColumn(name = "pinID", unique = true)
+    private Pin pin;
 
     @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;
@@ -45,7 +47,6 @@ public class User extends BaseEntity {
 
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
-
 
     @Column(name = "balance_id", nullable = false)
     private String balanceID;

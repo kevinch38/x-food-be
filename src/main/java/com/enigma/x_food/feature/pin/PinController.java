@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.pin;
 
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
+import com.enigma.x_food.feature.pin.dto.request.UpdatePinRequest;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
 import com.enigma.x_food.feature.pin.PinService;
@@ -16,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class PinController {
     private final PinService pinService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNewPin(@RequestBody NewPinRequest request) {
-        PinResponse pinResponse = pinService.createNew(request);
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createNewPin(@RequestBody UpdatePinRequest request) {
+        PinResponse pinResponse = pinService.update(request);
         CommonResponse<PinResponse> response = CommonResponse.<PinResponse>builder()
                 .message("successfully create new pin")
                 .statusCode(HttpStatus.CREATED.value())

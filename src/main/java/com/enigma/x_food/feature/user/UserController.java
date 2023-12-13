@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.user;
 
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
+import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
@@ -11,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.x_food.util.PagingUtil;
 
@@ -48,8 +51,7 @@ public class UserController {
             @RequestParam(required = false) String ktpID,
             @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) LocalDate dateOfBirth
+            @RequestParam(required = false) String lastName
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
@@ -66,7 +68,6 @@ public class UserController {
                 .phoneNumber(phoneNumber)
                 .firstName(firstName)
                 .lastName(lastName)
-                .dateOfBirth(dateOfBirth)
                 .build();
         Page<UserResponse> users = userService.getAll(request);
 
@@ -96,6 +97,33 @@ public class UserController {
                 .message("successfully get user")
                 .statusCode(HttpStatus.OK.value())
                 .data(userResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+
+    @PutMapping
+    public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequest request) {
+        UserResponse userResponse = userService.update(request);
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+                .message("successfully update user")
+                .statusCode(HttpStatus.OK.value())
+                .data(userResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable String id) {
+        userService.deleteById(id);
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .message("successfully delete user")
+                .statusCode(HttpStatus.OK.value())
+                .data("OK")
                 .build();
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -5,16 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NewPinRequest {
-    @NotNull(message = "Pin cannot be empty")
+public class UpdatePinRequest {
+    @NotBlank(message = "Pin ID cannot be empty")
+    private String pinID;
+    @NotBlank(message = "Pin cannot be empty")
     private String pin;
 }
