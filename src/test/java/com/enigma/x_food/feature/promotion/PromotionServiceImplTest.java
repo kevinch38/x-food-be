@@ -36,8 +36,6 @@ class PromotionServiceImplTest {
                 .quantity(2)
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
                 .promotionStatusID("1")
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
         Promotion promotion = Promotion.builder()
                 .merchantID(newPromotionRequest.getMerchantID())
@@ -50,8 +48,6 @@ class PromotionServiceImplTest {
                 .adminID("adminID")
                 .expiredDate(newPromotionRequest.getExpiredDate())
                 .promotionStatusID(newPromotionRequest.getPromotionStatusID())
-                .createdAt(newPromotionRequest.getCreatedAt())
-                .updatedAt(newPromotionRequest.getUpdatedAt())
                 .build();
         PromotionResponse promotionResponse = PromotionResponse.builder()
                 .merchantID(promotion.getMerchantID())
@@ -73,5 +69,21 @@ class PromotionServiceImplTest {
         PromotionResponse actual = promotionService.createNew(newPromotionRequest);
 
         assertEquals("adminID",actual.getAdminID());
+    }
+
+    @Test
+    void update() {
+    }
+
+    @Test
+    void findById() {
+    }
+
+    @Test
+    void getAll() {
+    }
+
+    @Test
+    void deleteById() {
     }
 }

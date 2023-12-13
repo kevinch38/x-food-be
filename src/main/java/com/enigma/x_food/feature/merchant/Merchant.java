@@ -15,7 +15,7 @@ import java.util.List;
 @SuperBuilder
 @Data
 @Entity
-@Table(name = "Merchant")
+@Table(name = "merchant")
 public class Merchant extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")

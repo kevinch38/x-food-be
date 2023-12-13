@@ -13,7 +13,7 @@ import javax.persistence.*;
 @SuperBuilder
 @Data
 @Entity
-@Table(name = "Merchant_Branch")
+@Table(name = "merchant_branch")
 public class MerchantBranch extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")

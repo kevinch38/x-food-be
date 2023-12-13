@@ -43,8 +43,6 @@ class PromotionControllerTest {
                 .quantity(2)
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
                 .promotionStatusID("1")
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
         PromotionResponse promotionResponse = PromotionResponse.builder()
                 .merchantID(promotion.getMerchantID())
@@ -57,8 +55,6 @@ class PromotionControllerTest {
                 .adminID("adminID")
                 .expiredDate(promotion.getExpiredDate())
                 .promotionStatusID(promotion.getPromotionStatusID())
-                .createdAt(promotion.getCreatedAt())
-                .updatedAt(promotion.getUpdatedAt())
                 .build();
         Mockito.when(promotionService.createNew(promotion)).thenReturn(promotionResponse);
 
@@ -74,5 +70,17 @@ class PromotionControllerTest {
                     Assertions.assertEquals(201, response.getStatusCode());
                     Assertions.assertEquals("adminID",response.getData().getAdminID());
                 });
+    }
+
+    @Test
+    void getAllPromotion() {
+    }
+
+    @Test
+    void updatePromotion() {
+    }
+
+    @Test
+    void deletePromotionById() {
     }
 }
