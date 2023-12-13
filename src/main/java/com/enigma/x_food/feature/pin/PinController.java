@@ -29,4 +29,17 @@ public class PinController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getPinById(@PathVariable String id) {
+        PinResponse pinResponse = pinService.getById(id);
+        CommonResponse<PinResponse> response = CommonResponse.<PinResponse>builder()
+                .message("successfully get pin")
+                .statusCode(HttpStatus.OK.value())
+                .data(pinResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 }
