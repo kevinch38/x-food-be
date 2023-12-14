@@ -18,7 +18,7 @@ public class PinController {
     private final PinService pinService;
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNewPin(@RequestBody UpdatePinRequest request) {
+    public ResponseEntity<?> updatePin(@RequestBody UpdatePinRequest request) {
         PinResponse pinResponse = pinService.update(request);
         CommonResponse<PinResponse> response = CommonResponse.<PinResponse>builder()
                 .message("successfully create new pin")
