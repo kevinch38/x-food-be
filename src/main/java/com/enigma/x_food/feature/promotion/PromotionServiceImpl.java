@@ -44,6 +44,7 @@ public class PromotionServiceImpl implements PromotionService {
                     .adminID("adminID")
                     .expiredDate(request.getExpiredDate())
                     .promotionStatusID(request.getPromotionStatusID())
+                    .notes(request.getNotes())
                     .build();
             promotionRepository.saveAndFlush(promotion);
             log.info("End createNew");
@@ -72,8 +73,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .adminID(promotion.getAdminID())
                 .expiredDate(request.getExpiredDate())
                 .promotionStatusID(request.getPromotionStatusID())
-                .createdAt(promotion.getCreatedAt())
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .notes(request.getNotes())
                 .build();
 
         return mapToResponse(promotionRepository.saveAndFlush(updated));
@@ -132,6 +132,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .promotionStatusID(promotion.getPromotionStatusID())
                 .createdAt(promotion.getCreatedAt())
                 .updatedAt(promotion.getUpdatedAt())
+                .notes(promotion.getNotes())
                 .build();
     }
 }

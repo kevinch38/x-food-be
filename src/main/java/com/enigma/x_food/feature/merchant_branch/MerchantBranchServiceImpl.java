@@ -43,8 +43,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .picNumber(merchantResponse.getPicNumber())
                 .joinDate(merchantResponse.getJoinDate())
                 .merchantStatusID(merchantResponse.getMerchantStatusID())
-                .createdAt(merchantResponse.getCreatedAt())
-                .updatedAt(merchantResponse.getUpdatedAt())
                 .build();
 
         MerchantBranch branch = MerchantBranch.builder()
@@ -73,8 +71,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .timezone(request.getTimezone())
                 .branchWorkingHoursID(request.getBranchWorkingHoursID())
                 .cityID(request.getCityID())
-                .createdAt(merchantBranch.getCreatedAt())
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
 
         return mapToResponse(merchantBranchRepository.saveAndFlush(updated));
