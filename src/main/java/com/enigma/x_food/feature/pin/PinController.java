@@ -4,7 +4,7 @@ import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.UpdatePinRequest;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
-import com.enigma.x_food.feature.pin.PinService;
+import com.enigma.x_food.shared.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

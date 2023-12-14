@@ -1,4 +1,4 @@
-package com.enigma.x_food.service.impl;
+package com.enigma.x_food.feature.pin;
 
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.pin.dto.request.*;
@@ -41,7 +41,7 @@ class PinServiceImplTest {
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        PinResponse pinResponse = PinResponse.builder()
+        PinResponse promotionResponse = PinResponse.builder()
                 .pinID("1")
                 .pin("2")
                 .accountID("3")
