@@ -21,8 +21,8 @@ public class PinController {
     public ResponseEntity<?> updatePin(@RequestBody UpdatePinRequest request) {
         PinResponse pinResponse = pinService.update(request);
         CommonResponse<PinResponse> response = CommonResponse.<PinResponse>builder()
-                .message("successfully create new pin")
-                .statusCode(HttpStatus.CREATED.value())
+                .message("successfully update pin")
+                .statusCode(HttpStatus.OK.value())
                 .data(pinResponse)
                 .build();
         return ResponseEntity
