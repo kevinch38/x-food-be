@@ -44,7 +44,6 @@ class UserControllerTest {
         NewUserRequest request = NewUserRequest.builder()
                 .accountEmail("a")
                 .phoneNumber("a")
-                .pinID("abc")
                 .firstName("a")
                 .lastName("a")
                 .build();
@@ -62,7 +61,7 @@ class UserControllerTest {
 
         Mockito.when(userService.createNew(request)).thenReturn(userResponse);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/users/register")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.status().isCreated())

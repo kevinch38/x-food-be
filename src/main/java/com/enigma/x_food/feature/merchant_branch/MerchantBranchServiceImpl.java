@@ -75,6 +75,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .timezone(request.getTimezone())
                 .branchWorkingHoursID(request.getBranchWorkingHoursID())
                 .cityID(request.getCityID())
+                .createdAt(merchantBranch.getCreatedAt())
                 .build();
 
         return mapToResponse(merchantBranchRepository.saveAndFlush(updated));

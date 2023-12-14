@@ -41,7 +41,8 @@ public class PromotionController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "accountID") String sortBy,
-            @RequestParam(required = false) String merchantId,
+            @RequestParam(required = false) String promotionID,
+            @RequestParam(required = false) String merchantID,
             @RequestParam(required = false) String promotionDescription,
             @RequestParam(required = false) String promotionName,
             @RequestParam(required = false) String adminID,
@@ -57,7 +58,8 @@ public class PromotionController {
                 .size(size)
                 .direction(direction)
                 .sortBy(sortBy)
-                .merchantId(merchantId)
+                .promotionID(promotionID)
+                .merchantID(merchantID)
                 .promotionDescription(promotionDescription)
                 .promotionName(promotionName)
                 .adminID(adminID)

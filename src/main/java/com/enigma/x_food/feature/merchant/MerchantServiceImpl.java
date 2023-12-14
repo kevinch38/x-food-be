@@ -57,6 +57,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .picEmail(request.getPicEmail())
                 .merchantDescription(request.getMerchantDescription())
                 .adminID(merchant.getAdminID())
+                .createdAt(merchant.getCreatedAt())
                 .merchantStatusID(request.getMerchantStatusID())
                 .notes(request.getNotes())
                 .build();

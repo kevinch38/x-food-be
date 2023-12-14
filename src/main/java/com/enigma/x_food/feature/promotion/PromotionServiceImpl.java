@@ -16,12 +16,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -110,6 +114,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .adminID(promotion.getAdminID())
                 .expiredDate(request.getExpiredDate())
                 .promotionStatusID(request.getPromotionStatusID())
+                .createdAt(promotion.getCreatedAt())
                 .notes(request.getNotes())
                 .build();
 
@@ -137,7 +142,8 @@ public class PromotionServiceImpl implements PromotionService {
                 request.getSortBy()
         );
 
-        Page<Promotion> promotions = promotionRepository.findAll(pageable);
+        Specification<Promotion> specification = getPromotionSpecification(request);
+        Page<Promotion> promotions = promotionRepository.findAll(specification, pageable);
         return promotions.map(this::mapToResponse);
     }
 
@@ -171,5 +177,70 @@ public class PromotionServiceImpl implements PromotionService {
                 .updatedAt(promotion.getUpdatedAt())
                 .notes(promotion.getNotes())
                 .build();
+    }
+
+    private Specification<Promotion> getPromotionSpecification(SearchPromotionRequest request) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getPromotionID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("promotionid")),
+                        "%" + request.getPromotionID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getMerchantID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("merchant_id")),
+                        "%" + request.getMerchantID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getPromotionDescription() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("promotion_description")),
+                        "%" + request.getPromotionDescription().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getPromotionName() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("promotion_name")),
+                        "%" + request.getPromotionName().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getAdminID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("admin_id")),
+                        "%" + request.getAdminID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getPromotionStatusID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("promotion_status_id")),
+                        "%" + request.getPromotionStatusID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+            if (request.getNote() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("note")),
+                        "%" + request.getNote().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            return query
+                    .where(predicates.toArray(new Predicate[]{}))
+                    .getRestriction();
+        };
     }
 }
