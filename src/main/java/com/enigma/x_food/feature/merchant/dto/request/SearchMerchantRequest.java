@@ -1,9 +1,17 @@
 package com.enigma.x_food.feature.merchant.dto.request;
 
+import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.promotion.Promotion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.OneToMany;
+import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,4 +22,13 @@ public class SearchMerchantRequest {
     private Integer size;
     private String direction;
     private String sortBy;
+    private String merchantID;
+    private String merchantName;
+    private String picName;
+    private String picNumber;
+    private String picEmail;
+    private String merchantDescription;
+    private String adminID;
+    private String merchantStatusID;
+    private String notes;
 }

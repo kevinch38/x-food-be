@@ -15,7 +15,8 @@ public class SearchPromotionRequest {
     private Integer size;
     private String direction;
     private String sortBy;
-    private String merchantId;
+    private String promotionID;
+    private String merchantID;
     private String promotionDescription;
     private String promotionName;
     private String adminID;

@@ -34,7 +34,5 @@ public class UpdatePromotionRequest {
     private Timestamp expiredDate;
     @NotBlank(message = "Promotion status ID cannot be empty")
     private String promotionStatusID;
-    @NotNull(message = "Updated at cannot be empty")
-    private Timestamp updatedAt;
     private String notes;
 }

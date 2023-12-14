@@ -36,16 +36,14 @@ class PinControllerTest {
     void createNew() throws Exception {
         NewPinRequest pin = NewPinRequest.builder()
                 .pin("2")
-                .accountID("3")
                 .build();
-        PinResponse promotionResponse = PinResponse.builder()
+        Pin pinResponse = Pin.builder()
                 .pinID("1")
                 .pin("2")
-                .accountID("3")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        Mockito.when(pinService.createNew(pin)).thenReturn(promotionResponse);
+        Mockito.when(pinService.createNew(pin)).thenReturn(pinResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/pins")
                         .content(objectMapper.writeValueAsString(pin))
@@ -57,7 +55,7 @@ class PinControllerTest {
                             new TypeReference<>() {}
                     );
                     Assertions.assertEquals(201, response.getStatusCode());
-                    Assertions.assertEquals("3",response.getData().getAccountID());
+                    Assertions.assertEquals("1",response.getData().getPinID());
                 });
     }
 

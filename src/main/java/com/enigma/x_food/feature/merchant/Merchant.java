@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.promotion.Promotion;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -39,6 +40,8 @@ public class Merchant extends BaseEntity {
     private String merchantStatusID;
     @Column(name = "notes", length = 150)
     private String notes;
-    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
     private List<MerchantBranch> merchantBranches;
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    private List<Promotion> promotions;
 }
