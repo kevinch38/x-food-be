@@ -4,9 +4,14 @@ import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
+import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,14 +65,36 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MerchantResponse findById(String id) {
         validationUtil.validate(id);
         return mapToResponse(findByIdOrThrowException(id));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
+    public void deleteById(String id) {
+        validationUtil.validate(id);
+        Merchant merchant = findByIdOrThrowException(id);
+        merchantRepository.delete(merchant);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<MerchantResponse> getAll(SearchMerchantRequest request) {
-        return null;
+        String fieldName = SortingUtil.sortByValidation(Merchant.class, request.getSortBy(), "merchantID");
+        request.setSortBy(fieldName);
+
+        Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
+        Pageable pageable = PageRequest.of(
+                request.getPage() - 1,
+                request.getSize(),
+                direction,
+                request.getSortBy()
+        );
+
+        Page<Merchant> merchantBranches = merchantRepository.findAll(pageable);
+        return merchantBranches.map(this::mapToResponse);
     }
 
     private MerchantResponse mapToResponse(Merchant merchant) {

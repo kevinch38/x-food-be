@@ -102,7 +102,7 @@ public class PromotionController {
     public ResponseEntity<?> deletePromotionById(@PathVariable String id) {
         promotionService.deleteById(id);
         CommonResponse<?> response = CommonResponse.builder()
-                .message("successfully update promotion")
+                .message("successfully delete promotion")
                 .statusCode(HttpStatus.OK.value())
                 .data("OK")
                 .build();

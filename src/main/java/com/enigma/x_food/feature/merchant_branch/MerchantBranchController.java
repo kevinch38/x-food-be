@@ -21,7 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MerchantBranchController {
     private final MerchantBranchService merchantBranchService;
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNewMerchantBranch(@RequestBody NewMerchantBranchRequest request) {
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.createNew(request);
@@ -105,7 +104,7 @@ public class MerchantBranchController {
     public ResponseEntity<?> deleteMerchantBranchById(@PathVariable String id) {
         merchantBranchService.deleteById(id);
         CommonResponse<?> response = CommonResponse.builder()
-                .message("successfully update merchant branch")
+                .message("successfully delete merchant branch")
                 .statusCode(HttpStatus.OK.value())
                 .data("OK")
                 .build();

@@ -20,7 +20,7 @@ public class MerchantBranch extends BaseEntity {
     @GeneratedValue(generator = "uuid")
     private String branchID;
     @JoinColumn(name = "merchant_id", nullable = false)
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Merchant merchant;
     @Column(name = "merchant_name", nullable = false, length = 100)
     private String branchName;

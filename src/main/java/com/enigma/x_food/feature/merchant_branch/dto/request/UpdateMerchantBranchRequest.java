@@ -15,9 +15,7 @@ import java.sql.Timestamp;
 @Builder
 public class UpdateMerchantBranchRequest {
     @NotBlank(message = "Merchant branch ID cannot be empty")
-    private String merchantBranchID;
-    @NotBlank(message = "Merchant ID cannot be empty")
-    private String merchantID;
+    private String branchID;
     @NotBlank(message = "Branch name cannot be empty")
     private String branchName;
     @NotBlank(message = "Address cannot be empty")
@@ -28,6 +26,4 @@ public class UpdateMerchantBranchRequest {
     private String branchWorkingHoursID;
     @NotBlank(message = "City ID cannot be empty")
     private String cityID;
-    @NotNull(message = "Updated at cannot be empty")
-    private Timestamp updatedAt;
 }
