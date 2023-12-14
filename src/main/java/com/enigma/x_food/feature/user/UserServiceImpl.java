@@ -102,6 +102,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponse getUserByPhoneNumber(String phoneNumber) {
+        log.info("Start getOneByPhoneNumber");
+        User user = findByPhoneNumberOrThrowNotFound(phoneNumber);
+        log.info("End getOneById");
+        return mapToResponse(user);
+    }
+
+    @Override
+    public User getUserByPhoneNumber2(String phoneNumber) {
+        log.info("Start getOneByPhoneNumber");
+        User user = findByPhoneNumberOrThrowNotFound(phoneNumber);
+        log.info("End getOneById");
+        return user;
+    }
+
+    @Override
     public UserResponse update(UpdateUserRequest request) {
         try {
             log.info("Start update");
@@ -151,6 +167,11 @@ public class UserServiceImpl implements UserService {
 
     private User findByIdOrThrowNotFound(String id) {
         return userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+    }
+
+    private User findByPhoneNumberOrThrowNotFound(String phoneNumber) {
+        return userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
     }
 

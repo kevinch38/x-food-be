@@ -54,8 +54,8 @@ public class PinServiceImpl implements PinService {
             pinRepository.saveAndFlush(pin);
             return mapToResponse(pin);
         } catch (DataIntegrityViolationException e) {
-            log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "pin already exist");
+            log.error("Error update: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "pin error");
         }
     }
 
