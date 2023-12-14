@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Timestamp;
+import javax.persistence.EntityManager;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +27,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     private final MerchantBranchRepository merchantBranchRepository;
     private final MerchantService merchantService;
     private final ValidationUtil validationUtil;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -35,20 +36,21 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
         Merchant merchant = Merchant.builder()
                 .merchantID(merchantResponse.getMerchantID())
-                .merchantName(merchantResponse.getMerchantName())
-                .merchantDescription(merchantResponse.getMerchantDescription())
-                .notes(merchantResponse.getNotes())
-                .picName(merchantResponse.getPicName())
-                .picEmail(merchantResponse.getPicEmail())
-                .picNumber(merchantResponse.getPicNumber())
                 .joinDate(merchantResponse.getJoinDate())
-                .merchantStatusID(merchantResponse.getMerchantStatusID())
+                .merchantName(merchantResponse.getMerchantName())
+                .picName(merchantResponse.getPicName())
+                .picNumber(merchantResponse.getPicNumber())
+                .picEmail(merchantResponse.getPicEmail())
+                .merchantDescription(merchantResponse.getMerchantDescription())
+                .adminID(merchantResponse.getAdminId())
                 .createdAt(merchantResponse.getCreatedAt())
                 .updatedAt(merchantResponse.getUpdatedAt())
+                .merchantStatusID(merchantResponse.getMerchantStatusID())
+                .notes(merchantResponse.getNotes())
                 .build();
 
         MerchantBranch branch = MerchantBranch.builder()
-                .merchant(merchant)
+                .merchant(entityManager.merge(merchant))
                 .branchName(request.getBranchName())
                 .address(request.getAddress())
                 .timezone(request.getTimezone())
@@ -64,7 +66,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     @Transactional(rollbackFor = Exception.class)
     public MerchantBranchResponse update(UpdateMerchantBranchRequest request) {
         validationUtil.validate(request);
-        MerchantBranch merchantBranch = findByIdOrThrowException(request.getMerchantBranchID());
+        MerchantBranch merchantBranch = findByIdOrThrowException(request.getBranchID());
 
         MerchantBranch updated = MerchantBranch.builder()
                 .merchant(merchantBranch.getMerchant())
@@ -74,7 +76,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .branchWorkingHoursID(request.getBranchWorkingHoursID())
                 .cityID(request.getCityID())
                 .createdAt(merchantBranch.getCreatedAt())
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
 
         return mapToResponse(merchantBranchRepository.saveAndFlush(updated));

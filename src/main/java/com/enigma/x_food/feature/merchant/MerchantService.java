@@ -10,6 +10,7 @@ public interface MerchantService {
     MerchantResponse createNew(NewMerchantRequest request);
     MerchantResponse update(UpdateMerchantRequest request);
     MerchantResponse findById(String id);
+    void deleteById(String id);
     Page<MerchantResponse> getAll(SearchMerchantRequest request);
 
 }

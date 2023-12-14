@@ -1,4 +1,5 @@
 package com.enigma.x_food.feature.promotion;
+import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.shared.BaseEntity;
 
 import lombok.*;
@@ -19,8 +20,9 @@ public class Promotion extends BaseEntity {
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
     private String promotionID;
-    @Column(name = "merchant_id", nullable = false, length = 36)
-    private String merchantID;
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    private Merchant merchant;
     @Column(name = "cost", nullable = false, length = 11)
     private Double cost;
     @Column(name = "max_redeem", nullable = false, length = 11)

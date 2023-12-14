@@ -32,27 +32,24 @@ class PinServiceImplTest {
     void createPin() {
         NewPinRequest newPinRequest = NewPinRequest.builder()
                 .pin("2")
-                .accountID("3")
                 .build();
         Pin pin = Pin.builder()
                 .pinID("1")
                 .pin("2")
-                .accountID("3")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        PinResponse promotionResponse = PinResponse.builder()
+        PinResponse pinResponse = PinResponse.builder()
                 .pinID("1")
                 .pin("2")
-                .accountID("3")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
         Mockito.doNothing().when(validationUtil).validate(newPinRequest);
         Mockito.when(pinRepository.saveAndFlush(pin)).thenReturn(pin);
 
-        PinResponse actual = pinService.createNew(newPinRequest);
+        Pin actual = pinService.createNew(newPinRequest);
 
-        assertEquals("3",actual.getAccountID());
+        assertEquals("1",actual.getPinID());
     }
 }

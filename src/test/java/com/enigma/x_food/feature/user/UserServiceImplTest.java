@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
@@ -41,14 +42,12 @@ class UserServiceImplTest {
         NewUserRequest request = NewUserRequest.builder()
                 .accountEmail("a")
                 .phoneNumber("a")
-                .pinID("abc")
                 .firstName("a")
                 .lastName("a")
                 .build();
         User user = User.builder()
                 .accountEmail("a")
                 .phoneNumber("a")
-                .pinID("abc")
                 .firstName("a")
                 .lastName("a")
                 .dateOfBirth(LocalDate.of(1970,1,1))
@@ -63,7 +62,7 @@ class UserServiceImplTest {
         UserResponse actual = userService.createNew(request);
         System.out.println(actual);
 
-        assertEquals(user.getPinID(),actual.getPinID());
+        assertEquals("a",actual.getAccountEmail());
     }
 
     @Test
@@ -80,7 +79,6 @@ class UserServiceImplTest {
                 .ktpID("2")
                 .accountEmail("Email")
                 .phoneNumber("3")
-                .pinID("4")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .firstName("A")
                 .lastName("B")
@@ -89,6 +87,7 @@ class UserServiceImplTest {
                 .balanceID("5")
                 .loyaltyPointID("6")
                 .otpID("7")
+                .pin(Pin.builder().pinID("1").build())
                 .build();
         Page<User> userPage = new PageImpl<>(List.of(user));
         Mockito.when(userRepository.findAll(Mockito.isA(Specification.class),Mockito.isA(Pageable.class))).thenReturn(userPage);
@@ -96,7 +95,6 @@ class UserServiceImplTest {
         Page<UserResponse> actual = userService.getAll(searchUserRequest);
 
         assertEquals(1,actual.getTotalElements());
-
     }
     @Test
     void findUserById() {
@@ -106,7 +104,6 @@ class UserServiceImplTest {
                 .ktpID("2")
                 .accountEmail("Email")
                 .phoneNumber("3")
-                .pinID("4")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .firstName("A")
                 .lastName("B")
@@ -115,6 +112,7 @@ class UserServiceImplTest {
                 .balanceID("5")
                 .loyaltyPointID("6")
                 .otpID("7")
+                .pin(Pin.builder().pinID("1").build())
                 .build();
         Mockito.when(userRepository.findById(Mockito.anyString())).thenReturn(Optional.of(user));
 
