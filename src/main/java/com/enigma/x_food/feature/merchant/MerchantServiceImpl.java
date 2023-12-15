@@ -4,6 +4,7 @@ import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
+import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -91,6 +92,9 @@ public class MerchantServiceImpl implements MerchantService {
         request.setSortBy(fieldName);
 
         Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
+
+        Specification<Merchant> specification = getMerchantSpecification(request);
+
         Pageable pageable = PageRequest.of(
                 request.getPage() - 1,
                 request.getSize(),
@@ -98,7 +102,7 @@ public class MerchantServiceImpl implements MerchantService {
                 request.getSortBy()
         );
 
-        Page<Merchant> merchantBranches = merchantRepository.findAll(pageable);
+        Page<Merchant> merchantBranches = merchantRepository.findAll(specification, pageable);
         return merchantBranches.map(this::mapToResponse);
     }
 
@@ -138,9 +142,9 @@ public class MerchantServiceImpl implements MerchantService {
             }
 
             if (request.getMerchantName() != null) {
-                Predicate predicate = criteriaBuilder.equal(
+                Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("merchantName")),
-                        request.getMerchantName().toLowerCase()
+                        "%" +request.getMerchantName().toLowerCase() +"%"
                 );
                 predicates.add(predicate);
             }

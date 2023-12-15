@@ -1,8 +1,9 @@
 package com.enigma.x_food.feature.merchant;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MerchantRepository extends JpaRepository<Merchant, String> {
+public interface MerchantRepository extends JpaRepository<Merchant, String>, JpaSpecificationExecutor<Merchant> {
 }
