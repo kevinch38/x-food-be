@@ -6,10 +6,12 @@ import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranc
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface MerchantBranchService {
     MerchantBranchResponse createNew(NewMerchantBranchRequest request);
     MerchantBranchResponse update(UpdateMerchantBranchRequest request);
     void deleteById(String id);
     MerchantBranchResponse findById(String id);
-    Page<MerchantBranchResponse> getAll(SearchMerchantBranchRequest request);
+    List<MerchantBranchResponse> findByMerchantId(SearchMerchantBranchRequest request);
 }

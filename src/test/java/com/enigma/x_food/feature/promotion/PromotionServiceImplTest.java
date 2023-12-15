@@ -10,7 +10,6 @@ import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;

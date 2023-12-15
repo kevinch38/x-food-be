@@ -36,6 +36,5 @@ public class SecurityConfiguration {
                 .antMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
                 .and().build();
-
     }
 }

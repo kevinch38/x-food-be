@@ -1,12 +1,9 @@
 package com.enigma.x_food.feature.user;
 
-import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
-import com.enigma.x_food.feature.user.UserService;
 import com.enigma.x_food.shared.CommonResponse;
-import com.enigma.x_food.shared.ErrorController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;

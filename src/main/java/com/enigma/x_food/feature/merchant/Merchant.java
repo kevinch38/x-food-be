@@ -21,6 +21,7 @@ public class Merchant extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
+    @Column(name = "merchant_id")
     private String merchantID;
     @Column(name = "join_date", nullable = false)
     private Timestamp joinDate;

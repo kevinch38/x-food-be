@@ -19,6 +19,7 @@ public class Promotion extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
+    @Column(name = "promotion_id")
     private String promotionID;
     @ManyToOne
     @JoinColumn(name = "merchant_id", nullable = false)
