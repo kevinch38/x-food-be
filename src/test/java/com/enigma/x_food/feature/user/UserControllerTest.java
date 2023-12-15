@@ -2,8 +2,10 @@ package com.enigma.x_food.feature.user;
 
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
+import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.shared.CommonResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
@@ -120,8 +122,8 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserById() throws Exception {
-        String id = "1";
+    void getUserByPhoneNumber() throws Exception {
+        String phoneNumber = "1";
         UserResponse userResponse = UserResponse.builder()
                 .accountID("1")
                 .ktpID("2")
@@ -138,9 +140,9 @@ class UserControllerTest {
                 .otpID("7")
                 .build();
 
-        Mockito.when(userService.getById(Mockito.any())).thenReturn(userResponse);
+        Mockito.when(userService.getUserByPhoneNumber(Mockito.any())).thenReturn(userResponse);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/"+id)
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/"+phoneNumber)
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(result -> {
@@ -150,6 +152,64 @@ class UserControllerTest {
                     );
                     Assertions.assertEquals(200, response.getStatusCode());
                     Assertions.assertEquals("1",response.getData().getAccountID());
+                });
+    }
+
+    @Test
+    void updateUser() throws Exception {
+        UpdateUserRequest request = UpdateUserRequest.builder()
+                .accountID("1")
+                .ktpID("a")
+                .accountEmail("a")
+                .phoneNumber("a")
+                .firstName("a")
+                .lastName("a")
+                .dateOfBirth(LocalDate.now())
+                .build();
+        UserResponse userResponse = UserResponse.builder()
+                .accountEmail("a")
+                .phoneNumber("a")
+                .pinID("abc")
+                .firstName("a")
+                .lastName("a")
+                .dateOfBirth(LocalDate.of(1970,1,1).toString())
+                .balanceID("a")
+                .loyaltyPointID("a")
+                .otpID("")
+                .build();
+
+        Mockito.when(userService.update(request)).thenReturn(userResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/users")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(result -> {
+                    CommonResponse<UserResponse> response = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            new TypeReference<>() {}
+                    );
+                    Assertions.assertEquals(200, response.getStatusCode());
+                    Assertions.assertEquals("a",response.getData().getAccountEmail());
+                });
+    }
+
+    @Test
+    void deleteUser() throws Exception {
+        String id ="1";
+
+        Mockito.doNothing().when(userService).deleteById(id);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/"+id)
+//                        .content(id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(result -> {
+                    CommonResponse<String> response = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            new TypeReference<>() {}
+                    );
+                    Assertions.assertEquals(200, response.getStatusCode());
                 });
     }
 

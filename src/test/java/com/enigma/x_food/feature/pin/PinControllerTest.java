@@ -1,6 +1,9 @@
 package com.enigma.x_food.feature.pin;
 
+import com.enigma.x_food.feature.pin.dto.request.CheckPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
+import com.enigma.x_food.feature.pin.dto.request.UpdatePinRequest;
+import com.enigma.x_food.feature.pin.dto.response.PinResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -31,21 +35,20 @@ class PinControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
-
     @Test
-    void createNew() throws Exception {
-        NewPinRequest pin = NewPinRequest.builder()
+    void createNewPin() throws Exception {
+        UpdatePinRequest pin = UpdatePinRequest.builder()
                 .pin("2")
                 .build();
-        Pin pinResponse = Pin.builder()
+        PinResponse pinResponse = PinResponse.builder()
                 .pinID("1")
                 .pin("2")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        Mockito.when(pinService.createNew(pin)).thenReturn(pinResponse);
+        Mockito.when(pinService.update(pin)).thenReturn(pinResponse);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/pins")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/pins")
                         .content(objectMapper.writeValueAsString(pin))
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.status().isCreated())
@@ -58,5 +61,59 @@ class PinControllerTest {
                     Assertions.assertEquals("1",response.getData().getPinID());
                 });
     }
+
+    @Test
+    void checkPin() throws Exception {
+        CheckPinRequest pin = CheckPinRequest.builder()
+                .pinID("1")
+                .pin("2")
+                .build();
+//        Pin pinResponse = Pin.builder()
+//                .pinID("1")
+//                .pin("2")
+//                .createdAt(new Timestamp(System.currentTimeMillis()))
+//                .updatedAt(new Timestamp(System.currentTimeMillis()))
+//                .build();
+        Mockito.when(pinService.checkPin(pin)).thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/pins")
+                        .content(objectMapper.writeValueAsString(pin))
+                        .contentType(MediaType.APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(result -> {
+                    CommonResponse<Boolean> response = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            new TypeReference<>() {}
+                    );
+                    Assertions.assertEquals(200, response.getStatusCode());
+                    Assertions.assertEquals(true, response.getData());
+                });
+    }
+
+    @Test
+    void getPinById() throws Exception {
+        String id = "1";
+        PinResponse pinResponse = PinResponse.builder()
+                .pinID("1")
+                .pin("2")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .build();
+
+        Mockito.when(pinService.getById(Mockito.any())).thenReturn(pinResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/pins/"+id)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(result -> {
+                    CommonResponse<PinResponse> response = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            new TypeReference<>() {}
+                    );
+                    Assertions.assertEquals(200, response.getStatusCode());
+                    Assertions.assertEquals("1",response.getData().getPinID());
+                });
+    }
+
+
 
 }

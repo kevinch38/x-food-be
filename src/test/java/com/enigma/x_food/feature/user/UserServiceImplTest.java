@@ -4,6 +4,7 @@ import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
+import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import org.junit.jupiter.api.Test;
@@ -118,5 +119,157 @@ class UserServiceImplTest {
 
         assertEquals("A",userById.getFirstName());
         assertEquals("B",userById.getLastName());
+    }
+    @Test
+    void getUserById(){
+        String id = "1";
+        User user = User.builder()
+                .accountID("1")
+                .ktpID("2")
+                .accountEmail("Email")
+                .phoneNumber("3")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .firstName("A")
+                .lastName("B")
+                .dateOfBirth(LocalDate.of(2001,10,28))
+                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .balanceID("5")
+                .loyaltyPointID("6")
+                .otp(OTP.builder().otpID("1").build())
+                .pin(Pin.builder().pinID("1").build())
+                .build();
+        Mockito.when(userRepository.findById(Mockito.anyString())).thenReturn(Optional.of(user));
+
+        User userById = userService.getUserById(id);
+
+        assertEquals("A",userById.getFirstName());
+        assertEquals("B",userById.getLastName());
+    }
+    @Test
+    void getUserByPhoneNumber(){
+        String phoneNumber = "3";
+        User user = User.builder()
+                .accountID("1")
+                .ktpID("2")
+                .accountEmail("Email")
+                .phoneNumber("3")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .firstName("A")
+                .lastName("B")
+                .dateOfBirth(LocalDate.of(2001,10,28))
+                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .balanceID("5")
+                .loyaltyPointID("6")
+                .otp(OTP.builder().otpID("1").build())
+                .pin(Pin.builder().pinID("1").build())
+                .build();
+        Mockito.when(userRepository.findByPhoneNumber(Mockito.anyString())).thenReturn(Optional.of(user));
+
+        UserResponse userById = userService.getUserByPhoneNumber(phoneNumber);
+
+        assertEquals("A",userById.getFirstName());
+        assertEquals("B",userById.getLastName());
+    }
+    @Test
+    void getUserByPhoneNumber2(){
+        String phoneNumber = "3";
+        User user = User.builder()
+                .accountID("1")
+                .ktpID("2")
+                .accountEmail("Email")
+                .phoneNumber("3")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .firstName("A")
+                .lastName("B")
+                .dateOfBirth(LocalDate.of(2001,10,28))
+                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .balanceID("5")
+                .loyaltyPointID("6")
+                .otp(OTP.builder().otpID("1").build())
+                .pin(Pin.builder().pinID("1").build())
+                .build();
+        Mockito.when(userRepository.findByPhoneNumber(Mockito.anyString())).thenReturn(Optional.of(user));
+
+        User userById = userService.getUserByPhoneNumber2(phoneNumber);
+
+        assertEquals("A",userById.getFirstName());
+        assertEquals("B",userById.getLastName());
+    }
+    @Test
+    void update(){
+        String id = "1";
+        User user = User.builder()
+                .accountID("1")
+                .ktpID("2")
+                .accountEmail("Email")
+                .phoneNumber("3")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .firstName("A")
+                .lastName("B")
+                .dateOfBirth(LocalDate.of(2001,10,28))
+                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .balanceID("5")
+                .loyaltyPointID("6")
+                .otp(OTP.builder().otpID("1").build())
+                .pin(Pin.builder().pinID("1").build())
+                .build();
+        Mockito.doNothing().when(validationUtil).validate(Mockito.isA(NewUserRequest.class));
+        Mockito.when(userRepository.findById(Mockito.anyString())).thenReturn(Optional.of(user));
+        User user2 = User.builder()
+                .accountID("1")
+                .ktpID("2")
+                .accountEmail("a")
+                .phoneNumber("3")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .firstName("A")
+                .lastName("B")
+                .dateOfBirth(LocalDate.of(2001,10,28))
+                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .balanceID("5")
+                .loyaltyPointID("6")
+                .otp(OTP.builder().otpID("1").build())
+                .pin(Pin.builder().pinID("1").build())
+                .build();
+        Mockito.when(userRepository.saveAndFlush(Mockito.isA(User.class))).thenReturn(user2);
+
+        UpdateUserRequest request = UpdateUserRequest.builder()
+                .accountID(id)
+                .ktpID("a")
+                .accountEmail("a")
+                .phoneNumber("a")
+                .firstName("a")
+                .lastName("a")
+                .dateOfBirth(LocalDate.now())
+                .build();
+        UserResponse userById = userService.update(request);
+
+        assertEquals("a",userById.getAccountEmail());
+    }
+    @Test
+    void deleteById(){
+        String id = "1";
+        User user = User.builder()
+                .accountID("1")
+                .ktpID("2")
+                .accountEmail("Email")
+                .phoneNumber("3")
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .firstName("A")
+                .lastName("B")
+                .dateOfBirth(LocalDate.of(2001,10,28))
+                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                .balanceID("5")
+                .loyaltyPointID("6")
+                .otp(OTP.builder().otpID("1").build())
+                .pin(Pin.builder().pinID("1").build())
+                .build();
+
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        Mockito.doNothing().when(userRepository).delete(user);
+
+        userService.deleteById(id);
+
+        Mockito.verify(userRepository, Mockito.times(1)).findById(id);
+        Mockito.verify(userRepository, Mockito.times(1)).delete(user);
     }
 }
