@@ -1,17 +1,9 @@
 package com.enigma.x_food.feature.merchant.dto.request;
 
-import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
-import com.enigma.x_food.feature.promotion.Promotion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import java.sql.Timestamp;
-import java.util.List;
 
 @Data
 @AllArgsConstructor

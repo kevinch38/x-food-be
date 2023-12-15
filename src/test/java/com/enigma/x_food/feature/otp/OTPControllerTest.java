@@ -1,8 +1,6 @@
 package com.enigma.x_food.feature.otp;
 
-import com.enigma.x_food.feature.otp.OTPService;
-import com.enigma.x_food.feature.otp.dto.request.NewOTPRequest;
-import com.enigma.x_food.feature.otp.dto.response.OTPResponse;
+import com.enigma.x_food.feature.otp.dto.request.CheckOTPRequest;
 import com.enigma.x_food.shared.CommonResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,12 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import java.sql.Timestamp;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -34,31 +31,21 @@ class OTPControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void createNewOTP() throws Exception {
-        NewOTPRequest otp = NewOTPRequest.builder()
-                .otp("2")
-                .accountID("3")
-                .build();
-        OTPResponse promotionResponse = OTPResponse.builder()
-                .otpID("1")
-                .otp("2")
-                .accountID("3")
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .updatedAt(new Timestamp(System.currentTimeMillis()))
-                .build();
-        Mockito.when(otpService.createNew(otp)).thenReturn(promotionResponse);
+    void checkOtp() throws Exception {
+        Mockito.when(otpService.checkOtp(Mockito.any(CheckOTPRequest.class))).thenReturn(true);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/otp")
-                        .content(objectMapper.writeValueAsString(otp))
+        CheckOTPRequest request = new CheckOTPRequest();
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/otp/check")
+                        .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
-                ).andExpect(MockMvcResultMatchers.status().isCreated())
+                ).andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(result -> {
-                    CommonResponse<OTPResponse> response = objectMapper.readValue(
+                    CommonResponse<Boolean> response = objectMapper.readValue(
                             result.getResponse().getContentAsString(),
                             new TypeReference<>() {}
                     );
-                    Assertions.assertEquals(201, response.getStatusCode());
-                    Assertions.assertEquals("3",response.getData().getAccountID());
+                    Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+                    Assertions.assertTrue(response.getData());
                 });
     }
 }

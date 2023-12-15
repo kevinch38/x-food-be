@@ -19,7 +19,6 @@ public class SearchMerchantBranchRequest {
     private String direction;
     private String sortBy;
     private String branchID;
-    private String merchantBranchID;
     private String merchantID;
     private String branchName;
     private String address;

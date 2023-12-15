@@ -1,10 +1,7 @@
 package com.enigma.x_food.feature.pin;
 
-import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.pin.dto.request.*;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
-import com.enigma.x_food.feature.pin.PinRepository;
-import com.enigma.x_food.feature.pin.PinService;
 import com.enigma.x_food.util.ValidationUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

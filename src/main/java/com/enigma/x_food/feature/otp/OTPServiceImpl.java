@@ -1,6 +1,6 @@
 package com.enigma.x_food.feature.otp;
 
-import com.enigma.x_food.feature.otp.dto.request.NewOTPRequest;
+import com.enigma.x_food.feature.otp.dto.request.CheckOTPRequest;
 import com.enigma.x_food.feature.otp.dto.response.OTPResponse;
 import com.enigma.x_food.security.BCryptUtil;
 import com.enigma.x_food.util.ValidationUtil;
@@ -21,48 +21,46 @@ public class OTPServiceImpl implements OTPService {
     private final ValidationUtil validationUtil;
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public OTPResponse createNew(NewOTPRequest request) {
+    public OTP createNew(String newOtp) {
         try {
             log.info("Start createNew");
-            validationUtil.validate(request);
+            validationUtil.validate(newOtp);
             OTP otp = OTP.builder()
-                    .otp(bCryptUtil.hash(request.getOtp()))
-                    .accountID(request.getAccountID())
+                    .otp(bCryptUtil.hash(newOtp))
                     .build();
             otpRepository.saveAndFlush(otp);
             log.info("End createNew");
-            return mapToResponse(otp);
+            return otp;
         } catch (DataIntegrityViolationException e) {
             log.error("Error createNew: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.CONFLICT, "otp already exist");
         }
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Page<OTPResponse> getAll(SearchOTPRequest request) {
-//        log.info("Start getAll");
-//        String fieldName = SortingUtil.sortByValidation(OTP.class, request.getSortBy(), "otpID");
-//        request.setSortBy(fieldName);
-//
-//        Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
-//        Pageable pageable = PageRequest.of(
-//                request.getPage() - 1,
-//                request.getSize(),
-//                direction,
-//                request.getSortBy()
-//        );
-//
-//        Page<OTP> otps = otpRepository.findAll(pageable);
-//        log.info("End getAll");
-//        return otps.map(this::mapToResponse);
-//    }
+    @Transactional(readOnly = true)
+    @Override
+    public Boolean checkOtp(CheckOTPRequest request) {
+        validationUtil.validate(request);
+
+        OTP otp = findByIdOrThrowException(request.getOtpID());
+
+        return bCryptUtil.check(request.getEnteredOtp(), otp.getOtp());
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public OTPResponse findById(String id) {
+        return mapToResponse(findByIdOrThrowException(id));
+    }
+
+    private OTP findByIdOrThrowException(String id) {
+        return otpRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OTP not found"));
+    }
 
     private OTPResponse mapToResponse(OTP otp) {
         return OTPResponse.builder()
                 .otpID(otp.getOtpID())
                 .otp(otp.getOtp())
-                .accountID(otp.getAccountID())
                 .createdAt(otp.getCreatedAt())
                 .updatedAt(otp.getUpdatedAt())
                 .build();

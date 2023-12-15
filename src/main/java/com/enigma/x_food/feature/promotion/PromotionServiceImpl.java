@@ -3,6 +3,7 @@ package com.enigma.x_food.feature.promotion;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
+import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
@@ -23,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -185,15 +188,16 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionID() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotionid")),
+                        criteriaBuilder.lower(root.get("promotionID")),
                         "%" + request.getPromotionID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
 
             if (request.getMerchantID() != null) {
+                Join<Promotion, Merchant> promotionJoin = root.join("merchant", JoinType.INNER);
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("merchant_id")),
+                        criteriaBuilder.lower(promotionJoin.get("merchantID")),
                         "%" + request.getMerchantID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
@@ -201,7 +205,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionDescription() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotion_description")),
+                        criteriaBuilder.lower(root.get("promotionDescription")),
                         "%" + request.getPromotionDescription().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
@@ -209,7 +213,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionName() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotion_name")),
+                        criteriaBuilder.lower(root.get("promotionName")),
                         "%" + request.getPromotionName().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
@@ -217,7 +221,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getAdminID() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("admin_id")),
+                        criteriaBuilder.lower(root.get("adminID")),
                         "%" + request.getAdminID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
@@ -225,14 +229,14 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionStatusID() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotion_status_id")),
+                        criteriaBuilder.lower(root.get("promotionStatusID")),
                         "%" + request.getPromotionStatusID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
             if (request.getNote() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("note")),
+                        criteriaBuilder.lower(root.get("notes")),
                         "%" + request.getNote().toLowerCase() + "%"
                 );
                 predicates.add(predicate);

@@ -14,12 +14,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -90,20 +97,13 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<MerchantBranchResponse> getAll(SearchMerchantBranchRequest request) {
+    public List<MerchantBranchResponse> findByMerchantId(SearchMerchantBranchRequest request) {
         String fieldName = SortingUtil.sortByValidation(MerchantBranch.class, request.getSortBy(), "branchID");
         request.setSortBy(fieldName);
 
-        Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
-        Pageable pageable = PageRequest.of(
-                request.getPage() - 1,
-                request.getSize(),
-                direction,
-                request.getSortBy()
-        );
-
-        Page<MerchantBranch> merchantBranches = merchantBranchRepository.findAll(pageable);
-        return merchantBranches.map(this::mapToResponse);
+        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request);
+        List<MerchantBranch> branches = merchantBranchRepository.findAll(specification);
+        return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -131,5 +131,71 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .branchWorkingHoursID(branch.getBranchWorkingHoursID())
                 .cityID(branch.getCityID())
                 .build();
+    }
+
+    private Specification<MerchantBranch> getMerchantBranchSpecification(SearchMerchantBranchRequest request) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getBranchID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("branchID")),
+                        "%" + request.getBranchID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getMerchantID() != null) {
+                Join<MerchantBranch, Merchant> merchantJoin = root.join("merchant", JoinType.INNER);
+                Predicate predicate = criteriaBuilder.equal(
+                        criteriaBuilder.lower(merchantJoin.get("merchantID")),
+                        request.getMerchantID().toLowerCase()
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getBranchName() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("branchName")),
+                        "%" + request.getBranchName().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getAddress() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("address")),
+                        "%" + request.getAddress().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getTimezone() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("timezone")),
+                        "%" + request.getTimezone().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getBranchWorkingHoursID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("branchWorkingHoursID")),
+                        "%" + request.getBranchWorkingHoursID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+            if (request.getCityID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("cityID")),
+                        "%" + request.getCityID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            return query
+                    .where(predicates.toArray(new Predicate[]{}))
+                    .getRestriction();
+        };
     }
 }

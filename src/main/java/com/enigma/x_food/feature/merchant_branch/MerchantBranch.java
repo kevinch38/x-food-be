@@ -18,6 +18,7 @@ public class MerchantBranch extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
+    @Column(name = "branch_id")
     private String branchID;
     @JoinColumn(name = "merchant_id", nullable = false)
     @ManyToOne
