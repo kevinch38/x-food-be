@@ -29,7 +29,7 @@ public class User extends BaseEntity {
     @Column(name = "account_email", nullable = false, length = 100)
     private String accountEmail;
 
-    @Column(name = "phone_number", nullable = false, length = 15)
+    @Column(name = "phone_number", nullable = false, length = 15, unique = true)
     private String phoneNumber;
 
     @OneToOne
