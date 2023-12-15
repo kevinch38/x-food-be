@@ -34,14 +34,13 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @GetMapping
-    public ResponseEntity<?> getAllMerchantBranch(
+    @GetMapping("/{merchantID}")
+    public ResponseEntity<?> findAll(@PathVariable String merchantID,
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "accountID") String sortBy,
+            @RequestParam(required = false, defaultValue = "account_id") String sortBy,
             @RequestParam(required = false) String branchID,
-            @RequestParam(required = false) String merchantId,
             @RequestParam(required = false) String branchName,
             @RequestParam(required = false) String address,
             @RequestParam(required = false) String timeZone,
@@ -58,7 +57,7 @@ public class MerchantBranchController {
                 .direction(direction)
                 .sortBy(sortBy)
                 .branchID(branchID)
-                .merchantID(merchantId)
+                .merchantID(merchantID)
                 .branchName(branchName)
                 .address(address)
                 .timezone(timeZone)
@@ -66,20 +65,12 @@ public class MerchantBranchController {
                 .cityID(cityID)
                 .build();
 
-        Page<MerchantBranchResponse> merchantBranches = merchantBranchService.getAll(request);
-
-        PagingResponse pagingResponse = PagingResponse.builder()
-                .page(page)
-                .size(size)
-                .count(merchantBranches.getTotalElements())
-                .totalPages(merchantBranches.getTotalPages())
-                .build();
+        List<MerchantBranchResponse> merchantBranches = merchantBranchService.findByMerchantId(request);
 
         CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
                 .message("successfully get all merchant branch")
                 .statusCode(HttpStatus.OK.value())
-                .data(merchantBranches.getContent())
-                .paging(pagingResponse)
+                .data(merchantBranches)
                 .build();
 
         return ResponseEntity

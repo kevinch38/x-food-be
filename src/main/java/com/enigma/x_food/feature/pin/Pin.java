@@ -17,6 +17,7 @@ public class Pin extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
+    @Column(name = "pin_id")
     private String pinID;
 
     @Column(name = "pin", nullable = false, length = 64)

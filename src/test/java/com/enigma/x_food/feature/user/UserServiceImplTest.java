@@ -1,12 +1,10 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
-import com.enigma.x_food.feature.user.User;
-import com.enigma.x_food.feature.user.UserRepository;
-import com.enigma.x_food.feature.user.UserService;
 import com.enigma.x_food.util.ValidationUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,7 +51,7 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.of(1970,1,1))
                 .balanceID("a")
                 .loyaltyPointID("a")
-                .otpID("")
+                .otp(OTP.builder().otpID("1").build())
                 .build();
         Mockito.doNothing().when(validationUtil).validate(Mockito.isA(NewUserRequest.class));
 
@@ -86,7 +84,7 @@ class UserServiceImplTest {
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .balanceID("5")
                 .loyaltyPointID("6")
-                .otpID("7")
+                .otp(OTP.builder().otpID("1").build())
                 .pin(Pin.builder().pinID("1").build())
                 .build();
         Page<User> userPage = new PageImpl<>(List.of(user));
@@ -111,7 +109,7 @@ class UserServiceImplTest {
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .balanceID("5")
                 .loyaltyPointID("6")
-                .otpID("7")
+                .otp(OTP.builder().otpID("1").build())
                 .pin(Pin.builder().pinID("1").build())
                 .build();
         Mockito.when(userRepository.findById(Mockito.anyString())).thenReturn(Optional.of(user));

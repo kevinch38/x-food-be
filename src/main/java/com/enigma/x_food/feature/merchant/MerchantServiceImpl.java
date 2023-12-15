@@ -4,7 +4,6 @@ import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
-import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +11,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -119,5 +123,86 @@ public class MerchantServiceImpl implements MerchantService {
         return merchantRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Merchant not found")
         );
+    }
+
+    private Specification<Merchant> getMerchantSpecification(SearchMerchantRequest request) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getMerchantID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("merchantID")),
+                        "%" + request.getMerchantID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getMerchantName() != null) {
+                Predicate predicate = criteriaBuilder.equal(
+                        criteriaBuilder.lower(root.get("merchantName")),
+                        request.getMerchantName().toLowerCase()
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getPicName() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("picName")),
+                        "%" + request.getPicName().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getPicNumber() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("picNumber")),
+                        "%" + request.getPicNumber().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getPicEmail() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("picEmail")),
+                        "%" + request.getPicEmail().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getMerchantDescription() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("merchantDescription")),
+                        "%" + request.getMerchantDescription().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+            if (request.getAdminID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("adminID")),
+                        "%" + request.getAdminID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getMerchantStatusID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("merchantStatusID")),
+                        "%" + request.getMerchantStatusID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getNotes() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("notes")),
+                        "%" + request.getNotes().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            return query
+                    .where(predicates.toArray(new Predicate[]{}))
+                    .getRestriction();
+        };
     }
 }

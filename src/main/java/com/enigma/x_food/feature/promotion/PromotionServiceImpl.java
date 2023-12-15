@@ -185,7 +185,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionID() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotionid")),
+                        criteriaBuilder.lower(root.get("promotionId")),
                         "%" + request.getPromotionID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
@@ -193,7 +193,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getMerchantID() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("merchant_id")),
+                        criteriaBuilder.lower(root.get("merchantID")),
                         "%" + request.getMerchantID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
@@ -201,7 +201,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionDescription() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotion_description")),
+                        criteriaBuilder.lower(root.get("promotionDescription")),
                         "%" + request.getPromotionDescription().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
@@ -209,7 +209,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionName() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotion_name")),
+                        criteriaBuilder.lower(root.get("promotionName")),
                         "%" + request.getPromotionName().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
@@ -217,7 +217,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getAdminID() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("admin_id")),
+                        criteriaBuilder.lower(root.get("adminID")),
                         "%" + request.getAdminID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
@@ -225,7 +225,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionStatusID() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotion_status_id")),
+                        criteriaBuilder.lower(root.get("promotionStatusID")),
                         "%" + request.getPromotionStatusID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);

@@ -1,5 +1,8 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.otp.OTP;
+import com.enigma.x_food.feature.otp.OTPService;
+import com.enigma.x_food.feature.otp.dto.response.OTPResponse;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.pin.PinService;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
@@ -35,8 +38,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PinService pinService;
-
-    private final BCryptUtil bCryptUtil;
+    private final OTPService otpService;
     private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
@@ -46,6 +48,8 @@ public class UserServiceImpl implements UserService {
             log.info("Start createNew");
             validationUtil.validate(request);
             Pin pin = pinService.createNew(NewPinRequest.builder().pin("").build());
+            OTP otp = otpService.createNew("1111");
+
             User user = User.builder()
                     .ktpID("")
                     .accountEmail(request.getAccountEmail())
@@ -56,7 +60,7 @@ public class UserServiceImpl implements UserService {
                     .dateOfBirth(LocalDate.of(1970,1,1))
                     .balanceID("")
                     .loyaltyPointID("")
-                    .otpID("")
+                    .otp(otp)
                     .build();
             userRepository.saveAndFlush(user);
             log.info("End createNew");
@@ -145,7 +149,7 @@ public class UserServiceImpl implements UserService {
                 .updatedAt(user.getUpdatedAt())
                 .balanceID(user.getBalanceID())
                 .loyaltyPointID(user.getLoyaltyPointID())
-                .otpID(user.getOtpID())
+                .otpID(user.getOtp().getOtpID())
                 .build();
     }
 

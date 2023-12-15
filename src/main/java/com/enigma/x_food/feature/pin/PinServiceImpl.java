@@ -1,22 +1,13 @@
 package com.enigma.x_food.feature.pin;
 
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
-import com.enigma.x_food.feature.pin.dto.request.SearchPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.UpdatePinRequest;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
-import com.enigma.x_food.feature.user.User;
-import com.enigma.x_food.feature.user.UserService;
-import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.security.BCryptUtil;
-import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +36,7 @@ public class PinServiceImpl implements PinService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public PinResponse update(UpdatePinRequest request) {
         try {
@@ -59,6 +51,7 @@ public class PinServiceImpl implements PinService {
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PinResponse getById(String id) {
         return mapToResponse(findByIdOrThrowNotFound(id));

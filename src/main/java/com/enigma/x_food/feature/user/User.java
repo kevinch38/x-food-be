@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.*;
@@ -19,6 +20,7 @@ public class User extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
+    @Column(name = "account_id")
     private String accountID;
 
     @Column(name = "ktp_id", nullable = false, length = 64)
@@ -31,7 +33,7 @@ public class User extends BaseEntity {
     private String phoneNumber;
 
     @OneToOne
-    @JoinColumn(name = "pinID", unique = true)
+    @JoinColumn(name = "pin_id", unique = true)
     private Pin pin;
 
     @Column(name = "first_name", nullable = false, length = 30)
@@ -49,6 +51,7 @@ public class User extends BaseEntity {
     @Column(name = "loyalty_point_id", nullable = false)
     private String loyaltyPointID;
 
-    @Column(name = "otp_id", nullable = false)
-    private String otpID;
+    @JoinColumn(name = "otp_id", unique = true)
+    @OneToOne
+    private OTP otp;
 }
