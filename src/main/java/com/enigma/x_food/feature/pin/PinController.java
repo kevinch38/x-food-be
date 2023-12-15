@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.pin;
 
+import com.enigma.x_food.feature.pin.dto.request.CheckPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.UpdatePinRequest;
 import com.enigma.x_food.shared.CommonResponse;
@@ -18,11 +19,11 @@ public class PinController {
     private final PinService pinService;
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updatePin(@RequestBody UpdatePinRequest request) {
+    public ResponseEntity<?> createNewPin(@RequestBody UpdatePinRequest request) {
         PinResponse pinResponse = pinService.update(request);
         CommonResponse<PinResponse> response = CommonResponse.<PinResponse>builder()
-                .message("successfully update pin")
-                .statusCode(HttpStatus.OK.value())
+                .message("successfully create new pin")
+                .statusCode(HttpStatus.CREATED.value())
                 .data(pinResponse)
                 .build();
         return ResponseEntity
@@ -35,6 +36,18 @@ public class PinController {
         PinResponse pinResponse = pinService.getById(id);
         CommonResponse<PinResponse> response = CommonResponse.<PinResponse>builder()
                 .message("successfully get pin")
+                .statusCode(HttpStatus.OK.value())
+                .data(pinResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> checkPin(@RequestBody CheckPinRequest request) {
+        boolean pinResponse = pinService.checkPin(request);
+        CommonResponse<Boolean> response = CommonResponse.<Boolean>builder()
+                .message("successfully check pin")
                 .statusCode(HttpStatus.OK.value())
                 .data(pinResponse)
                 .build();

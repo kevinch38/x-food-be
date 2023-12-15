@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.pin;
 
+import com.enigma.x_food.feature.pin.dto.request.CheckPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.SearchPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.UpdatePinRequest;
@@ -54,14 +55,21 @@ public class PinServiceImpl implements PinService {
             pinRepository.saveAndFlush(pin);
             return mapToResponse(pin);
         } catch (DataIntegrityViolationException e) {
-            log.error("Error update: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "pin error");
+            log.error("Error createNew: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "pin already exist");
         }
     }
 
     @Override
     public PinResponse getById(String id) {
         return mapToResponse(findByIdOrThrowNotFound(id));
+    }
+
+    @Override
+    public boolean checkPin(CheckPinRequest request) {
+        validationUtil.validate(request);
+        Pin pin = findByIdOrThrowNotFound(request.getPinID());
+        return bCryptUtil.matches(request.getPin(), pin.getPin());
     }
 
 //    @Override
