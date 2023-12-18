@@ -26,7 +26,7 @@ public class User extends BaseEntity {
     @Column(name = "ktp_id", nullable = false, length = 64)
     private String ktpID;
 
-    @Column(name = "account_email", nullable = false, length = 100)
+    @Column(name = "account_email", unique = true, nullable = false, length = 100)
     private String accountEmail;
 
     @Column(name = "phone_number", nullable = false, length = 15, unique = true)
