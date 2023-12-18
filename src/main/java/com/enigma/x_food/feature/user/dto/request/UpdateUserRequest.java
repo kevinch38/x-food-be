@@ -16,15 +16,15 @@ import java.time.LocalDate;
 public class UpdateUserRequest {
     @NotBlank(message = "ID is required")
     private String accountID;
-    @NotBlank(message = "KTP ID is required")
+    @NotNull(message = "KTP ID is required")
     private String ktpID;
-    @NotBlank(message = "Email is required")
+    @NotNull(message = "Email is required")
     private String accountEmail;
     @NotBlank(message = "Phone number is required")
     private String phoneNumber;
-    @NotBlank(message = "First name is required")
+    @NotNull(message = "First name is required")
     private String firstName;
-    @NotBlank(message = "Last name is required")
+    @NotNull(message = "Last name is required")
     private String lastName;
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
