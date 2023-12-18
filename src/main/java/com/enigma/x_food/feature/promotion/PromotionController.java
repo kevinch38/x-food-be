@@ -23,7 +23,7 @@ public class PromotionController {
     private final PromotionService promotionService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNewPromotion(@RequestBody NewPromotionRequest request) {
+    public ResponseEntity<?> createNew(@RequestBody NewPromotionRequest request) {
         PromotionResponse promotionResponse = promotionService.createNew(request);
         CommonResponse<PromotionResponse> response = CommonResponse.<PromotionResponse>builder()
                 .message("successfully create new promotion")
@@ -36,7 +36,7 @@ public class PromotionController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllPromotion(
+    public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
@@ -88,7 +88,7 @@ public class PromotionController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updatePromotion(@RequestBody UpdatePromotionRequest request) {
+    public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) {
         PromotionResponse promotionResponse =promotionService.update(request);
         CommonResponse<PromotionResponse> response = CommonResponse.<PromotionResponse>builder()
                 .message("successfully update promotion")
@@ -101,7 +101,7 @@ public class PromotionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePromotionById(@PathVariable String id) {
+    public ResponseEntity<?> delete(@PathVariable String id) {
         promotionService.deleteById(id);
         CommonResponse<?> response = CommonResponse.builder()
                 .message("successfully delete promotion")
