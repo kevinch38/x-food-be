@@ -18,7 +18,6 @@ public class SearchUserRequest {
     private Integer size;
     private String direction;
     private String sortBy;
-
     private String accountID;
     private String accountEmail;
     private String ktpID;

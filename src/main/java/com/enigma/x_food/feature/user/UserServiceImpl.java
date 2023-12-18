@@ -52,11 +52,11 @@ public class UserServiceImpl implements UserService {
 
             User user = User.builder()
                     .ktpID("")
-                    .accountEmail(request.getAccountEmail())
+                    .accountEmail("")
                     .pin(pin)
-                    .phoneNumber(request.getPhoneNumber())
-                    .firstName(request.getFirstName())
-                    .lastName(request.getLastName())
+                    .phoneNumber("+62"+request.getPhoneNumber())
+                    .firstName("")
+                    .lastName("")
                     .dateOfBirth(LocalDate.of(1970,1,1))
                     .balanceID("")
                     .loyaltyPointID("")
@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
             User user = findByIdOrThrowNotFound(request.getAccountID());
             user.setKtpID(request.getKtpID());
             user.setAccountEmail(request.getAccountEmail());
-            user.setPhoneNumber(request.getPhoneNumber());
+            user.setPhoneNumber("+62"+request.getPhoneNumber());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
             user.setDateOfBirth(request.getDateOfBirth());
