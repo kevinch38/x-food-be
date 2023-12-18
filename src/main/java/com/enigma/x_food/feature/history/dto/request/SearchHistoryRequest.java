@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SearchHistoryRequest {
-    private String accountId;
+    private String accountID;
 }

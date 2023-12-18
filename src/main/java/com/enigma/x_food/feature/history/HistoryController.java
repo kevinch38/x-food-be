@@ -19,7 +19,7 @@ public class HistoryController {
     @GetMapping("/{accountID}")
     public ResponseEntity<?> getAll(@PathVariable String accountID) {
         SearchHistoryRequest request = SearchHistoryRequest.builder()
-                .accountId(accountID)
+                .accountID(accountID)
                 .build();
         List<HistoryResponse> histories = historyService.findByAccountId(request);
 

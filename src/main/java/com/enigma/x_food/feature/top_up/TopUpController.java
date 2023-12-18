@@ -1,5 +1,8 @@
 package com.enigma.x_food.feature.top_up;
 
+import com.enigma.x_food.feature.history.dto.request.SearchHistoryRequest;
+import com.enigma.x_food.feature.history.dto.response.HistoryResponse;
+import com.enigma.x_food.feature.top_up.dto.request.SearchTopUpRequest;
 import com.enigma.x_food.feature.top_up.dto.request.TopUpRequest;
 import com.enigma.x_food.feature.top_up.dto.response.TopUpResponse;
 import com.enigma.x_food.shared.CommonResponse;
@@ -27,6 +30,24 @@ public class TopUpController {
                 .build();
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @GetMapping("/{accountID}")
+    public ResponseEntity<?> getAll(@PathVariable String accountID) {
+        SearchTopUpRequest request = SearchTopUpRequest.builder()
+                .accountID(accountID)
+                .build();
+        List<TopUpResponse> topUpResponses = topUpService.findByAccountId(request);
+
+        CommonResponse<List<TopUpResponse>> response = CommonResponse.<List<TopUpResponse>>builder()
+                .message("successfully get all history")
+                .statusCode(HttpStatus.OK.value())
+                .data(topUpResponses)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(response);
     }
 }

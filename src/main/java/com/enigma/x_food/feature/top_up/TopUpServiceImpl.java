@@ -17,10 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -71,6 +74,14 @@ public class TopUpServiceImpl implements TopUpService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<TopUpResponse> findByAccountId(SearchTopUpRequest request) {
+        Specification<TopUp> specification = getTopUpSpecification(request);
+        return topUpRepository.findAll(specification).stream().map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     private TopUpResponse mapToResponse(TopUp topUp) {
         return TopUpResponse.builder()
                 .topUpID(topUp.getTopUpID())
@@ -89,10 +100,18 @@ public class TopUpServiceImpl implements TopUpService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getHistoryID() != null) {
+            if (request.getAccountID() != null) {
+                Join<TopUp, History> topUpHistoryJoin = root.join("history", JoinType.INNER);
+
                 Predicate predicate = criteriaBuilder.equal(
-                        criteriaBuilder.lower(root.get("historyID")),
-                        request.getHistoryID().toLowerCase()
+                        criteriaBuilder.lower(topUpHistoryJoin.get("user").get("accountID")),
+                        request.getAccountID().toLowerCase()
+                );
+                predicates.add(predicate);
+
+                predicate = criteriaBuilder.equal(
+                        criteriaBuilder.lower(topUpHistoryJoin.get("transactionType")),
+                        "topup"
                 );
                 predicates.add(predicate);
             }

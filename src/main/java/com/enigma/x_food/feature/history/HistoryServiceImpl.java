@@ -89,12 +89,12 @@ public class HistoryServiceImpl implements HistoryService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getAccountId() != null) {
+            if (request.getAccountID() != null) {
                 Join<User, History> userHistoryJoin = root.join("user", JoinType.INNER);
 
                 Predicate predicate = criteriaBuilder.equal(
                         criteriaBuilder.lower(userHistoryJoin.get("accountID")),
-                        request.getAccountId().toLowerCase()
+                        request.getAccountID().toLowerCase()
                 );
                 predicates.add(predicate);
             }
