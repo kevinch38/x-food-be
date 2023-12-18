@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.shared.BaseEntity;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -54,4 +56,7 @@ public class User extends BaseEntity {
     @JoinColumn(name = "otp_id", unique = true)
     @OneToOne
     private OTP otp;
+
+    @OneToMany(mappedBy = "user")
+    private List<History> histories;
 }

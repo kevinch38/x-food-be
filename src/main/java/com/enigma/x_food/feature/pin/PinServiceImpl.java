@@ -62,7 +62,7 @@ public class PinServiceImpl implements PinService {
     public boolean checkPin(CheckPinRequest request) {
         validationUtil.validate(request);
         Pin pin = findByIdOrThrowNotFound(request.getPinID());
-        return bCryptUtil.matches(request.getPin(), pin.getPin());
+        return bCryptUtil.check(request.getPin(), pin.getPin());
     }
 
 //    @Override

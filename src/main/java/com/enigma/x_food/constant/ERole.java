@@ -1,4 +1,4 @@
-package com.enigma.x_food.shared;
+package com.enigma.x_food.constant;
 
 public enum ERole {
     ROLE_ADMIN,
