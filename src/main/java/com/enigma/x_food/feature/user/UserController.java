@@ -1,9 +1,7 @@
 package com.enigma.x_food.feature.user;
 
-import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
-import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
+import com.enigma.x_food.feature.user.dto.request.*;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
-import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
@@ -17,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.x_food.util.PagingUtil;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,6 +36,26 @@ public class UserController {
                 .build();
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PutMapping(path = "/profile/photo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateProfilePhoto(
+            @RequestParam String accountID,
+            @RequestParam MultipartFile profilePhoto
+    ) {
+        UpdateUserProfilePhotoRequest request = UpdateUserProfilePhotoRequest.builder()
+                .accountID(accountID)
+                .profilePhoto(profilePhoto)
+                .build();
+        UserResponse userResponse = userService.updateProfilePhoto(request);
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+                .message("successfully update user profile photo")
+                .statusCode(HttpStatus.OK.value())
+                .data(userResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(response);
     }
 

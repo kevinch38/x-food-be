@@ -31,9 +31,9 @@ public class PinServiceImpl implements PinService {
                     .build();
             pinRepository.saveAndFlush(pin);
             return pin;
-        } catch (DataIntegrityViolationException e) {
+        } catch (Exception e) {
             log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "pin already exist");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -46,9 +46,9 @@ public class PinServiceImpl implements PinService {
             pin.setPin(bCryptUtil.hash(request.getPin()));
             pinRepository.saveAndFlush(pin);
             return mapToResponse(pin);
-        } catch (DataIntegrityViolationException e) {
+        } catch (Exception e) {
             log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "pin already exist");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 

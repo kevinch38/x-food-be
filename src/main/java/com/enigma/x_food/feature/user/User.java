@@ -7,6 +7,7 @@ import com.enigma.x_food.shared.BaseEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -34,7 +35,7 @@ public class User extends BaseEntity {
     @Column(name = "phone_number", nullable = false, length = 15, unique = true)
     private String phoneNumber;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pin_id", unique = true)
     private Pin pin;
 
@@ -46,6 +47,11 @@ public class User extends BaseEntity {
 
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
+
+    @Lob
+    @Column(name = "profile_photo", nullable = false)
+    @Type(type = "org.hibernate.type.BinaryType")
+    private byte[] profilePhoto;
 
     @Column(name = "balance_id", nullable = false)
     private String balanceID;
