@@ -1,13 +1,9 @@
 package com.enigma.x_food.feature.pin;
 
-import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.pin.dto.request.*;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
-import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.UpdatePinRequest;
-import com.enigma.x_food.feature.pin.dto.response.PinResponse;
-import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.security.BCryptUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import org.junit.jupiter.api.Test;
@@ -19,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
