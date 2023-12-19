@@ -24,6 +24,7 @@ public class UserResponse {
     private String lastName;
     private String dateOfBirth;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    private byte[] profilePhoto;
     private Timestamp updatedAt;
     private String balanceID;
     private String loyaltyPointID;

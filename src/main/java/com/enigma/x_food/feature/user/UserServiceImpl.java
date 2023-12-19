@@ -8,6 +8,7 @@ import com.enigma.x_food.feature.pin.PinService;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
+import com.enigma.x_food.feature.user.dto.request.UpdateUserProfilePhotoRequest;
 import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
@@ -28,6 +29,8 @@ import com.enigma.x_food.util.SortingUtil;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.Predicate;
+import java.awt.*;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +63,7 @@ public class UserServiceImpl implements UserService {
                     .phoneNumber("+62"+request.getPhoneNumber())
                     .firstName("")
                     .lastName("")
+                    .profilePhoto(new byte[]{})
                     .dateOfBirth(LocalDate.of(1970,1,1))
                     .balanceID("")
                     .loyaltyPointID("")
@@ -70,7 +74,7 @@ public class UserServiceImpl implements UserService {
             return mapToResponse(user);
         } catch (DataIntegrityViolationException e) {
             log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "user already exist");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone number already exist");
         }
     }
 
@@ -141,7 +145,25 @@ public class UserServiceImpl implements UserService {
             return mapToResponse(user);
         } catch (DataIntegrityViolationException e) {
             log.error("Error update: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "user already exist");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    @Override
+    public UserResponse updateProfilePhoto(UpdateUserProfilePhotoRequest request) {
+        try {
+            log.info("Start update");
+            validationUtil.validate(request);
+            User user = findByIdOrThrowNotFound(request.getAccountID());
+
+            user.setProfilePhoto(request.getProfilePhoto().getBytes());
+
+            userRepository.saveAndFlush(user);
+            log.info("End update");
+            return mapToResponse(user);
+        } catch (Exception e) {
+            log.error("Error update: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -165,6 +187,7 @@ public class UserServiceImpl implements UserService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .dateOfBirth(user.getDateOfBirth().toString())
+                .profilePhoto(user.getProfilePhoto())
                 .updatedAt(user.getUpdatedAt())
                 .balanceID(user.getBalanceID())
                 .loyaltyPointID(user.getLoyaltyPointID())
