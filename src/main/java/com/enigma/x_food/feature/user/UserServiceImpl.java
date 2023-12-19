@@ -31,6 +31,7 @@ import javax.persistence.criteria.Predicate;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,8 @@ public class UserServiceImpl implements UserService {
     private final PinService pinService;
     private final OTPService otpService;
     private final ValidationUtil validationUtil;
+    private final Random random;
+    private final BCryptUtil bCryptUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -52,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
             User user = User.builder()
                     .ktpID("")
-                    .accountEmail("")
+                    .accountEmail(bCryptUtil.hash(String.valueOf(random.nextInt())))
                     .pin(pin)
                     .phoneNumber("+62"+request.getPhoneNumber())
                     .firstName("")
