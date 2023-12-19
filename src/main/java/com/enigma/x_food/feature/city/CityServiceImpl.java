@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,12 +48,18 @@ public class CityServiceImpl implements CityService {
             Row currentRow = rows.next();
 
             Iterator<Cell> cellsInRow = currentRow.iterator();
+            String cityName;
             City city;
             List<City> cities = new ArrayList<>();
             while (cellsInRow.hasNext()) {
                 Cell currentCell = cellsInRow.next();
 
-                city = City.builder().cityName(currentCell.getStringCellValue()).build();
+                cityName=currentCell.getStringCellValue();
+
+                Optional<City> byCityName = cityRepository.findByCityName(cityName);
+                if (byCityName.isPresent()) continue;
+
+                city = City.builder().cityName(cityName).build();
                 cities.add(city);
             }
 
@@ -65,6 +72,10 @@ public class CityServiceImpl implements CityService {
     @Override
     public CityResponse getById(String id) {
         return mapToResponse(findByIdOrThrowNotFound(id));
+    }
+
+    public City getByCityName(String name) {
+        return null;
     }
 
     @Override
@@ -85,6 +96,7 @@ public class CityServiceImpl implements CityService {
     private CityResponse mapToResponse(City pin) {
         return CityResponse.builder()
                 .cityID(pin.getCityID())
+                .cityName(pin.getCityName())
                 .createdAt(pin.getCreatedAt())
                 .updatedAt(pin.getUpdatedAt())
                 .build();
