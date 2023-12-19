@@ -20,15 +20,12 @@ import java.util.List;
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "itemIName") String sortBy,
-            @RequestParam(required = false) String cityID
-    ) {
+            @RequestParam(required = false, defaultValue = "itemIName") String sortBy) {
         direction = PagingUtil.validateDirection(direction);
 
         SearchItemRequest request = SearchItemRequest.builder()
                 .direction(direction)
                 .sortBy(sortBy)
-                .cityID(cityID)
                 .build();
         List<ItemResponse> items = itemService.getAll(request);
 

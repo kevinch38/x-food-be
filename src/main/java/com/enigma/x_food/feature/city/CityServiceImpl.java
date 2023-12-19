@@ -1,9 +1,6 @@
 package com.enigma.x_food.feature.city;
 
-import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
-import com.enigma.x_food.security.BCryptUtil;
-import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
@@ -11,7 +8,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,8 +28,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CityServiceImpl implements CityService {
     private final CityRepository cityRepository;
-    private final BCryptUtil bCryptUtil;
-    private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
@@ -42,11 +35,8 @@ public class CityServiceImpl implements CityService {
         InputStream inp = new FileInputStream("src/main/java/com/enigma/x_food/shared/Status and City List.xlsx");
         Workbook workbook = new XSSFWorkbook(inp);
         Sheet sheet = workbook.getSheet("List of City");
-        Iterator<Row> rows = sheet.iterator();
 
-        while (rows.hasNext()) {
-            Row currentRow = rows.next();
-
+        for (Row currentRow : sheet) {
             Iterator<Cell> cellsInRow = currentRow.iterator();
             String cityName;
             City city;
@@ -54,7 +44,7 @@ public class CityServiceImpl implements CityService {
             while (cellsInRow.hasNext()) {
                 Cell currentCell = cellsInRow.next();
 
-                cityName=currentCell.getStringCellValue();
+                cityName = currentCell.getStringCellValue();
 
                 Optional<City> byCityName = cityRepository.findByCityName(cityName);
                 if (byCityName.isPresent()) continue;
@@ -93,12 +83,12 @@ public class CityServiceImpl implements CityService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "city not found"));
     }
 
-    private CityResponse mapToResponse(City pin) {
+    private CityResponse mapToResponse(City city) {
         return CityResponse.builder()
-                .cityID(pin.getCityID())
-                .cityName(pin.getCityName())
-                .createdAt(pin.getCreatedAt())
-                .updatedAt(pin.getUpdatedAt())
+                .cityID(city.getCityID())
+                .cityName(city.getCityName())
+                .createdAt(city.getCreatedAt())
+                .updatedAt(city.getUpdatedAt())
                 .build();
     }
 }

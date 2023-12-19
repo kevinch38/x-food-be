@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.city;
 
+import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,5 +24,8 @@ public class City extends BaseEntity {
     private String cityID;
 
     @Column(name = "city_name", nullable = false, length = 100)
-    private String cityName;}
+    private String cityName;
 
+    @OneToOne(mappedBy = "city")
+    private MerchantBranch merchantBranch;
+}

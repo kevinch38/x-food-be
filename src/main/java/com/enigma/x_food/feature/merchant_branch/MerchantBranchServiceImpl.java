@@ -1,5 +1,9 @@
 package com.enigma.x_food.feature.merchant_branch;
 
+import com.enigma.x_food.feature.city.City;
+import com.enigma.x_food.feature.city.CityService;
+import com.enigma.x_food.feature.city.CityServiceImpl;
+import com.enigma.x_food.feature.city.dto.response.CityResponse;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
@@ -10,6 +14,7 @@ import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResp
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,6 +36,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     private final MerchantService merchantService;
     private final ValidationUtil validationUtil;
     private final EntityManager entityManager;
+    private final CityService cityService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -52,13 +58,18 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .notes(merchantResponse.getNotes())
                 .build();
 
+        CityResponse cityResponse = cityService.getById(request.getCityID());
+
         MerchantBranch branch = MerchantBranch.builder()
                 .merchant(entityManager.merge(merchant))
                 .branchName(request.getBranchName())
                 .address(request.getAddress())
                 .timezone(request.getTimezone())
                 .branchWorkingHoursID(request.getBranchWorkingHoursID())
-                .cityID(request.getCityID())
+                .city(City.builder()
+                        .cityID(cityResponse.getCityID())
+                        .cityName(cityResponse.getCityName())
+                        .build())
                 .build();
 
         merchantBranchRepository.saveAndFlush(branch);
@@ -71,13 +82,18 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         validationUtil.validate(request);
         MerchantBranch merchantBranch = findByIdOrThrowException(request.getBranchID());
 
+        CityResponse cityResponse = cityService.getById(request.getCityID());
+
         MerchantBranch updated = MerchantBranch.builder()
                 .merchant(merchantBranch.getMerchant())
                 .branchName(request.getBranchName())
                 .address(request.getAddress())
                 .timezone(request.getTimezone())
                 .branchWorkingHoursID(request.getBranchWorkingHoursID())
-                .cityID(request.getCityID())
+                .city(City.builder()
+                        .cityID(cityResponse.getCityID())
+                        .cityName(cityResponse.getCityName())
+                        .build())
                 .createdAt(merchantBranch.getCreatedAt())
                 .build();
 
@@ -94,11 +110,10 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     @Override
     @Transactional(readOnly = true)
     public List<MerchantBranchResponse> findByMerchantId(SearchMerchantBranchRequest request) {
-        String fieldName = SortingUtil.sortByValidation(MerchantBranch.class, request.getSortBy(), "branchID");
-        request.setSortBy(fieldName);
+        validationUtil.validate(request);
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
-        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request);
-        List<MerchantBranch> branches = merchantBranchRepository.findAll(specification);
+        List<MerchantBranch> branches = merchantBranchRepository.findAll(sort);
         return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
@@ -112,7 +127,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     private MerchantBranch findByIdOrThrowException(String id) {
         return merchantBranchRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "MerchantBranch not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Merchant branch not found"));
     }
 
     private MerchantBranchResponse mapToResponse(MerchantBranch branch) {
@@ -125,7 +140,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .createdAt(branch.getCreatedAt())
                 .updatedAt(branch.getUpdatedAt())
                 .branchWorkingHoursID(branch.getBranchWorkingHoursID())
-                .cityID(branch.getCityID())
+                .cityID(branch.getCity().getCityID())
                 .build();
     }
 
@@ -183,7 +198,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
             }
             if (request.getCityID() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("cityID")),
+                        criteriaBuilder.lower(root.get("city").get("cityID")),
                         "%" + request.getCityID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);

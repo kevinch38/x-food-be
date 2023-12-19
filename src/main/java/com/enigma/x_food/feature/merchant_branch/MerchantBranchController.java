@@ -20,7 +20,7 @@ import java.util.List;
 public class MerchantBranchController {
     private final MerchantBranchService merchantBranchService;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNewMerchantBranch(@RequestBody NewMerchantBranchRequest request) {
+    public ResponseEntity<?> createNew(@RequestBody NewMerchantBranchRequest request) {
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.createNew(request);
         CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
                 .message("successfully create new merchant branch")
@@ -34,10 +34,8 @@ public class MerchantBranchController {
 
     @GetMapping("/{merchantID}")
     public ResponseEntity<?> findAll(@PathVariable String merchantID,
-            @RequestParam(required = false, defaultValue = "1") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "branchID") String sortBy,
+            @RequestParam(required = false, defaultValue = "branchName") String sortBy,
             @RequestParam(required = false) String branchID,
             @RequestParam(required = false) String branchName,
             @RequestParam(required = false) String address,
@@ -45,13 +43,9 @@ public class MerchantBranchController {
             @RequestParam(required = false) String branchWorkingHoursID,
             @RequestParam(required = false) String cityID
     ) {
-        page = PagingUtil.validatePage(page);
-        size = PagingUtil.validateSize(size);
         direction = PagingUtil.validateDirection(direction);
 
         SearchMerchantBranchRequest request = SearchMerchantBranchRequest.builder()
-                .page(page)
-                .size(size)
                 .direction(direction)
                 .sortBy(sortBy)
                 .branchID(branchID)
@@ -77,7 +71,7 @@ public class MerchantBranchController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateMerchantBranch(@RequestBody UpdateMerchantBranchRequest request) {
+    public ResponseEntity<?> update(@RequestBody UpdateMerchantBranchRequest request) {
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.update(request);
         CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
                 .message("successfully update merchant branch")
@@ -90,7 +84,7 @@ public class MerchantBranchController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteMerchantBranchById(@PathVariable String id) {
+    public ResponseEntity<?> delete(@PathVariable String id) {
         merchantBranchService.deleteById(id);
         CommonResponse<?> response = CommonResponse.builder()
                 .message("successfully delete merchant branch")

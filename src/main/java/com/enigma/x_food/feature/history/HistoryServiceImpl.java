@@ -64,6 +64,8 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional(readOnly = true)
     public List<HistoryResponse> findByAccountId(SearchHistoryRequest request) {
+        validationUtil.validate(request);
+
         Specification<History> specification = getHistorySpecification(request);
         List<History> histories = historyRepository.findAll(specification);
         return histories.stream().map(this::mapToResponse)

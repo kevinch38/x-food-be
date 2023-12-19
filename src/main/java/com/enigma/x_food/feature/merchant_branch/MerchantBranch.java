@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.merchant_branch;
 
+import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.shared.BaseEntity;
@@ -33,8 +34,9 @@ public class MerchantBranch extends BaseEntity {
     private String timezone;
     @Column(name = "branch_working_hours_id", nullable = false)
     private String branchWorkingHoursID;
-    @Column(name = "city_id", nullable = false, length = 36)
-    private String cityID;
+    @OneToOne
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
     @OneToMany(mappedBy = "merchantBranch")
     private List<Item> itemList;
 }

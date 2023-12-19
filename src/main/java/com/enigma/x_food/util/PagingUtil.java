@@ -10,6 +10,6 @@ public class PagingUtil {
     }
 
     public static String validateDirection(String direction) {
-        return direction.equals("ASC") || direction.equals("DESC") ? direction : "ASC";
+        return direction.equalsIgnoreCase("ASC") || direction.equalsIgnoreCase("DESC") ? direction : "ASC";
     }
 }
