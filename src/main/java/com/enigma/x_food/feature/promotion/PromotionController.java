@@ -40,7 +40,7 @@ public class PromotionController {
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "accountID") String sortBy,
+            @RequestParam(required = false, defaultValue = "promotionID") String sortBy,
             @RequestParam(required = false) String promotionID,
             @RequestParam(required = false) String merchantID,
             @RequestParam(required = false) String promotionDescription,

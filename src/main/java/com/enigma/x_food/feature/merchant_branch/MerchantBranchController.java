@@ -5,10 +5,8 @@ import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranc
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
 import com.enigma.x_food.shared.CommonResponse;
-import com.enigma.x_food.shared.PagingResponse;
 import com.enigma.x_food.util.PagingUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +37,7 @@ public class MerchantBranchController {
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "account_id") String sortBy,
+            @RequestParam(required = false, defaultValue = "branchID") String sortBy,
             @RequestParam(required = false) String branchID,
             @RequestParam(required = false) String branchName,
             @RequestParam(required = false) String address,

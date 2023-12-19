@@ -34,7 +34,7 @@ public class User extends BaseEntity {
     @Column(name = "phone_number", nullable = false, length = 15, unique = true)
     private String phoneNumber;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pin_id", unique = true)
     private Pin pin;
 

@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.merchant_branch;
 
+import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.*;
@@ -7,6 +8,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,4 +35,6 @@ public class MerchantBranch extends BaseEntity {
     private String branchWorkingHoursID;
     @Column(name = "city_id", nullable = false, length = 36)
     private String cityID;
+    @OneToMany(mappedBy = "merchantBranch")
+    private List<Item> itemList;
 }

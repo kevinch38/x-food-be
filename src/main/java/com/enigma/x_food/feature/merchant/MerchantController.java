@@ -38,7 +38,7 @@ public class MerchantController {
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "accountID") String sortBy,
+            @RequestParam(required = false, defaultValue = "merchantID") String sortBy,
             @RequestParam(required = false) String merchantID,
             @RequestParam(required = false) String merchantName,
             @RequestParam(required = false) String picName,
