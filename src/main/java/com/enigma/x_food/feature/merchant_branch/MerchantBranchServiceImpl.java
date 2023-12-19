@@ -10,10 +10,6 @@ import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResp
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -90,9 +86,9 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public MerchantBranchResponse findById(String id) {
+    public MerchantBranch findById(String id) {
         validationUtil.validate(id);
-        return mapToResponse(findByIdOrThrowException(id));
+        return findByIdOrThrowException(id);
     }
 
     @Override
