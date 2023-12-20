@@ -136,7 +136,6 @@ public class UserServiceImpl implements UserService {
             User user = findByIdOrThrowNotFound(request.getAccountID());
             user.setKtpID(request.getKtpID());
             user.setAccountEmail(request.getAccountEmail());
-            user.setPhoneNumber("+62"+request.getPhoneNumber());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
             user.setDateOfBirth(request.getDateOfBirth());
