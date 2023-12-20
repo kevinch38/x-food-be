@@ -120,11 +120,22 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MerchantBranchResponse> findByMerchantId(SearchMerchantBranchRequest request) {
+    public List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request) {
         validationUtil.validate(request);
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
-        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request);
+        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request, "all");
+        List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
+        return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MerchantBranchResponse> getAllActiveByMerchantId(SearchMerchantBranchRequest request) {
+        validationUtil.validate(request);
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+
+        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request, "active");
         List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
         return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
@@ -161,7 +172,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .build();
     }
 
-    private Specification<MerchantBranch> getMerchantBranchSpecification(SearchMerchantBranchRequest request) {
+    private Specification<MerchantBranch> getMerchantBranchSpecification(SearchMerchantBranchRequest request, String option) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -221,11 +232,13 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 predicates.add(predicate);
             }
 
-            Predicate predicate = criteriaBuilder.equal(
-                    root.get("merchantBranchStatus").get("status"),
-                    EMerchantBranchStatus.ACTIVE
-            );
-            predicates.add(predicate);
+            if (option.equalsIgnoreCase("active")){
+                Predicate predicate = criteriaBuilder.equal(
+                        root.get("merchantBranchStatus").get("status"),
+                        EMerchantBranchStatus.ACTIVE
+                );
+                predicates.add(predicate);
+            }
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))

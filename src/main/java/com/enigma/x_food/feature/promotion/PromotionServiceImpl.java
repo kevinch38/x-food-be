@@ -34,6 +34,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -159,9 +160,23 @@ public class PromotionServiceImpl implements PromotionService {
                 request.getSortBy()
         );
 
-        Specification<Promotion> specification = getPromotionSpecification(request);
+        Specification<Promotion> specification = getPromotionSpecification(request, "all");
         Page<Promotion> promotions = promotionRepository.findAll(specification, pageable);
         return promotions.map(this::mapToResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromotionResponse> getAllActive(SearchPromotionRequest request) {
+        String fieldName = SortingUtil.sortByValidation(Promotion.class, request.getSortBy(), "promotionID");
+        request.setSortBy(fieldName);
+
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+
+        Specification<Promotion> specification = getPromotionSpecification(request, "active");
+        List<Promotion> promotions = promotionRepository.findAll(specification, sort);
+        return promotions.stream().map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -199,7 +214,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .build();
     }
 
-    private Specification<Promotion> getPromotionSpecification(SearchPromotionRequest request) {
+    private Specification<Promotion> getPromotionSpecification(SearchPromotionRequest request, String option) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -259,11 +274,13 @@ public class PromotionServiceImpl implements PromotionService {
                 predicates.add(predicate);
             }
 
-            Predicate predicate = criteriaBuilder.equal(
-                    root.get("promotionStatus").get("status"),
-                    EPromotionStatus.ACTIVE
-            );
-            predicates.add(predicate);
+            if (option.equalsIgnoreCase("active")){
+                Predicate predicate = criteriaBuilder.equal(
+                        root.get("promotionStatus").get("status"),
+                        EPromotionStatus.ACTIVE
+                );
+                predicates.add(predicate);
+            }
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))

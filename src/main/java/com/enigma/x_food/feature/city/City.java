@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,6 +27,6 @@ public class City extends BaseEntity {
     @Column(name = "city_name", nullable = false, length = 100)
     private String cityName;
 
-    @OneToOne(mappedBy = "city")
-    private MerchantBranch merchantBranch;
+    @OneToMany(mappedBy = "city")
+    private List<MerchantBranch> merchantBranches;
 }

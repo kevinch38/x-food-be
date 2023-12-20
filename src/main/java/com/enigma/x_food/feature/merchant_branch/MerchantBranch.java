@@ -35,7 +35,7 @@ public class MerchantBranch extends BaseEntity {
     private String timezone;
     @Column(name = "branch_working_hours_id", nullable = false)
     private String branchWorkingHoursID;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
     @OneToMany(mappedBy = "merchantBranch")

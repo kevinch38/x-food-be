@@ -28,6 +28,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -107,13 +108,27 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<MerchantResponse> getAllActive(SearchMerchantRequest request) {
+        String fieldName = SortingUtil.sortByValidation(Merchant.class, request.getSortBy(), "merchantID");
+        request.setSortBy(fieldName);
+
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+
+        Specification<Merchant> specification = getMerchantSpecification(request, "active");
+
+        return merchantRepository.findAll(specification, sort).stream().map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<MerchantResponse> getAll(SearchMerchantRequest request) {
         String fieldName = SortingUtil.sortByValidation(Merchant.class, request.getSortBy(), "merchantID");
         request.setSortBy(fieldName);
 
         Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
 
-        Specification<Merchant> specification = getMerchantSpecification(request);
+        Specification<Merchant> specification = getMerchantSpecification(request, "all");
 
         Pageable pageable = PageRequest.of(
                 request.getPage() - 1,
@@ -149,7 +164,7 @@ public class MerchantServiceImpl implements MerchantService {
         );
     }
 
-    private Specification<Merchant> getMerchantSpecification(SearchMerchantRequest request) {
+    private Specification<Merchant> getMerchantSpecification(SearchMerchantRequest request, String option) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -224,11 +239,13 @@ public class MerchantServiceImpl implements MerchantService {
                 predicates.add(predicate);
             }
 
-            Predicate predicate = criteriaBuilder.equal(
-                    root.get("merchantStatus").get("status"),
-                    EMerchantStatus.ACTIVE
-            );
-            predicates.add(predicate);
+            if (option.equalsIgnoreCase("active")){
+                Predicate predicate = criteriaBuilder.equal(
+                        root.get("merchantStatus").get("status"),
+                        EMerchantStatus.ACTIVE
+                );
+                predicates.add(predicate);
+            }
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))
