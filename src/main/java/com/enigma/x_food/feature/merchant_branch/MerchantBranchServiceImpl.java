@@ -124,7 +124,8 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         validationUtil.validate(request);
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
-        List<MerchantBranch> branches = merchantBranchRepository.findAll(sort);
+        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request);
+        List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
         return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
@@ -219,6 +220,12 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 );
                 predicates.add(predicate);
             }
+
+            Predicate predicate = criteriaBuilder.equal(
+                    root.get("merchantBranchStatus").get("status"),
+                    EMerchantBranchStatus.ACTIVE
+            );
+            predicates.add(predicate);
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))

@@ -1,10 +1,14 @@
 package com.enigma.x_food.feature.merchant;
 
+import com.enigma.x_food.constant.EMerchantBranchStatus;
 import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
+import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
+import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatusService;
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
 import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
 import com.enigma.x_food.util.SortingUtil;
@@ -32,6 +36,7 @@ public class MerchantServiceImpl implements MerchantService {
     private final ValidationUtil validationUtil;
     private final EntityManager entityManager;
     private final MerchantStatusService merchantStatusService;
+    private final MerchantBranchStatusService merchantBranchStatusService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -91,6 +96,11 @@ public class MerchantServiceImpl implements MerchantService {
         Merchant merchant = findByIdOrThrowException(id);
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.INACTIVE);
         merchant.setMerchantStatus(merchantStatus);
+
+        for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
+            MerchantBranchStatus status = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.INACTIVE);
+            merchantBranch.setMerchantBranchStatus(status);
+        }
 
         merchantRepository.saveAndFlush(merchant);
     }
@@ -213,6 +223,12 @@ public class MerchantServiceImpl implements MerchantService {
                 );
                 predicates.add(predicate);
             }
+
+            Predicate predicate = criteriaBuilder.equal(
+                    root.get("merchantStatus").get("status"),
+                    EMerchantStatus.ACTIVE
+            );
+            predicates.add(predicate);
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))

@@ -259,6 +259,12 @@ public class PromotionServiceImpl implements PromotionService {
                 predicates.add(predicate);
             }
 
+            Predicate predicate = criteriaBuilder.equal(
+                    root.get("promotionStatus").get("status"),
+                    EPromotionStatus.ACTIVE
+            );
+            predicates.add(predicate);
+
             return query
                     .where(predicates.toArray(new Predicate[]{}))
                     .getRestriction();
