@@ -34,7 +34,7 @@ public class MerchantController {
                 .body(response);
     }
     @GetMapping
-    public ResponseEntity<?> getAllMerchant(
+    public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
@@ -83,6 +83,47 @@ public class MerchantController {
                 .statusCode(HttpStatus.OK.value())
                 .data(merchants.getContent())
                 .paging(pagingResponse)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<?> getAllActive(
+            @RequestParam(required = false, defaultValue = "asc") String direction,
+            @RequestParam(required = false, defaultValue = "merchantID") String sortBy,
+            @RequestParam(required = false) String merchantID,
+            @RequestParam(required = false) String merchantName,
+            @RequestParam(required = false) String picName,
+            @RequestParam(required = false) String picNumber,
+            @RequestParam(required = false) String picEmail,
+            @RequestParam(required = false) String merchantDescription,
+            @RequestParam(required = false) String adminID,
+            @RequestParam(required = false) String merchantStatusID,
+            @RequestParam(required = false) String notes
+    ) {
+        SearchMerchantRequest request = SearchMerchantRequest.builder()
+                .direction(direction)
+                .sortBy(sortBy)
+                .merchantID(merchantID)
+                .merchantName(merchantName)
+                .picName(picName)
+                .picNumber(picNumber)
+                .picEmail(picEmail)
+                .merchantDescription(merchantDescription)
+                .adminID(adminID)
+                .merchantStatusID(merchantStatusID)
+                .notes(notes)
+                .build();
+
+        List<MerchantResponse> merchants = merchantService.getAllActive(request);
+
+        CommonResponse<List<MerchantResponse>> response = CommonResponse.<List<MerchantResponse>>builder()
+                .message("successfully get all active merchant")
+                .statusCode(HttpStatus.OK.value())
+                .data(merchants)
                 .build();
 
         return ResponseEntity

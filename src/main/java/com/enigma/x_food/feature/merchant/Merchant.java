@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.merchant_status.MerchantStatus;
 import com.enigma.x_food.feature.promotion.Promotion;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.*;
@@ -37,8 +38,9 @@ public class Merchant extends BaseEntity {
     private String merchantDescription;
     @Column(name = "admin_id", nullable = false, length = 36)
     private String adminID;
-    @Column(name = "merchant_status_id", nullable = false, length = 36)
-    private String merchantStatusID;
+    @OneToOne
+    @JoinColumn(name = "merchant_status_id", nullable = false)
+    private MerchantStatus merchantStatus;
     @Column(name = "notes", length = 150)
     private String notes;
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)

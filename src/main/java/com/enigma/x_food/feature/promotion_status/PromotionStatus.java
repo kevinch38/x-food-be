@@ -1,6 +1,6 @@
-package com.enigma.x_food.feature.city;
+package com.enigma.x_food.feature.promotion_status;
 
-import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.constant.EPromotionStatus;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,24 +9,21 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @Data
 @Entity
-@Table(name = "City")
-public class City extends BaseEntity {
+@Table(name = "promotion_status")
+public class PromotionStatus extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
-    @Column(name = "city_id")
-    private String cityID;
+    @Column(name = "promotion_status_id")
+    private String promotionStatusID;
 
-    @Column(name = "city_name", nullable = false, length = 100)
-    private String cityName;
-
-    @OneToMany(mappedBy = "city")
-    private List<MerchantBranch> merchantBranches;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 100)
+    private EPromotionStatus status;
 }

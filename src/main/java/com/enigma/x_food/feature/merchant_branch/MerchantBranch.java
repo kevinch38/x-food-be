@@ -3,6 +3,7 @@ package com.enigma.x_food.feature.merchant_branch;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.merchant.Merchant;
+import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -34,9 +35,12 @@ public class MerchantBranch extends BaseEntity {
     private String timezone;
     @Column(name = "branch_working_hours_id", nullable = false)
     private String branchWorkingHoursID;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
     @OneToMany(mappedBy = "merchantBranch")
     private List<Item> itemList;
+    @OneToOne
+    @JoinColumn(name = "merchant_branch_status_id", nullable = false)
+    private MerchantBranchStatus merchantBranchStatus;
 }

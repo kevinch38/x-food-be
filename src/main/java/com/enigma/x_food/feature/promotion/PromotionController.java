@@ -87,6 +87,43 @@ public class PromotionController {
                 .body(response);
     }
 
+    @GetMapping("/active")
+    public ResponseEntity<?> getAllActive(
+            @RequestParam(required = false, defaultValue = "asc") String direction,
+            @RequestParam(required = false, defaultValue = "promotionID") String sortBy,
+            @RequestParam(required = false) String promotionID,
+            @RequestParam(required = false) String merchantID,
+            @RequestParam(required = false) String promotionDescription,
+            @RequestParam(required = false) String promotionName,
+            @RequestParam(required = false) String adminID,
+            @RequestParam(required = false) String promotionStatusID,
+            @RequestParam(required = false) String notes
+    ) {
+        SearchPromotionRequest request = SearchPromotionRequest.builder()
+                .direction(direction)
+                .sortBy(sortBy)
+                .promotionID(promotionID)
+                .merchantID(merchantID)
+                .promotionDescription(promotionDescription)
+                .promotionName(promotionName)
+                .adminID(adminID)
+                .promotionStatusID(promotionStatusID)
+                .note(notes)
+                .build();
+        List<PromotionResponse> promotions = promotionService.getAllActive(request);
+
+
+        CommonResponse<List<PromotionResponse>> response = CommonResponse.<List<PromotionResponse>>builder()
+                .message("successfully get all active promotion")
+                .statusCode(HttpStatus.OK.value())
+                .data(promotions)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) {
         PromotionResponse promotionResponse =promotionService.update(request);

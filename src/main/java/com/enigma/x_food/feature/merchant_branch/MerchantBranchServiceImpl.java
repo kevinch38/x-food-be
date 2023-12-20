@@ -1,8 +1,9 @@
 package com.enigma.x_food.feature.merchant_branch;
 
+import com.enigma.x_food.constant.EMerchantBranchStatus;
+import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.CityService;
-import com.enigma.x_food.feature.city.CityServiceImpl;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
@@ -11,7 +12,10 @@ import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRe
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
-import com.enigma.x_food.util.SortingUtil;
+import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
+import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatusService;
+import com.enigma.x_food.feature.merchant_status.MerchantStatus;
+import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -34,6 +38,8 @@ import java.util.stream.Collectors;
 public class MerchantBranchServiceImpl implements MerchantBranchService {
     private final MerchantBranchRepository merchantBranchRepository;
     private final MerchantService merchantService;
+    private final MerchantStatusService merchantStatusService;
+    private final MerchantBranchStatusService merchantBranchStatusService;
     private final ValidationUtil validationUtil;
     private final EntityManager entityManager;
     private final CityService cityService;
@@ -43,6 +49,8 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     public MerchantBranchResponse createNew(NewMerchantBranchRequest request) {
         validationUtil.validate(request);
         MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.valueOf(merchantResponse.getStatus()));
+
         Merchant merchant = Merchant.builder()
                 .merchantID(merchantResponse.getMerchantID())
                 .joinDate(merchantResponse.getJoinDate())
@@ -54,12 +62,13 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .adminID(merchantResponse.getAdminId())
                 .createdAt(merchantResponse.getCreatedAt())
                 .updatedAt(merchantResponse.getUpdatedAt())
-                .merchantStatusID(merchantResponse.getMerchantStatusID())
+                .merchantStatus(entityManager.merge(merchantStatus))
                 .notes(merchantResponse.getNotes())
                 .build();
 
         CityResponse cityResponse = cityService.getById(request.getCityID());
 
+        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.ACTIVE);
         MerchantBranch branch = MerchantBranch.builder()
                 .merchant(entityManager.merge(merchant))
                 .branchName(request.getBranchName())
@@ -70,6 +79,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                         .cityID(cityResponse.getCityID())
                         .cityName(cityResponse.getCityName())
                         .build())
+                .merchantBranchStatus(entityManager.merge(merchantBranchStatus))
                 .build();
 
         merchantBranchRepository.saveAndFlush(branch);
@@ -95,6 +105,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                         .cityName(cityResponse.getCityName())
                         .build())
                 .createdAt(merchantBranch.getCreatedAt())
+                .merchantBranchStatus(merchantBranch.getMerchantBranchStatus())
                 .build();
 
         return mapToResponse(merchantBranchRepository.saveAndFlush(updated));
@@ -109,11 +120,23 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MerchantBranchResponse> findByMerchantId(SearchMerchantBranchRequest request) {
+    public List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request) {
         validationUtil.validate(request);
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
-        List<MerchantBranch> branches = merchantBranchRepository.findAll(sort);
+        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request, "all");
+        List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
+        return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MerchantBranchResponse> getAllActiveByMerchantId(SearchMerchantBranchRequest request) {
+        validationUtil.validate(request);
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+
+        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request, "active");
+        List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
         return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
@@ -122,7 +145,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     public void deleteById(String id) {
         validationUtil.validate(id);
         MerchantBranch merchantBranch = findByIdOrThrowException(id);
-        merchantBranchRepository.delete(merchantBranch);
+        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.INACTIVE);
+
+        merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
+
+        merchantBranchRepository.saveAndFlush(merchantBranch);
     }
 
     private MerchantBranch findByIdOrThrowException(String id) {
@@ -141,10 +168,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .updatedAt(branch.getUpdatedAt())
                 .branchWorkingHoursID(branch.getBranchWorkingHoursID())
                 .cityID(branch.getCity().getCityID())
+                .status(branch.getMerchantBranchStatus().getStatus().name())
                 .build();
     }
 
-    private Specification<MerchantBranch> getMerchantBranchSpecification(SearchMerchantBranchRequest request) {
+    private Specification<MerchantBranch> getMerchantBranchSpecification(SearchMerchantBranchRequest request, String option) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -200,6 +228,14 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("city").get("cityID")),
                         "%" + request.getCityID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (option.equalsIgnoreCase("active")){
+                Predicate predicate = criteriaBuilder.equal(
+                        root.get("merchantBranchStatus").get("status"),
+                        EMerchantBranchStatus.ACTIVE
                 );
                 predicates.add(predicate);
             }
