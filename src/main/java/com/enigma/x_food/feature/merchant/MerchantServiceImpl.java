@@ -136,20 +136,23 @@ public class MerchantServiceImpl implements MerchantService {
 
     private MerchantResponse mapToResponse(Merchant merchant) {
         List<MerchantBranchResponse> merchantBranchResponses = new ArrayList<>();
-        for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
-            merchantBranchResponses.add(MerchantBranchResponse.builder()
-                    .branchID(merchantBranch.getBranchID())
-                    .merchantID(merchantBranch.getMerchant().getMerchantID())
-                    .branchName(merchantBranch.getBranchName())
-                    .address(merchantBranch.getAddress())
-                    .timezone(merchantBranch.getTimezone())
-                    .createdAt(merchantBranch.getCreatedAt())
-                    .updatedAt(merchantBranch.getUpdatedAt())
-                    .branchWorkingHoursID(merchantBranch.getBranchWorkingHoursID())
-                    .city(merchantBranch.getCity().getCityName())
-                    .status(merchantBranch.getMerchantBranchStatus().getStatus().name())
-                    .itemList(merchantBranch.getItemList())
-                    .build());
+
+        if (merchant.getMerchantBranches() != null) {
+            for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
+                merchantBranchResponses.add(MerchantBranchResponse.builder()
+                        .branchID(merchantBranch.getBranchID())
+                        .merchantID(merchantBranch.getMerchant().getMerchantID())
+                        .branchName(merchantBranch.getBranchName())
+                        .address(merchantBranch.getAddress())
+                        .timezone(merchantBranch.getTimezone())
+                        .createdAt(merchantBranch.getCreatedAt())
+                        .updatedAt(merchantBranch.getUpdatedAt())
+                        .branchWorkingHoursID(merchantBranch.getBranchWorkingHoursID())
+                        .city(merchantBranch.getCity().getCityName())
+                        .status(merchantBranch.getMerchantBranchStatus().getStatus().name())
+                        .itemList(merchantBranch.getItemList())
+                        .build());
+            }
         }
 
         return MerchantResponse.builder()
@@ -190,7 +193,7 @@ public class MerchantServiceImpl implements MerchantService {
             if (request.getMerchantName() != null) {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("merchantName")),
-                        "%" +request.getMerchantName().toLowerCase() +"%"
+                        "%" + request.getMerchantName().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
@@ -250,7 +253,7 @@ public class MerchantServiceImpl implements MerchantService {
                 predicates.add(predicate);
             }
 
-            if (option.equalsIgnoreCase("active")){
+            if (option.equalsIgnoreCase("active")) {
                 Predicate predicate = criteriaBuilder.equal(
                         root.get("merchantStatus").get("status"),
                         EMerchantStatus.ACTIVE
