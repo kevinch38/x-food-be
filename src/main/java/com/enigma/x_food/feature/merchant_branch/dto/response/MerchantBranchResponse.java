@@ -26,6 +26,6 @@ public class MerchantBranchResponse {
     private Timestamp updatedAt;
     private String branchWorkingHoursID;
     private String status;
-    private String cityID;
+    private String city;
     private List<Item> itemList;
 }

@@ -162,7 +162,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .createdAt(branch.getCreatedAt())
                 .updatedAt(branch.getUpdatedAt())
                 .branchWorkingHoursID(branch.getBranchWorkingHoursID())
-                .cityID(branch.getCity().getCityID())
+                .city(branch.getCity().getCityName())
                 .status(branch.getMerchantBranchStatus().getStatus().name())
                 .itemList(branch.getItemList())
                 .build();

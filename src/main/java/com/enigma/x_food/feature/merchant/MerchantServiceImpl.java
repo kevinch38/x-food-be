@@ -7,6 +7,7 @@ import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatusService;
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
@@ -25,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +135,23 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     private MerchantResponse mapToResponse(Merchant merchant) {
+        List<MerchantBranchResponse> merchantBranchResponses = new ArrayList<>();
+        for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
+            merchantBranchResponses.add(MerchantBranchResponse.builder()
+                    .branchID(merchantBranch.getBranchID())
+                    .merchantID(merchantBranch.getMerchant().getMerchantID())
+                    .branchName(merchantBranch.getBranchName())
+                    .address(merchantBranch.getAddress())
+                    .timezone(merchantBranch.getTimezone())
+                    .createdAt(merchantBranch.getCreatedAt())
+                    .updatedAt(merchantBranch.getUpdatedAt())
+                    .branchWorkingHoursID(merchantBranch.getBranchWorkingHoursID())
+                    .city(merchantBranch.getCity().getCityName())
+                    .status(merchantBranch.getMerchantBranchStatus().getStatus().name())
+                    .itemList(merchantBranch.getItemList())
+                    .build());
+        }
+
         return MerchantResponse.builder()
                 .merchantID(merchant.getMerchantID())
                 .joinDate(merchant.getJoinDate())
@@ -148,7 +165,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .updatedAt(merchant.getUpdatedAt())
                 .status(merchant.getMerchantStatus().getStatus().name())
                 .notes(merchant.getNotes())
-                .merchantBranches(merchant.getMerchantBranches())
+                .merchantBranches(merchantBranchResponses)
                 .build();
     }
 
