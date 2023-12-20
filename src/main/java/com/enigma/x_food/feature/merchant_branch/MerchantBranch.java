@@ -27,6 +27,7 @@ public class MerchantBranch extends BaseEntity {
     private String branchID;
     @JoinColumn(name = "merchant_id", nullable = false)
     @ManyToOne
+    @JsonBackReference
     private Merchant merchant;
     @Column(name = "merchant_name", nullable = false, length = 100)
     private String branchName;
@@ -38,6 +39,7 @@ public class MerchantBranch extends BaseEntity {
     private String branchWorkingHoursID;
     @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
+    @JsonBackReference
     private City city;
     @OneToMany(mappedBy = "merchantBranch")
     @JsonBackReference

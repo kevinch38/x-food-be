@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.merchant.dto.response;
 
+import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,4 +30,5 @@ public class MerchantResponse {
     private Timestamp updatedAt;
     private String status;
     private String notes;
+    private List<MerchantBranch> merchantBranches;
 }

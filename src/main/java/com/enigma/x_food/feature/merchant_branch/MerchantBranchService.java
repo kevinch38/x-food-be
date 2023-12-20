@@ -11,7 +11,7 @@ public interface MerchantBranchService {
     MerchantBranchResponse createNew(NewMerchantBranchRequest request);
     MerchantBranchResponse update(UpdateMerchantBranchRequest request);
     void deleteById(String id);
-    MerchantBranch findById(String id);
-    List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request);
+    MerchantBranchResponse findById(String id);
+//    List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request);
     List<MerchantBranchResponse> getAllActiveByMerchantId(SearchMerchantBranchRequest request);
 }

@@ -4,6 +4,7 @@ import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
 import com.enigma.x_food.feature.merchant_status.promotion.Promotion;
 import com.enigma.x_food.shared.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
@@ -44,6 +45,7 @@ public class Merchant extends BaseEntity {
     @Column(name = "notes", length = 150)
     private String notes;
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<MerchantBranch> merchantBranches;
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
     private List<Promotion> promotions;

@@ -108,21 +108,21 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public MerchantBranch findById(String id) {
+    public MerchantBranchResponse findById(String id) {
         validationUtil.validate(id);
-        return findByIdOrThrowException(id);
+        return mapToResponse(findByIdOrThrowException(id));
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request) {
-        validationUtil.validate(request);
-        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
-
-        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request, "all");
-        List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
-        return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request) {
+//        validationUtil.validate(request);
+//        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+//
+//        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request, "all");
+//        List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
+//        return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
+//    }
 
     @Override
     @Transactional(readOnly = true)
@@ -130,7 +130,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         validationUtil.validate(request);
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
-        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request, "active");
+        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request);
         List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
         return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
@@ -168,7 +168,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .build();
     }
 
-    private Specification<MerchantBranch> getMerchantBranchSpecification(SearchMerchantBranchRequest request, String option) {
+    private Specification<MerchantBranch> getMerchantBranchSpecification(SearchMerchantBranchRequest request) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -228,13 +228,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 predicates.add(predicate);
             }
 
-            if (option.equalsIgnoreCase("active")){
-                Predicate predicate = criteriaBuilder.equal(
-                        root.get("merchantBranchStatus").get("status"),
-                        EMerchantBranchStatus.ACTIVE
-                );
-                predicates.add(predicate);
-            }
+            Predicate predicate = criteriaBuilder.equal(
+                    root.get("merchantBranchStatus").get("status"),
+                    EMerchantBranchStatus.ACTIVE
+            );
+            predicates.add(predicate);
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))

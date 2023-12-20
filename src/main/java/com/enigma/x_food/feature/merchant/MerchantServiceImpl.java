@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,22 +66,14 @@ public class MerchantServiceImpl implements MerchantService {
     public MerchantResponse update(UpdateMerchantRequest request) {
         validationUtil.validate(request);
         Merchant merchant = findByIdOrThrowException(request.getMerchantID());
+        merchant.setMerchantName(request.getMerchantName());
+        merchant.setPicName(request.getPicName());
+        merchant.setPicNumber(request.getPicNumber());
+        merchant.setPicEmail(request.getPicEmail());
+        merchant.setMerchantDescription(request.getMerchantDescription());
+        merchant.setNotes(request.getNotes());
 
-        Merchant updated = Merchant.builder()
-                .merchantID(merchant.getMerchantID())
-                .joinDate(merchant.getJoinDate())
-                .merchantName(request.getMerchantName())
-                .picName(request.getPicName())
-                .picNumber(request.getPicNumber())
-                .picEmail(request.getPicEmail())
-                .merchantDescription(request.getMerchantDescription())
-                .adminID(merchant.getAdminID())
-                .createdAt(merchant.getCreatedAt())
-                .merchantStatus(merchant.getMerchantStatus())
-                .notes(request.getNotes())
-                .build();
-
-        return mapToResponse(merchantRepository.saveAndFlush(updated));
+        return mapToResponse(merchantRepository.saveAndFlush(merchant));
     }
 
     @Override
@@ -155,6 +148,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .updatedAt(merchant.getUpdatedAt())
                 .status(merchant.getMerchantStatus().getStatus().name())
                 .notes(merchant.getNotes())
+                .merchantBranches(merchant.getMerchantBranches())
                 .build();
     }
 
