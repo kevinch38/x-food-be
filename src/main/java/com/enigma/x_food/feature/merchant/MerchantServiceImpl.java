@@ -1,10 +1,12 @@
 package com.enigma.x_food.feature.merchant;
 
+import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
-import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.merchant_status.MerchantStatus;
+import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +30,15 @@ import java.util.List;
 public class MerchantServiceImpl implements MerchantService {
     private final MerchantRepository merchantRepository;
     private final ValidationUtil validationUtil;
+    private final EntityManager entityManager;
+    private final MerchantStatusService merchantStatusService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MerchantResponse createNew(NewMerchantRequest request) {
         validationUtil.validate(request);
+
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.ACTIVE);
         Merchant merchant = Merchant.builder()
                 .joinDate(request.getJoinDate())
                 .merchantName(request.getMerchantName())
@@ -40,7 +47,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .picEmail(request.getPicEmail())
                 .merchantDescription(request.getMerchantDescription())
                 .adminID("")
-                .merchantStatusID(request.getMerchantStatusID())
+                .merchantStatus(entityManager.merge(merchantStatus))
                 .notes(request.getNotes())
                 .build();
         merchantRepository.saveAndFlush(merchant);
@@ -63,7 +70,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .merchantDescription(request.getMerchantDescription())
                 .adminID(merchant.getAdminID())
                 .createdAt(merchant.getCreatedAt())
-                .merchantStatusID(request.getMerchantStatusID())
+                .merchantStatus(merchant.getMerchantStatus())
                 .notes(request.getNotes())
                 .build();
 
@@ -82,7 +89,10 @@ public class MerchantServiceImpl implements MerchantService {
     public void deleteById(String id) {
         validationUtil.validate(id);
         Merchant merchant = findByIdOrThrowException(id);
-        merchantRepository.delete(merchant);
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.INACTIVE);
+        merchant.setMerchantStatus(merchantStatus);
+
+        merchantRepository.saveAndFlush(merchant);
     }
 
     @Override
@@ -118,7 +128,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .adminId(merchant.getAdminID())
                 .createdAt(merchant.getCreatedAt())
                 .updatedAt(merchant.getUpdatedAt())
-                .merchantStatusID(merchant.getMerchantStatusID())
+                .status(merchant.getMerchantStatus().getStatus().name())
                 .notes(merchant.getNotes())
                 .build();
     }

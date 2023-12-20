@@ -23,5 +23,6 @@ public class MerchantBranchResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;
     private String branchWorkingHoursID;
+    private String status;
     private String cityID;
 }

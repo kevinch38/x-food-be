@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.promotion;
 import com.enigma.x_food.feature.merchant.Merchant;
+import com.enigma.x_food.feature.promotion_status.PromotionStatus;
 import com.enigma.x_food.shared.BaseEntity;
 
 import lombok.*;
@@ -40,8 +41,9 @@ public class Promotion extends BaseEntity {
     private Timestamp expiredDate;
     @Column(name = "admin_id", nullable = false, length = 36)
     private String adminID;
-    @Column(name = "promotion_status_id", nullable = false, length = 36)
-    private String promotionStatusID;
+    @OneToOne
+    @JoinColumn(name = "promotion_status_id", nullable = false)
+    private PromotionStatus promotionStatus;
     @Column(name = "notes", length = 150)
     private String notes;
 }

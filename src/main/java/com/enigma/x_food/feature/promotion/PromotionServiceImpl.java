@@ -1,13 +1,18 @@
 package com.enigma.x_food.feature.promotion;
 
+import com.enigma.x_food.constant.EMerchantStatus;
+import com.enigma.x_food.constant.EPromotionStatus;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
-import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.merchant_status.MerchantStatus;
+import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
 import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
+import com.enigma.x_food.feature.promotion_status.PromotionStatus;
+import com.enigma.x_food.feature.promotion_status.PromotionStatusService;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +41,8 @@ import java.util.List;
 public class PromotionServiceImpl implements PromotionService {
     private final PromotionRepository promotionRepository;
     private final MerchantService merchantService;
+    private final MerchantStatusService merchantStatusService;
+    private final PromotionStatusService promotionStatusService;
     private final ValidationUtil validationUtil;
     private final EntityManager entityManager;
 
@@ -46,6 +53,8 @@ public class PromotionServiceImpl implements PromotionService {
             log.info("Start createNew");
             validationUtil.validate(request);
             MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
+            MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.valueOf(merchantResponse.getStatus()));
+
             Merchant merchant = Merchant.builder()
                     .merchantID(merchantResponse.getMerchantID())
                     .joinDate(merchantResponse.getJoinDate())
@@ -57,9 +66,11 @@ public class PromotionServiceImpl implements PromotionService {
                     .adminID(merchantResponse.getAdminId())
                     .createdAt(merchantResponse.getCreatedAt())
                     .updatedAt(merchantResponse.getUpdatedAt())
-                    .merchantStatusID(merchantResponse.getMerchantStatusID())
+                    .merchantStatus(entityManager.merge(merchantStatus))
                     .notes(merchantResponse.getNotes())
                     .build();
+
+            PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
 
             Promotion promotion = Promotion.builder()
                     .merchant(entityManager.merge(merchant))
@@ -71,9 +82,10 @@ public class PromotionServiceImpl implements PromotionService {
                     .quantity(request.getQuantity())
                     .adminID("adminID")
                     .expiredDate(request.getExpiredDate())
-                    .promotionStatusID(request.getPromotionStatusID())
+                    .promotionStatus(entityManager.merge(promotionStatus))
                     .notes(request.getNotes())
                     .build();
+
             promotionRepository.saveAndFlush(promotion);
             log.info("End createNew");
             return mapToResponse(promotion);
@@ -90,6 +102,8 @@ public class PromotionServiceImpl implements PromotionService {
         Promotion promotion = findByIdOrThrowException(request.getPromotionID());
 
         MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.valueOf(merchantResponse.getStatus()));
+
         Merchant merchant = Merchant.builder()
                 .merchantID(merchantResponse.getMerchantID())
                 .joinDate(merchantResponse.getJoinDate())
@@ -101,7 +115,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .adminID(merchantResponse.getAdminId())
                 .createdAt(merchantResponse.getCreatedAt())
                 .updatedAt(merchantResponse.getUpdatedAt())
-                .merchantStatusID(merchantResponse.getMerchantStatusID())
+                .merchantStatus(entityManager.merge(merchantStatus))
                 .notes(merchantResponse.getNotes())
                 .build();
 
@@ -116,7 +130,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .quantity(request.getQuantity())
                 .adminID(promotion.getAdminID())
                 .expiredDate(request.getExpiredDate())
-                .promotionStatusID(request.getPromotionStatusID())
+                .promotionStatus(promotion.getPromotionStatus())
                 .createdAt(promotion.getCreatedAt())
                 .notes(request.getNotes())
                 .build();
@@ -155,7 +169,10 @@ public class PromotionServiceImpl implements PromotionService {
     public void deleteById(String id) {
         validationUtil.validate(id);
         Promotion promotion = findByIdOrThrowException(id);
-        promotionRepository.delete(promotion);
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.INACTIVE);
+        promotion.setPromotionStatus(promotionStatus);
+
+        promotionRepository.saveAndFlush(promotion);
     }
 
     private Promotion findByIdOrThrowException(String id) {
@@ -175,7 +192,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .quantity(promotion.getQuantity())
                 .adminID(promotion.getAdminID())
                 .expiredDate(promotion.getExpiredDate())
-                .promotionStatusID(promotion.getPromotionStatusID())
+                .status(promotion.getPromotionStatus().getStatus().name())
                 .createdAt(promotion.getCreatedAt())
                 .updatedAt(promotion.getUpdatedAt())
                 .notes(promotion.getNotes())

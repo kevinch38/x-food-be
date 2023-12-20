@@ -26,7 +26,5 @@ public class NewMerchantRequest {
     private String picEmail;
     @NotBlank(message = "Merchant description cannot be empty")
     private String merchantDescription;
-    @NotBlank(message = "Merchant status ID cannot be empty")
-    private String merchantStatusID;
     private String notes;
 }
