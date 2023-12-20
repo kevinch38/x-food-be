@@ -94,21 +94,16 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
         CityResponse cityResponse = cityService.getById(request.getCityID());
 
-        MerchantBranch updated = MerchantBranch.builder()
-                .merchant(merchantBranch.getMerchant())
-                .branchName(request.getBranchName())
-                .address(request.getAddress())
-                .timezone(request.getTimezone())
-                .branchWorkingHoursID(request.getBranchWorkingHoursID())
-                .city(City.builder()
-                        .cityID(cityResponse.getCityID())
-                        .cityName(cityResponse.getCityName())
-                        .build())
-                .createdAt(merchantBranch.getCreatedAt())
-                .merchantBranchStatus(merchantBranch.getMerchantBranchStatus())
-                .build();
+        merchantBranch.setBranchName(request.getBranchName());
+        merchantBranch.setAddress(request.getAddress());
+        merchantBranch.setTimezone(request.getTimezone());
+        merchantBranch.setBranchWorkingHoursID(request.getBranchWorkingHoursID());
+        merchantBranch.setCity(City.builder()
+                .cityID(cityResponse.getCityID())
+                .cityName(cityResponse.getCityName())
+                .build());
 
-        return mapToResponse(merchantBranchRepository.saveAndFlush(updated));
+        return mapToResponse(merchantBranchRepository.saveAndFlush(merchantBranch));
     }
 
     @Override
@@ -169,6 +164,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .branchWorkingHoursID(branch.getBranchWorkingHoursID())
                 .cityID(branch.getCity().getCityID())
                 .status(branch.getMerchantBranchStatus().getStatus().name())
+                .itemList(branch.getItemList())
                 .build();
     }
 

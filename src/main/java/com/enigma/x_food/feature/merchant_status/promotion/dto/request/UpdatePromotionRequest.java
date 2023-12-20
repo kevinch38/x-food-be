@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.promotion.dto.request;
+package com.enigma.x_food.feature.merchant_status.promotion.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

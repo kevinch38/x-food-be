@@ -1,18 +1,24 @@
 package com.enigma.x_food.feature.item;
 
+import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.feature.item.dto.request.SearchItemRequest;
 import com.enigma.x_food.feature.item.dto.response.ItemResponse;
+import com.enigma.x_food.feature.merchant.Merchant;
+import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +42,9 @@ public class ItemServiceImpl implements ItemService {
         validationUtil.validate(request);
 
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
-        List<Item> items = itemRepository.findAll(sort);
+
+        Specification<Item> specification = getItemSpecification(request);
+        List<Item> items = itemRepository.findAll(specification, sort);
         return items.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
@@ -67,5 +75,23 @@ public class ItemServiceImpl implements ItemService {
                 .isRecommended(item.getIsRecommended())
                 .itemDescription(item.getItemDescription())
                 .build();
+    }
+
+    private Specification<Item> getItemSpecification(SearchItemRequest request) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getBranchID() != null) {
+                Predicate predicate = criteriaBuilder.equal(
+                        criteriaBuilder.lower(root.get("merchantBranch").get("branchID")),
+                        request.getBranchID().toLowerCase()
+                );
+                predicates.add(predicate);
+            }
+
+            return query
+                    .where(predicates.toArray(new Predicate[]{}))
+                    .getRestriction();
+        };
     }
 }

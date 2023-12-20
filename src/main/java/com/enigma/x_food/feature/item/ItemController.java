@@ -17,15 +17,16 @@ import java.util.List;
     public class ItemController {
     private final ItemService itemService;
 
-    @GetMapping
-    public ResponseEntity<?> getAll(
+    @GetMapping("/{branchID}")
+    public ResponseEntity<?> getAll(@PathVariable String branchID,
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "itemIName") String sortBy) {
+            @RequestParam(required = false, defaultValue = "itemName") String sortBy) {
         direction = PagingUtil.validateDirection(direction);
 
         SearchItemRequest request = SearchItemRequest.builder()
                 .direction(direction)
                 .sortBy(sortBy)
+                .branchID(branchID)
                 .build();
         List<ItemResponse> items = itemService.getAll(request);
 
