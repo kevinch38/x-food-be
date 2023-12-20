@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.promotion;
+package com.enigma.x_food.feature.merchant_status.promotion;
 
 import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.constant.EPromotionStatus;
@@ -7,10 +7,10 @@ import com.enigma.x_food.feature.merchant.MerchantService;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
 import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
-import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
-import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
-import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
-import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
+import com.enigma.x_food.feature.merchant_status.promotion.dto.request.NewPromotionRequest;
+import com.enigma.x_food.feature.merchant_status.promotion.dto.request.SearchPromotionRequest;
+import com.enigma.x_food.feature.merchant_status.promotion.dto.request.UpdatePromotionRequest;
+import com.enigma.x_food.feature.merchant_status.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.feature.promotion_status.PromotionStatus;
 import com.enigma.x_food.feature.promotion_status.PromotionStatusService;
 import com.enigma.x_food.util.SortingUtil;

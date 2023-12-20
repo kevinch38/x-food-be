@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class SearchItemRequest {
     private String direction;
     private String sortBy;
+    private String branchID;
 }
