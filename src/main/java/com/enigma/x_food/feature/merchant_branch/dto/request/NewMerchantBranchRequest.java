@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +26,12 @@ public class NewMerchantBranchRequest {
     private String branchWorkingHoursID;
     @NotBlank(message = "City ID cannot be empty")
     private String cityID;
+    @NotNull(message = "Image cannot be empty")
+    private MultipartFile image;
+    @NotBlank(message = "PIC name cannot be empty")
+    private String picName;
+    @NotBlank(message = "PIC number cannot be empty")
+    private String picNumber;
+    @NotBlank(message = "PIC email cannot be empty")
+    private String picEmail;
 }

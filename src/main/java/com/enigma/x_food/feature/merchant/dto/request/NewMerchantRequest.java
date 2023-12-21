@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -26,5 +27,7 @@ public class NewMerchantRequest {
     private String picEmail;
     @NotBlank(message = "Merchant description cannot be empty")
     private String merchantDescription;
+    @NotNull(message = "Image cannot be empty")
+    private MultipartFile image;
     private String notes;
 }

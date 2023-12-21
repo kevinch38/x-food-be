@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
@@ -21,8 +22,7 @@ public class NewItemRequest {
     private String categoryID;
     @NotBlank(message = "Branch ID cannot be empty")
     private String branchID;
-    @NotBlank(message = "Image cannot be empty")
-    private byte[] image;
+    private MultipartFile image;
     @NotBlank(message = "Initial price cannot be empty")
     private Double initialPrice;
     @NotBlank(message = "Discounted price cannot be empty")

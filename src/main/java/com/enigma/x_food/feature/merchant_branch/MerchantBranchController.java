@@ -11,16 +11,43 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/merchants/branch")
+@RequestMapping("api/merchants/branches")
 @RequiredArgsConstructor
 public class MerchantBranchController {
     private final MerchantBranchService merchantBranchService;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNew(@RequestBody NewMerchantBranchRequest request) {
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createNew(
+            @RequestParam String merchantID,
+            @RequestParam String branchName,
+            @RequestParam String address,
+            @RequestParam String timezone,
+            @RequestParam String branchWorkingHoursID,
+            @RequestParam String cityID,
+            @RequestParam String picName,
+            @RequestParam String picNumber,
+            @RequestParam String picEmail,
+            @RequestParam MultipartFile image
+                                       ) throws IOException {
+        NewMerchantBranchRequest request = NewMerchantBranchRequest.builder()
+                .merchantID(merchantID)
+                .branchName(branchName)
+                .address(address)
+                .timezone(timezone)
+                .branchWorkingHoursID(branchWorkingHoursID)
+                .cityID(cityID)
+                .image(image)
+                .picName(picName)
+                .picNumber(picNumber)
+                .picEmail(picEmail)
+                .build();
+
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.createNew(request);
         CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
                 .message("successfully create new merchant branch")
@@ -32,46 +59,8 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @GetMapping("/{merchantID}")
-    public ResponseEntity<?> findAll(@PathVariable String merchantID,
-            @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "branchName") String sortBy,
-            @RequestParam(required = false) String branchID,
-            @RequestParam(required = false) String branchName,
-            @RequestParam(required = false) String address,
-            @RequestParam(required = false) String timeZone,
-            @RequestParam(required = false) String branchWorkingHoursID,
-            @RequestParam(required = false) String cityID
-    ) {
-        direction = PagingUtil.validateDirection(direction);
-
-        SearchMerchantBranchRequest request = SearchMerchantBranchRequest.builder()
-                .direction(direction)
-                .sortBy(sortBy)
-                .branchID(branchID)
-                .merchantID(merchantID)
-                .branchName(branchName)
-                .address(address)
-                .timezone(timeZone)
-                .branchWorkingHoursID(branchWorkingHoursID)
-                .cityID(cityID)
-                .build();
-
-        List<MerchantBranchResponse> merchantBranches = merchantBranchService.findAllByMerchantId(request);
-
-        CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
-                .message("successfully get all merchant branch")
-                .statusCode(HttpStatus.OK.value())
-                .data(merchantBranches)
-                .build();
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
-
-    @GetMapping("/{merchantID}/active")
-    public ResponseEntity<?> getAll(@PathVariable String merchantID,
+    @GetMapping
+    public ResponseEntity<?> findAll(@RequestParam String merchantID,
                                      @RequestParam(required = false, defaultValue = "asc") String direction,
                                      @RequestParam(required = false, defaultValue = "branchName") String sortBy,
                                      @RequestParam(required = false) String branchID,
@@ -98,7 +87,7 @@ public class MerchantBranchController {
         List<MerchantBranchResponse> merchantBranches = merchantBranchService.getAllActiveByMerchantId(request);
 
         CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
-                .message("successfully get all active merchant branch")
+                .message("successfully get all merchant branch")
                 .statusCode(HttpStatus.OK.value())
                 .data(merchantBranches)
                 .build();
@@ -108,9 +97,45 @@ public class MerchantBranchController {
                 .body(response);
     }
 
+    @GetMapping("/{branchID}")
+    public ResponseEntity<?> findById(@PathVariable String branchID) {
+        MerchantBranchResponse merchantBranchResponse = merchantBranchService.findById(branchID);
+        CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
+                .message("successfully get merchant branch")
+                .statusCode(HttpStatus.OK.value())
+                .data(merchantBranchResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 
-    @PutMapping
-    public ResponseEntity<?> update(@RequestBody UpdateMerchantBranchRequest request) {
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> update(
+            @RequestParam String branchID,
+            @RequestParam String branchName,
+            @RequestParam String address,
+            @RequestParam String timezone,
+            @RequestParam String branchWorkingHoursID,
+            @RequestParam String cityID,
+            @RequestParam String picName,
+            @RequestParam String picNumber,
+            @RequestParam String picEmail,
+            @RequestParam MultipartFile image
+    ) throws IOException {
+        UpdateMerchantBranchRequest request = UpdateMerchantBranchRequest.builder()
+                .branchID(branchID)
+                .branchName(branchName)
+                .address(address)
+                .timezone(timezone)
+                .branchWorkingHoursID(branchWorkingHoursID)
+                .cityID(cityID)
+                .image(image)
+                .picName(picName)
+                .picNumber(picNumber)
+                .picEmail(picEmail)
+                .build();
+
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.update(request);
         CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
                 .message("successfully update merchant branch")
@@ -122,9 +147,9 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
-        merchantBranchService.deleteById(id);
+    @DeleteMapping("/{branchID}")
+    public ResponseEntity<?> delete(@PathVariable String branchID) {
+        merchantBranchService.deleteById(branchID);
         CommonResponse<?> response = CommonResponse.builder()
                 .message("successfully delete merchant branch")
                 .statusCode(HttpStatus.OK.value())
@@ -135,3 +160,4 @@ public class MerchantBranchController {
                 .body(response);
     }
 }
+
