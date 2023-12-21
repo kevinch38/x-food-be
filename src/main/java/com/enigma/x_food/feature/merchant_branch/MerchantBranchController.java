@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,8 +22,32 @@ import java.util.List;
 public class MerchantBranchController {
     private final MerchantBranchService merchantBranchService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNew(@RequestBody NewMerchantBranchRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createNew(
+            @RequestParam String merchantID,
+            @RequestParam String branchName,
+            @RequestParam String address,
+            @RequestParam String timezone,
+            @RequestParam String branchWorkingHoursID,
+            @RequestParam String cityID,
+            @RequestParam String picName,
+            @RequestParam String picNumber,
+            @RequestParam String picEmail,
+            @RequestParam MultipartFile image
+                                       ) throws IOException {
+        NewMerchantBranchRequest request = NewMerchantBranchRequest.builder()
+                .merchantID(merchantID)
+                .branchName(branchName)
+                .address(address)
+                .timezone(timezone)
+                .branchWorkingHoursID(branchWorkingHoursID)
+                .cityID(cityID)
+                .image(image)
+                .picName(picName)
+                .picNumber(picNumber)
+                .picEmail(picEmail)
+                .build();
+
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.createNew(request);
         CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
                 .message("successfully create new merchant branch")
@@ -84,8 +110,32 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @PutMapping
-    public ResponseEntity<?> update(@RequestBody UpdateMerchantBranchRequest request) {
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> update(
+            @RequestParam String branchID,
+            @RequestParam String branchName,
+            @RequestParam String address,
+            @RequestParam String timezone,
+            @RequestParam String branchWorkingHoursID,
+            @RequestParam String cityID,
+            @RequestParam String picName,
+            @RequestParam String picNumber,
+            @RequestParam String picEmail,
+            @RequestParam MultipartFile image
+    ) throws IOException {
+        UpdateMerchantBranchRequest request = UpdateMerchantBranchRequest.builder()
+                .branchID(branchID)
+                .branchName(branchName)
+                .address(address)
+                .timezone(timezone)
+                .branchWorkingHoursID(branchWorkingHoursID)
+                .cityID(cityID)
+                .image(image)
+                .picName(picName)
+                .picNumber(picNumber)
+                .picEmail(picEmail)
+                .build();
+
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.update(request);
         CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
                 .message("successfully update merchant branch")

@@ -21,4 +21,7 @@ public class SearchMerchantBranchRequest {
     private String timezone;
     private String branchWorkingHoursID;
     private String cityID;
+    private String picName;
+    private String picNumber;
+    private String picEmail;
 }

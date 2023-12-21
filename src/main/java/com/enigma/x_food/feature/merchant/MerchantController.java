@@ -9,11 +9,17 @@ import com.enigma.x_food.shared.PagingResponse;
 import com.enigma.x_food.util.PagingUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -21,8 +27,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MerchantController {
     private final MerchantService merchantService;
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNewMerchant(@RequestBody NewMerchantRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createNew(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String joinDate,
+            @RequestParam String merchantName,
+            @RequestParam String picName,
+            @RequestParam String picNumber,
+            @RequestParam String picEmail,
+            @RequestParam String merchantDescription,
+            @RequestParam String notes,
+            @RequestParam MultipartFile image
+                                               ) throws IOException {
+        Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(joinDate, DateTimeFormatter.ISO_DATE_TIME));
+
+        NewMerchantRequest request = NewMerchantRequest.builder()
+                .joinDate(timestamp)
+                .merchantDescription(merchantDescription)
+                .merchantName(merchantName)
+                .picName(picName)
+                .picEmail(picEmail)
+                .picNumber(picNumber)
+                .notes(notes)
+                .image(image)
+                .build();
+
         MerchantResponse merchantResponse = merchantService.createNew(request);
         CommonResponse<MerchantResponse> response = CommonResponse.<MerchantResponse>builder()
                 .message("successfully create new merchant")
@@ -106,8 +134,41 @@ public class MerchantController {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateMerchant(@RequestBody UpdateMerchantRequest request) {
+    @GetMapping("/{merchantID}")
+    public ResponseEntity<?> getById(@PathVariable String merchantID) {
+        MerchantResponse merchantResponse = merchantService.findById(merchantID);
+        CommonResponse<?> response = CommonResponse.builder()
+                .message("successfully get merchant")
+                .statusCode(HttpStatus.OK.value())
+                .data(merchantResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> update(
+            @RequestParam String merchantID,
+            @RequestParam String merchantName,
+            @RequestParam String picName,
+            @RequestParam String picNumber,
+            @RequestParam String picEmail,
+            @RequestParam String merchantDescription,
+            @RequestParam String notes,
+            @RequestParam MultipartFile image
+    ) throws IOException {
+        UpdateMerchantRequest request = UpdateMerchantRequest.builder()
+                .merchantID(merchantID)
+                .merchantDescription(merchantDescription)
+                .merchantName(merchantName)
+                .picName(picName)
+                .picEmail(picEmail)
+                .picNumber(picNumber)
+                .notes(notes)
+                .image(image)
+                .build();
+
         MerchantResponse merchantResponse = merchantService.update(request);
         CommonResponse<MerchantResponse> response = CommonResponse.<MerchantResponse>builder()
                 .message("successfully update merchant")

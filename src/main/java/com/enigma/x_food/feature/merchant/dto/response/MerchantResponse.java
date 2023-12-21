@@ -31,4 +31,5 @@ public class MerchantResponse {
     private String status;
     private String notes;
     private List<MerchantBranchResponse> merchantBranches;
+    private byte[] image;
 }

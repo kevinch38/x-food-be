@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MerchantBranchResponse createNew(NewMerchantBranchRequest request) {
+    public MerchantBranchResponse createNew(NewMerchantBranchRequest request) throws IOException {
         validationUtil.validate(request);
         MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.valueOf(merchantResponse.getStatus()));
@@ -64,6 +65,10 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .updatedAt(merchantResponse.getUpdatedAt())
                 .merchantStatus(entityManager.merge(merchantStatus))
                 .notes(merchantResponse.getNotes())
+                .picName(request.getPicName())
+                .picNumber(merchantResponse.getPicNumber())
+                .picEmail(merchantResponse.getPicEmail())
+                .image(merchantResponse.getImage())
                 .build();
 
         CityResponse cityResponse = cityService.getById(request.getCityID());
@@ -75,6 +80,10 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .address(request.getAddress())
                 .timezone(request.getTimezone())
                 .branchWorkingHoursID(request.getBranchWorkingHoursID())
+                .picName(request.getPicName())
+                .picNumber(request.getPicNumber())
+                .picEmail(request.getPicEmail())
+                .image(request.getImage().getBytes())
                 .city(City.builder()
                         .cityID(cityResponse.getCityID())
                         .cityName(cityResponse.getCityName())
@@ -88,16 +97,20 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MerchantBranchResponse update(UpdateMerchantBranchRequest request) {
+    public MerchantBranchResponse update(UpdateMerchantBranchRequest request) throws IOException {
         validationUtil.validate(request);
         MerchantBranch merchantBranch = findByIdOrThrowException(request.getBranchID());
 
-        CityResponse cityResponse = cityService.getById(request.getCityID());
+        CityResponse cityResponse = cityService.getById(request.getCityID().isBlank() ? merchantBranch.getCity().getCityID() : request.getCityID());
 
-        merchantBranch.setBranchName(request.getBranchName());
-        merchantBranch.setAddress(request.getAddress());
-        merchantBranch.setTimezone(request.getTimezone());
-        merchantBranch.setBranchWorkingHoursID(request.getBranchWorkingHoursID());
+        merchantBranch.setBranchName(request.getBranchName().isBlank() ? merchantBranch.getBranchName() : request.getBranchName());
+        merchantBranch.setAddress(request.getAddress().isBlank() ? merchantBranch.getAddress() : request.getAddress());
+        merchantBranch.setTimezone(request.getTimezone().isBlank() ? merchantBranch.getTimezone() : request.getTimezone());
+        merchantBranch.setBranchWorkingHoursID(request.getBranchWorkingHoursID().isBlank() ? merchantBranch.getBranchWorkingHoursID() : request.getBranchWorkingHoursID());
+        merchantBranch.setPicName(request.getPicName().isBlank() ? merchantBranch.getPicName() : request.getPicName());
+        merchantBranch.setPicNumber(request.getPicNumber().isBlank() ? merchantBranch.getPicNumber() : request.getPicNumber());
+        merchantBranch.setPicEmail(request.getPicEmail().isBlank() ? merchantBranch.getPicEmail() : request.getPicEmail());
+        merchantBranch.setImage(request.getImage().isEmpty() ? merchantBranch.getImage() : request.getImage().getBytes());
         merchantBranch.setCity(City.builder()
                 .cityID(cityResponse.getCityID())
                 .cityName(cityResponse.getCityName())
@@ -165,6 +178,10 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .city(branch.getCity().getCityName())
                 .status(branch.getMerchantBranchStatus().getStatus().name())
                 .itemList(branch.getItemList())
+                .picName(branch.getPicName())
+                .picNumber(branch.getPicNumber())
+                .picEmail(branch.getPicEmail())
+                .image(branch.getImage())
                 .build();
     }
 
@@ -224,6 +241,30 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("city").get("cityID")),
                         "%" + request.getCityID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getPicName() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("picName")),
+                        "%" + request.getPicName().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getPicEmail() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("picEmail")),
+                        "%" + request.getPicEmail().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getPicNumber() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("picNumber")),
+                        "%" + request.getPicNumber().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }

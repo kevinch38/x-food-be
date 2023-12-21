@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -28,4 +29,8 @@ public class MerchantBranchResponse {
     private String status;
     private String city;
     private List<Item> itemList;
+    private String picName;
+    private String picNumber;
+    private String picEmail;
+    private byte[] image;
 }
