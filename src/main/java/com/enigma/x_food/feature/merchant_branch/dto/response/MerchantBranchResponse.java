@@ -33,4 +33,6 @@ public class MerchantBranchResponse {
     private String picNumber;
     private String picEmail;
     private byte[] image;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    private Timestamp joinDate;
 }

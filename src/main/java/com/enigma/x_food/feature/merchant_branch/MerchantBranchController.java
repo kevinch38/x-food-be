@@ -99,11 +99,11 @@ public class MerchantBranchController {
 
     @GetMapping("/{branchID}")
     public ResponseEntity<?> findById(@PathVariable String branchID) {
-        MerchantBranchResponse merchantBranchResponse = merchantBranchService.findById(branchID);
-        CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
+        MerchantBranch merchantBranch = merchantBranchService.findById(branchID);
+        CommonResponse<MerchantBranch> response = CommonResponse.<MerchantBranch>builder()
                 .message("successfully get merchant branch")
                 .statusCode(HttpStatus.OK.value())
-                .data(merchantBranchResponse)
+                .data(merchantBranch)
                 .build();
         return ResponseEntity
                 .status(HttpStatus.OK)
