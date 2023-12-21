@@ -1,6 +1,9 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.balance.Balance;
 import com.enigma.x_food.feature.history.History;
+import com.enigma.x_food.feature.loyalty_point.LoyaltyPoint;
+import com.enigma.x_food.feature.loyalty_point.LoyaltyPointService;
 import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.shared.BaseEntity;
@@ -53,11 +56,13 @@ public class User extends BaseEntity {
     @Type(type = "org.hibernate.type.BinaryType")
     private byte[] profilePhoto;
 
-    @Column(name = "balance_id", nullable = false)
-    private String balanceID;
+    @OneToOne
+    @JoinColumn(name = "balance_id", nullable = false)
+    private Balance balance;
 
-    @Column(name = "loyalty_point_id", nullable = false)
-    private String loyaltyPointID;
+    @OneToOne
+    @JoinColumn(name = "loyalty_point_id", nullable = false)
+    private LoyaltyPoint loyaltyPoint;
 
     @JoinColumn(name = "otp_id", unique = true)
     @OneToOne

@@ -1,12 +1,16 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.feature.balance.Balance;
+import com.enigma.x_food.feature.balance.BalanceService;
+import com.enigma.x_food.feature.balance.dto.request.NewBalanceRequest;
+import com.enigma.x_food.feature.loyalty_point.LoyaltyPoint;
+import com.enigma.x_food.feature.loyalty_point.LoyaltyPointService;
+import com.enigma.x_food.feature.loyalty_point.dto.request.NewLoyaltyPointRequest;
 import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.otp.OTPService;
-import com.enigma.x_food.feature.otp.dto.response.OTPResponse;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.pin.PinService;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
-import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.feature.user.dto.request.UpdateUserProfilePhotoRequest;
 import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
@@ -29,8 +33,7 @@ import com.enigma.x_food.util.SortingUtil;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.Predicate;
-import java.awt.*;
-import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PinService pinService;
     private final OTPService otpService;
+    private final BalanceService balanceService;
+    private final LoyaltyPointService loyaltyPointService;
     private final ValidationUtil validationUtil;
     private final Random random;
     private final BCryptUtil bCryptUtil;
@@ -56,20 +61,37 @@ public class UserServiceImpl implements UserService {
             Pin pin = pinService.createNew(NewPinRequest.builder().pin("").build());
             OTP otp = otpService.createNew("1111");
 
+            Balance balance = balanceService.createNew(NewBalanceRequest.builder()
+                    .totalBalance(0D)
+                    .build());
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+
+            Timestamp expiredAt = new Timestamp(currentTimestamp.toInstant().plusSeconds(3L * 30 * 24 * 60 * 60).toEpochMilli());
+
+            LoyaltyPoint loyaltyPoint = loyaltyPointService.createNew(NewLoyaltyPointRequest.builder()
+                    .loyaltyPointAmount(0D)
+                    .expiredAt(expiredAt)
+                    .build());
+
             User user = User.builder()
                     .ktpID("")
                     .accountEmail(bCryptUtil.hash(String.valueOf(random.nextInt())))
                     .pin(pin)
-                    .phoneNumber("+62"+request.getPhoneNumber())
+                    .phoneNumber("+62" + request.getPhoneNumber())
                     .firstName("")
                     .lastName("")
                     .profilePhoto(new byte[]{})
-                    .dateOfBirth(LocalDate.of(1970,1,1))
-                    .balanceID("")
-                    .loyaltyPointID("")
+                    .dateOfBirth(LocalDate.of(1970, 1, 1))
+                    .balance(balance)
+                    .loyaltyPoint(loyaltyPoint)
                     .otp(otp)
                     .build();
+
+            balance.setUser(user);
+            loyaltyPoint.setUser(user);
+
             userRepository.saveAndFlush(user);
+
             log.info("End createNew");
             return mapToResponse(user);
         } catch (DataIntegrityViolationException e) {
@@ -136,7 +158,7 @@ public class UserServiceImpl implements UserService {
             User user = findByIdOrThrowNotFound(request.getAccountID());
             user.setKtpID(request.getKtpID());
             user.setAccountEmail(request.getAccountEmail());
-            user.setPhoneNumber("+62"+request.getPhoneNumber());
+            user.setPhoneNumber("+62" + request.getPhoneNumber());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
             user.setDateOfBirth(request.getDateOfBirth());
@@ -189,8 +211,8 @@ public class UserServiceImpl implements UserService {
                 .dateOfBirth(user.getDateOfBirth().toString())
                 .profilePhoto(user.getProfilePhoto())
                 .updatedAt(user.getUpdatedAt())
-                .balanceID(user.getBalanceID())
-                .loyaltyPointID(user.getLoyaltyPointID())
+                .balanceID(user.getBalance().getBalanceID())
+                .loyaltyPointID(user.getLoyaltyPoint().getLoyaltyPointID())
                 .otpID(user.getOtp().getOtpID())
                 .build();
     }

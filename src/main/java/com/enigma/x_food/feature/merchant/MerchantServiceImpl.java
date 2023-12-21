@@ -58,6 +58,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .merchantStatus(entityManager.merge(merchantStatus))
                 .notes(request.getNotes())
                 .image(request.getImage().getBytes())
+                .logoImage(request.getLogoImage().getBytes())
                 .build();
         merchantRepository.saveAndFlush(merchant);
         return mapToResponse(merchant);
@@ -76,6 +77,7 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setMerchantDescription(request.getMerchantDescription().isBlank() ? merchant.getMerchantDescription() : request.getMerchantDescription());
         merchant.setNotes(request.getNotes().isBlank() ? merchant.getNotes() : request.getNotes());
         merchant.setImage(request.getImage().isEmpty() ? merchant.getImage() : request.getImage().getBytes());
+        merchant.setLogoImage(request.getLogoImage().isEmpty() ? merchant.getLogoImage() : request.getLogoImage().getBytes());
 
         return mapToResponse(merchantRepository.saveAndFlush(merchant));
     }
@@ -178,6 +180,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .notes(merchant.getNotes())
                 .merchantBranches(merchantBranchResponses)
                 .image(merchant.getImage())
+                .logoImage(merchant.getLogoImage())
                 .build();
     }
 

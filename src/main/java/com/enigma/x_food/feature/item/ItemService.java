@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ItemService {
     void deleteById(String id);
-    ItemResponse findById(String id);
+    Item findById(String id);
     List<ItemResponse> getAll(SearchItemRequest request);
 }

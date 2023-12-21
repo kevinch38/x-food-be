@@ -13,6 +13,7 @@ import org.hibernate.annotations.Type;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.List;
 
 @AllArgsConstructor
@@ -45,6 +46,8 @@ public class MerchantBranch extends BaseEntity {
     private String picNumber;
     @Column(name = "pic_email", nullable = false, length = 100)
     private String picEmail;
+    @Column(name = "join_date", nullable = false)
+    private Timestamp joinDate;
     @Lob
     @Column(name = "image", nullable = false)
     @Type(type = "org.hibernate.type.BinaryType")

@@ -89,6 +89,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                         .cityName(cityResponse.getCityName())
                         .build())
                 .merchantBranchStatus(entityManager.merge(merchantBranchStatus))
+                .joinDate(request.getJoinDate())
                 .build();
 
         merchantBranchRepository.saveAndFlush(branch);
@@ -121,9 +122,9 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public MerchantBranchResponse findById(String id) {
+    public MerchantBranch findById(String id) {
         validationUtil.validate(id);
-        return mapToResponse(findByIdOrThrowException(id));
+        return findByIdOrThrowException(id);
     }
 
 //    @Override
@@ -182,6 +183,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .picNumber(branch.getPicNumber())
                 .picEmail(branch.getPicEmail())
                 .image(branch.getImage())
+                .joinDate(branch.getJoinDate())
                 .build();
     }
 
