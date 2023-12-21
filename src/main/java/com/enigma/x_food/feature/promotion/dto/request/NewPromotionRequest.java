@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.merchant_status.promotion.dto.request;
+package com.enigma.x_food.feature.promotion.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

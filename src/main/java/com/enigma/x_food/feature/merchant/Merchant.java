@@ -2,7 +2,7 @@ package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
-import com.enigma.x_food.feature.merchant_status.promotion.Promotion;
+import com.enigma.x_food.feature.promotion.Promotion;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

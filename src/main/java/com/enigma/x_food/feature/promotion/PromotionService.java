@@ -1,9 +1,9 @@
-package com.enigma.x_food.feature.merchant_status.promotion;
+package com.enigma.x_food.feature.promotion;
 
-import com.enigma.x_food.feature.merchant_status.promotion.dto.request.NewPromotionRequest;
-import com.enigma.x_food.feature.merchant_status.promotion.dto.request.SearchPromotionRequest;
-import com.enigma.x_food.feature.merchant_status.promotion.dto.request.UpdatePromotionRequest;
-import com.enigma.x_food.feature.merchant_status.promotion.dto.response.PromotionResponse;
+import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
