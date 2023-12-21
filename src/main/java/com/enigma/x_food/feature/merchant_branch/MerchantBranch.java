@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.List;
@@ -27,6 +29,7 @@ public class MerchantBranch extends BaseEntity {
     private String branchID;
     @JoinColumn(name = "merchant_id", nullable = false)
     @ManyToOne
+    @JsonBackReference
     private Merchant merchant;
     @Column(name = "merchant_name", nullable = false, length = 100)
     private String branchName;
@@ -36,8 +39,19 @@ public class MerchantBranch extends BaseEntity {
     private String timezone;
     @Column(name = "branch_working_hours_id", nullable = false)
     private String branchWorkingHoursID;
+    @Column(name = "pic_name", nullable = false, length = 50)
+    private String picName;
+    @Column(name = "pic_number", nullable = false, length = 15)
+    private String picNumber;
+    @Column(name = "pic_email", nullable = false, length = 100)
+    private String picEmail;
+    @Lob
+    @Column(name = "image", nullable = false)
+    @Type(type = "org.hibernate.type.BinaryType")
+    private byte[] image;
     @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
+    @JsonBackReference
     private City city;
     @OneToMany(mappedBy = "merchantBranch")
     @JsonBackReference

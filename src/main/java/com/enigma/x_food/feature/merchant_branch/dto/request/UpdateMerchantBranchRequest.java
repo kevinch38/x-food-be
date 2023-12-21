@@ -4,26 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UpdateMerchantBranchRequest {
-    @NotBlank(message = "Merchant branch ID cannot be empty")
     private String branchID;
-    @NotBlank(message = "Branch name cannot be empty")
     private String branchName;
-    @NotBlank(message = "Address cannot be empty")
     private String address;
-    @NotBlank(message = "Timezone cannot be empty")
     private String timezone;
-    @NotBlank(message = "Branch working hours ID cannot be empty")
     private String branchWorkingHoursID;
-    @NotBlank(message = "City ID cannot be empty")
     private String cityID;
+    private MultipartFile image;
+    private String picName;
+    private String picNumber;
+    private String picEmail;
 }

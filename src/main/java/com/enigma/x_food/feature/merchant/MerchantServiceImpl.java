@@ -7,6 +7,7 @@ import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatusService;
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
@@ -26,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,7 +43,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MerchantResponse createNew(NewMerchantRequest request) {
+    public MerchantResponse createNew(NewMerchantRequest request) throws IOException {
         validationUtil.validate(request);
 
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.ACTIVE);
@@ -55,6 +57,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .adminID("")
                 .merchantStatus(entityManager.merge(merchantStatus))
                 .notes(request.getNotes())
+                .image(request.getImage().getBytes())
                 .build();
         merchantRepository.saveAndFlush(merchant);
         return mapToResponse(merchant);
@@ -62,25 +65,19 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MerchantResponse update(UpdateMerchantRequest request) {
+    public MerchantResponse update(UpdateMerchantRequest request) throws IOException {
         validationUtil.validate(request);
         Merchant merchant = findByIdOrThrowException(request.getMerchantID());
 
-        Merchant updated = Merchant.builder()
-                .merchantID(merchant.getMerchantID())
-                .joinDate(merchant.getJoinDate())
-                .merchantName(request.getMerchantName())
-                .picName(request.getPicName())
-                .picNumber(request.getPicNumber())
-                .picEmail(request.getPicEmail())
-                .merchantDescription(request.getMerchantDescription())
-                .adminID(merchant.getAdminID())
-                .createdAt(merchant.getCreatedAt())
-                .merchantStatus(merchant.getMerchantStatus())
-                .notes(request.getNotes())
-                .build();
+        merchant.setMerchantName(request.getMerchantName().isBlank() ? merchant.getMerchantName() : request.getMerchantName());
+        merchant.setPicName(request.getPicName().isBlank() ? merchant.getPicName() : request.getPicName());
+        merchant.setPicNumber(request.getPicNumber().isBlank() ? merchant.getPicNumber() : request.getPicNumber());
+        merchant.setPicEmail(request.getPicEmail().isBlank() ? merchant.getPicEmail() : request.getPicEmail());
+        merchant.setMerchantDescription(request.getMerchantDescription().isBlank() ? merchant.getMerchantDescription() : request.getMerchantDescription());
+        merchant.setNotes(request.getNotes().isBlank() ? merchant.getNotes() : request.getNotes());
+        merchant.setImage(request.getImage().isEmpty() ? merchant.getImage() : request.getImage().getBytes());
 
-        return mapToResponse(merchantRepository.saveAndFlush(updated));
+        return mapToResponse(merchantRepository.saveAndFlush(merchant));
     }
 
     @Override
@@ -142,6 +139,30 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     private MerchantResponse mapToResponse(Merchant merchant) {
+        List<MerchantBranchResponse> merchantBranchResponses = new ArrayList<>();
+
+        if (merchant.getMerchantBranches() != null) {
+            for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
+                merchantBranchResponses.add(MerchantBranchResponse.builder()
+                        .branchID(merchantBranch.getBranchID())
+                        .merchantID(merchantBranch.getMerchant().getMerchantID())
+                        .branchName(merchantBranch.getBranchName())
+                        .address(merchantBranch.getAddress())
+                        .timezone(merchantBranch.getTimezone())
+                        .createdAt(merchantBranch.getCreatedAt())
+                        .updatedAt(merchantBranch.getUpdatedAt())
+                        .branchWorkingHoursID(merchantBranch.getBranchWorkingHoursID())
+                        .city(merchantBranch.getCity().getCityName())
+                        .status(merchantBranch.getMerchantBranchStatus().getStatus().name())
+                        .itemList(merchantBranch.getItemList())
+                        .picName(merchant.getPicName())
+                        .picNumber(merchant.getPicNumber())
+                        .picEmail(merchant.getPicEmail())
+                        .image(merchantBranch.getImage())
+                        .build());
+            }
+        }
+
         return MerchantResponse.builder()
                 .merchantID(merchant.getMerchantID())
                 .joinDate(merchant.getJoinDate())
@@ -155,6 +176,8 @@ public class MerchantServiceImpl implements MerchantService {
                 .updatedAt(merchant.getUpdatedAt())
                 .status(merchant.getMerchantStatus().getStatus().name())
                 .notes(merchant.getNotes())
+                .merchantBranches(merchantBranchResponses)
+                .image(merchant.getImage())
                 .build();
     }
 
@@ -179,7 +202,7 @@ public class MerchantServiceImpl implements MerchantService {
             if (request.getMerchantName() != null) {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("merchantName")),
-                        "%" +request.getMerchantName().toLowerCase() +"%"
+                        "%" + request.getMerchantName().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
@@ -239,7 +262,7 @@ public class MerchantServiceImpl implements MerchantService {
                 predicates.add(predicate);
             }
 
-            if (option.equalsIgnoreCase("active")){
+            if (option.equalsIgnoreCase("active")) {
                 Predicate predicate = criteriaBuilder.equal(
                         root.get("merchantStatus").get("status"),
                         EMerchantStatus.ACTIVE

@@ -2,11 +2,13 @@ package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
-import com.enigma.x_food.feature.merchant_status.promotion.Promotion;
+import com.enigma.x_food.feature.promotion.Promotion;
 import com.enigma.x_food.shared.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -43,7 +45,12 @@ public class Merchant extends BaseEntity {
     private MerchantStatus merchantStatus;
     @Column(name = "notes", length = 150)
     private String notes;
+    @Lob
+    @Column(name = "image", nullable = false)
+    @Type(type = "org.hibernate.type.BinaryType")
+    private byte[] image;
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<MerchantBranch> merchantBranches;
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
     private List<Promotion> promotions;

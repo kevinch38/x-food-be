@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.merchant_status.promotion;
+package com.enigma.x_food.feature.promotion;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.promotion_status.PromotionStatus;
 import com.enigma.x_food.shared.BaseEntity;

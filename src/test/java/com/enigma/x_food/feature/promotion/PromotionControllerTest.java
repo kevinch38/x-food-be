@@ -1,10 +1,9 @@
 package com.enigma.x_food.feature.promotion;
 
-import com.enigma.x_food.feature.merchant_status.promotion.PromotionService;
-import com.enigma.x_food.feature.merchant_status.promotion.dto.request.NewPromotionRequest;
-import com.enigma.x_food.feature.merchant_status.promotion.dto.request.SearchPromotionRequest;
-import com.enigma.x_food.feature.merchant_status.promotion.dto.request.UpdatePromotionRequest;
-import com.enigma.x_food.feature.merchant_status.promotion.dto.response.PromotionResponse;
+import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
