@@ -23,8 +23,8 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private String dateOfBirth;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private byte[] profilePhoto;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;
     private String balanceID;
     private String loyaltyPointID;
