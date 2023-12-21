@@ -32,4 +32,5 @@ public class MerchantResponse {
     private String notes;
     private List<MerchantBranchResponse> merchantBranches;
     private byte[] image;
+    private byte[] logoImage;
 }

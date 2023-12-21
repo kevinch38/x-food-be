@@ -31,9 +31,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public ItemResponse findById(String id) {
+    public Item findById(String id) {
         validationUtil.validate(id);
-        return mapToResponse(findByIdOrThrowException(id));
+        return findByIdOrThrowException(id);
     }
 
     @Override
