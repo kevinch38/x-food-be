@@ -22,6 +22,8 @@ public class UpdateUserRequest {
     private String accountEmail;
     @NotNull(message = "First name is required")
     private String firstName;
+    @NotBlank(message = "Phone number is required")
+    private String phoneNumber;
     @NotNull(message = "Last name is required")
     private String lastName;
     @NotNull(message = "Date of birth is required")
