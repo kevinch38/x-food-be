@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -54,6 +55,11 @@ public class BalanceServiceImpl implements BalanceService {
     public BalanceResponse findById(String id) {
         validationUtil.validate(id);
         return mapToResponse(findByIdOrThrowException(id));
+    }
+
+    @Override
+    public Balance getById(String balanceID) {
+        return findByIdOrThrowException(balanceID);
     }
 
     private Balance findByIdOrThrowException(String id) {

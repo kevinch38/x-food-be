@@ -60,7 +60,6 @@ public class UserServiceImpl implements UserService {
             validationUtil.validate(request);
             Pin pin = pinService.createNew(NewPinRequest.builder().pin("").build());
             OTP otp = otpService.createNew("1111");
-
             Balance balance = balanceService.createNew(NewBalanceRequest.builder()
                     .totalBalance(0D)
                     .build());
@@ -89,6 +88,8 @@ public class UserServiceImpl implements UserService {
 
             balance.setUser(user);
             loyaltyPoint.setUser(user);
+            pin.setUser(user);
+            otp.setUser(user);
 
             userRepository.saveAndFlush(user);
 
@@ -158,7 +159,6 @@ public class UserServiceImpl implements UserService {
             User user = findByIdOrThrowNotFound(request.getAccountID());
             user.setKtpID(request.getKtpID());
             user.setAccountEmail(request.getAccountEmail());
-            user.setPhoneNumber("+62" + request.getPhoneNumber());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
             user.setDateOfBirth(request.getDateOfBirth());

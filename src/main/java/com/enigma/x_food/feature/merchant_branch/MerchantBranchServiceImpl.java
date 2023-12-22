@@ -69,6 +69,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .picNumber(merchantResponse.getPicNumber())
                 .picEmail(merchantResponse.getPicEmail())
                 .image(merchantResponse.getImage())
+                .logoImage(merchantResponse.getLogoImage())
                 .build();
 
         CityResponse cityResponse = cityService.getById(request.getCityID());

@@ -7,6 +7,7 @@ import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranc
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.util.PagingUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -33,8 +37,11 @@ public class MerchantBranchController {
             @RequestParam String picName,
             @RequestParam String picNumber,
             @RequestParam String picEmail,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String joinDate,
             @RequestParam MultipartFile image
                                        ) throws IOException {
+        Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(joinDate, DateTimeFormatter.ISO_DATE_TIME));
+
         NewMerchantBranchRequest request = NewMerchantBranchRequest.builder()
                 .merchantID(merchantID)
                 .branchName(branchName)
@@ -46,6 +53,7 @@ public class MerchantBranchController {
                 .picName(picName)
                 .picNumber(picNumber)
                 .picEmail(picEmail)
+                .joinDate(timestamp)
                 .build();
 
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.createNew(request);

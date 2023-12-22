@@ -29,7 +29,7 @@ public class NewMerchantRequest {
     private String merchantDescription;
     @NotNull(message = "Image cannot be empty")
     private MultipartFile image;
-    @NotNull(message = "Image cannot be empty")
+    @NotNull(message = "Logo image cannot be empty")
     private MultipartFile logoImage;
     private String notes;
 }

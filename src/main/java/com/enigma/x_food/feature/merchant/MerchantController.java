@@ -36,7 +36,8 @@ public class MerchantController {
             @RequestParam String picEmail,
             @RequestParam String merchantDescription,
             @RequestParam String notes,
-            @RequestParam MultipartFile image
+            @RequestParam MultipartFile image,
+            @RequestParam MultipartFile logoImage
                                                ) throws IOException {
         Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(joinDate, DateTimeFormatter.ISO_DATE_TIME));
 
@@ -49,6 +50,7 @@ public class MerchantController {
                 .picNumber(picNumber)
                 .notes(notes)
                 .image(image)
+                .logoImage(logoImage)
                 .build();
 
         MerchantResponse merchantResponse = merchantService.createNew(request);

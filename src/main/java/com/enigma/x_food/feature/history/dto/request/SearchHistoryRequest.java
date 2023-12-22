@@ -10,5 +10,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SearchHistoryRequest {
+    private Integer page;
+    private Integer size;
+    private String direction;
+    private String sortBy;
+    private String historyID;
+    private String transactionType;
+    private Boolean credit;
+    private Boolean debit;
+    private String orderID;
+    private String paymentID;
+    private String topUpID;
     private String accountID;
 }

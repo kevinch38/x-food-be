@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -13,7 +12,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Builder
 public class NewBalanceRequest {
-    @NotBlank(message = "Account ID cannot be empty")
     private String accountID;
     @NotNull(message = "Total balance cannot be empty")
     private Double totalBalance;

@@ -1,5 +1,8 @@
 package com.enigma.x_food.feature.top_up;
 
+import com.enigma.x_food.feature.balance.Balance;
+import com.enigma.x_food.feature.balance.BalanceService;
+import com.enigma.x_food.feature.balance.dto.response.BalanceResponse;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class TopUpServiceImpl implements TopUpService {
     private final TopUpRepository topUpRepository;
     private final HistoryService historyService;
+    private final BalanceService balanceService;
     private final ValidationUtil validationUtil;
     private final EntityManager entityManager;
 
@@ -40,6 +44,8 @@ public class TopUpServiceImpl implements TopUpService {
         try {
             log.info("Start createNew");
             validationUtil.validate(request);
+
+            Balance balance = balanceService.getById(request.getBalanceID());
 
             HistoryRequest historyRequest = HistoryRequest.builder()
                     .transactionType("TOPUP")
@@ -59,7 +65,7 @@ public class TopUpServiceImpl implements TopUpService {
                     .methodID(request.getMethodID())
                     .topUpFee(request.getTopUpFee())
                     .topUpStatusID(request.getTopUpStatusID())
-                    .balanceID(request.getBalanceID())
+                    .balance(entityManager.merge(balance))
                     .history(entityManager.merge(history))
                     .build();
 
@@ -89,7 +95,7 @@ public class TopUpServiceImpl implements TopUpService {
                 .methodID(topUp.getMethodID())
                 .topUpFee(topUp.getTopUpFee())
                 .topUpStatusID(topUp.getTopUpStatusID())
-                .balanceID(topUp.getBalanceID())
+                .balanceID(topUp.getBalance().getBalanceID())
                 .historyID(topUp.getHistory().getHistoryID())
                 .createdAt(topUp.getCreatedAt())
                 .updatedAt(topUp.getUpdatedAt())

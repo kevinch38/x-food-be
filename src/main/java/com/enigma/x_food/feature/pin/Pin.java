@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.pin;
 
+import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -21,4 +22,9 @@ public class Pin extends BaseEntity {
     private String pinID;
 
     @Column(name = "pin", nullable = false, length = 64)
-    private String pin;}
+    private String pin;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+}

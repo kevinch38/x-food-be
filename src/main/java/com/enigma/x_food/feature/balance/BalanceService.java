@@ -8,4 +8,5 @@ public interface BalanceService {
     Balance createNew(NewBalanceRequest request);
     BalanceResponse update(UpdateBalanceRequest request);
     BalanceResponse findById(String id);
+    Balance getById(String balanceID);
 }

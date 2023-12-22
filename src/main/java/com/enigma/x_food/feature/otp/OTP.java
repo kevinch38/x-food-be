@@ -23,4 +23,8 @@ public class OTP extends BaseEntity {
 
     @Column(name = "otp", nullable = false, length = 64)
     private String otp;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

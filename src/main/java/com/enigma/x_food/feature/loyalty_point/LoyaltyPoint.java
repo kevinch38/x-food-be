@@ -24,7 +24,7 @@ public class LoyaltyPoint extends BaseEntity {
     @Column(name = "balance_id")
     private String loyaltyPointID;
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
     @Column(name = "loyalty_point_amount", nullable = false, length = 11)
     private Double loyaltyPointAmount;

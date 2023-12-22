@@ -14,7 +14,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Builder
 public class NewLoyaltyPointRequest {
-    @NotBlank(message = "Account ID cannot be empty")
     private String accountID;
     @NotNull(message = "Loyalty point amount cannot be empty")
     private Double loyaltyPointAmount;

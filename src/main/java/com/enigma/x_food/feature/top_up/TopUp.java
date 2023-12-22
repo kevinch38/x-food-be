@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.top_up;
 
+import com.enigma.x_food.feature.balance.Balance;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
@@ -30,8 +31,9 @@ public class TopUp extends BaseEntity {
     private Double topUpFee;
     @Column(name = "top_up_status_id", nullable = false)
     private String topUpStatusID;
-    @Column(name = "balance_id", nullable = false)
-    private String balanceID;
+    @ManyToOne
+    @JoinColumn(name = "balance_id", nullable = false)
+    private Balance balance;
     @JoinColumn(name = "history_id", nullable = false)
     @OneToOne
     private History history;
