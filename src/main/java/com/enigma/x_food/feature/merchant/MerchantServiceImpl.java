@@ -108,9 +108,7 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     @Transactional(readOnly = true)
     public List<MerchantResponse> getAllActive(SearchMerchantRequest request) {
-        String fieldName = SortingUtil.sortByValidation(Merchant.class, request.getSortBy(), "merchantID");
-        request.setSortBy(fieldName);
-
+        validationUtil.validate(request);
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
         Specification<Merchant> specification = getMerchantSpecification(request, "active");

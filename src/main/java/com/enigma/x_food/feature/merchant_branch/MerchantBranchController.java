@@ -76,7 +76,8 @@ public class MerchantBranchController {
                                      @RequestParam(required = false) String address,
                                      @RequestParam(required = false) String timeZone,
                                      @RequestParam(required = false) String branchWorkingHoursID,
-                                     @RequestParam(required = false) String cityID
+                                     @RequestParam(required = false) String cityID,
+                                     @RequestParam(required = false, defaultValue = "all") String status
     ) {
         direction = PagingUtil.validateDirection(direction);
 
@@ -92,17 +93,32 @@ public class MerchantBranchController {
                 .cityID(cityID)
                 .build();
 
-        List<MerchantBranchResponse> merchantBranches = merchantBranchService.getAllActiveByMerchantId(request);
+        if (status.equalsIgnoreCase("active")){
+            List<MerchantBranchResponse> merchantBranches = merchantBranchService.findAllActiveByMerchantId(request);
 
-        CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
-                .message("successfully get all merchant branch")
-                .statusCode(HttpStatus.OK.value())
-                .data(merchantBranches)
-                .build();
+            CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
+                    .message("successfully get all active merchant branch")
+                    .statusCode(HttpStatus.OK.value())
+                    .data(merchantBranches)
+                    .build();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+        }
+        else {
+            List<MerchantBranchResponse> merchantBranches = merchantBranchService.findAllByMerchantId(request);
+
+            CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
+                    .message("successfully get all merchant branch")
+                    .statusCode(HttpStatus.OK.value())
+                    .data(merchantBranches)
+                    .build();
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+        }
     }
 
     @GetMapping("/{branchID}")
