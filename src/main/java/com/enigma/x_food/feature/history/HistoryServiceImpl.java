@@ -4,6 +4,12 @@ import com.enigma.x_food.constant.ETransactionType;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.history.dto.request.SearchHistoryRequest;
 import com.enigma.x_food.feature.history.dto.response.HistoryResponse;
+import com.enigma.x_food.feature.order.Order;
+import com.enigma.x_food.feature.order.dto.response.OrderResponse;
+import com.enigma.x_food.feature.payment.Payment;
+import com.enigma.x_food.feature.payment.dto.response.PaymentResponse;
+import com.enigma.x_food.feature.top_up.TopUp;
+import com.enigma.x_food.feature.top_up.dto.response.TopUpResponse;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.UserService;
 import com.enigma.x_food.util.SortingUtil;
@@ -92,23 +98,70 @@ public class HistoryServiceImpl implements HistoryService {
                 request.getSortBy()
         );
 
-
         Specification<History> specification = getAllHistorySpecification(request);
         Page<History> histories = historyRepository.findAll(specification, pageable);
         return histories.map(this::mapToResponse);
     }
 
     private HistoryResponse mapToResponse(History history) {
+        TopUp topUp = history.getTopUp();
+        TopUpResponse topUpResponse = null;
+
+        Order order = history.getOrder();
+        OrderResponse orderResponse = null;
+
+        Payment payment = history.getPayment();
+        PaymentResponse paymentResponse = null;
+
+        if (topUp != null) {
+            topUpResponse = TopUpResponse.builder()
+                    .topUpID(topUp.getTopUpID())
+                    .topUpAmount(topUp.getTopUpAmount())
+                    .methodID(topUp.getMethodID())
+                    .topUpFee(topUp.getTopUpFee())
+                    .createdAt(topUp.getCreatedAt())
+                    .updatedAt(topUp.getUpdatedAt())
+                    .topUpStatusID(topUp.getTopUpStatusID())
+                    .balanceID(topUp.getBalance().getBalanceID())
+                    .historyID(topUp.getHistory().getHistoryID())
+                    .build();
+        } else if (order != null) {
+            orderResponse = OrderResponse.builder()
+                    .orderID(order.getOrderID())
+                    .accountID(order.getUser().getAccountID())
+                    .historyID(order.getHistory().getHistoryID())
+                    .orderValue(order.getOrderValue())
+                    .notes(order.getNotes())
+                    .tableNumber(order.getTableNumber())
+                    .orderStatusID(order.getOrderStatusID())
+                    .branchID(order.getMerchantBranch().getBranchID())
+                    .createdAt(order.getCreatedAt())
+                    .updatedAt(order.getUpdatedAt())
+                    .build();
+        } else if (payment != null){
+            paymentResponse = PaymentResponse.builder()
+                    .paymentID(payment.getPaymentID())
+                    .accountID(payment.getUser().getAccountID())
+                    .paymentAmount(payment.getPaymentAmount())
+                    .expiredAt(payment.getExpiredAt())
+                    .paymentStatusID(payment.getPaymentStatusID())
+                    .historyID(payment.getHistory().getHistoryID())
+                    .friendID(payment.getFriendID())
+                    .orderID(payment.getOrder().getOrderID())
+                    .createdAt(payment.getCreatedAt())
+                    .updatedAt(payment.getUpdatedAt())
+                    .build();
+        }
         return HistoryResponse.builder()
                 .historyID(history.getHistoryID())
-                .transactionType(history.getTransactionType().toString())
+                .transactionType(history.getTransactionType())
                 .historyValue(history.getHistoryValue())
                 .transactionDate(LocalDate.now())
                 .credit(history.getCredit())
                 .debit(history.getDebit())
-                .orderID(history.getOrderID())
-                .paymentID(history.getPaymentID())
-                .topUpID(history.getTopUp().getTopUpID())
+                .order(orderResponse)
+                .payment(paymentResponse)
+                .topUp(topUpResponse)
                 .accountID(history.getUser().getAccountID())
                 .createdAt(history.getCreatedAt())
                 .updatedAt(history.getUpdatedAt())

@@ -48,7 +48,7 @@ public class TopUpServiceImpl implements TopUpService {
             Balance balance = balanceService.getById(request.getBalanceID());
 
             HistoryRequest historyRequest = HistoryRequest.builder()
-                    .transactionType("TOPUP")
+                    .transactionType("TOP_UP")
                     .historyValue(request.getTopUpAmount())
                     .transactionDate(LocalDate.now())
                     .credit(false)

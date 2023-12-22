@@ -1,5 +1,7 @@
 package com.enigma.x_food.feature.history;
 
+import com.enigma.x_food.feature.order.Order;
+import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.top_up.TopUp;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
@@ -34,14 +36,16 @@ public class History extends BaseEntity {
     private Boolean credit;
     @Column(name = "debit")
     private Boolean debit;
-    @Column(name = "order_id")
-    private String orderID;
-    @Column(name = "payment_id")
-    private String paymentID;
-    @JoinColumn(name = "top_up_id")
     @OneToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+    @OneToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+    @OneToOne
+    @JoinColumn(name = "top_up_id")
     private TopUp topUp;
-    @JoinColumn(name = "account_id")
     @ManyToOne
+    @JoinColumn(name = "account_id")
     private User user;
 }
