@@ -55,9 +55,9 @@ public class BranchWorkingHoursServiceImpl implements BranchWorkingHoursService 
     public BranchWorkingHoursResponse update(UpdateBranchWorkingHoursRequest request) {
         validationUtil.validate(request);
         BranchWorkingHours branchWorkingHours = findByIdOrThrowException(request.getBranchWorkingHoursID());
-        branchWorkingHours.setCloseHour(request.getCloseHour() == null ? branchWorkingHours.getCloseHour() : request.getCloseHour());
-        branchWorkingHours.setOpenHour(request.getOpenHour() == null ? branchWorkingHours.getOpenHour() : request.getOpenHour());
-        branchWorkingHours.setDays(request.getDays() == null ? branchWorkingHours.getDays() : request.getDays());
+        branchWorkingHours.setCloseHour(request.getCloseHour());
+        branchWorkingHours.setOpenHour(request.getOpenHour());
+        branchWorkingHours.setDays(request.getDays());
 
         return mapToResponse(branchWorkingHoursRepository.saveAndFlush(branchWorkingHours));
     }

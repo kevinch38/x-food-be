@@ -110,6 +110,8 @@ public class HistoryServiceImpl implements HistoryService {
                 .paymentID(history.getPaymentID())
                 .topUpID(history.getTopUp().getTopUpID())
                 .accountID(history.getUser().getAccountID())
+                .createdAt(history.getCreatedAt())
+                .updatedAt(history.getUpdatedAt())
                 .build();
     }
 

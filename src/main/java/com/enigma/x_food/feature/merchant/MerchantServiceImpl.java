@@ -70,14 +70,14 @@ public class MerchantServiceImpl implements MerchantService {
         validationUtil.validate(request);
         Merchant merchant = findByIdOrThrowException(request.getMerchantID());
 
-        merchant.setMerchantName(request.getMerchantName().isBlank() ? merchant.getMerchantName() : request.getMerchantName());
-        merchant.setPicName(request.getPicName().isBlank() ? merchant.getPicName() : request.getPicName());
-        merchant.setPicNumber(request.getPicNumber().isBlank() ? merchant.getPicNumber() : request.getPicNumber());
-        merchant.setPicEmail(request.getPicEmail().isBlank() ? merchant.getPicEmail() : request.getPicEmail());
-        merchant.setMerchantDescription(request.getMerchantDescription().isBlank() ? merchant.getMerchantDescription() : request.getMerchantDescription());
-        merchant.setNotes(request.getNotes().isBlank() ? merchant.getNotes() : request.getNotes());
-        merchant.setImage(request.getImage().isEmpty() ? merchant.getImage() : request.getImage().getBytes());
-        merchant.setLogoImage(request.getLogoImage().isEmpty() ? merchant.getLogoImage() : request.getLogoImage().getBytes());
+        merchant.setMerchantName(request.getMerchantName());
+        merchant.setPicName(request.getPicName());
+        merchant.setPicNumber(request.getPicNumber());
+        merchant.setPicEmail(request.getPicEmail());
+        merchant.setMerchantDescription(request.getMerchantDescription());
+        merchant.setNotes(request.getNotes());
+        merchant.setImage(request.getImage().getBytes());
+        merchant.setLogoImage(request.getLogoImage().getBytes());
 
         return mapToResponse(merchantRepository.saveAndFlush(merchant));
     }

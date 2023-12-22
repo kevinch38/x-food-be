@@ -103,16 +103,16 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         validationUtil.validate(request);
         MerchantBranch merchantBranch = findByIdOrThrowException(request.getBranchID());
 
-        CityResponse cityResponse = cityService.getById(request.getCityID().isBlank() ? merchantBranch.getCity().getCityID() : request.getCityID());
+        CityResponse cityResponse = cityService.getById(request.getCityID());
 
-        merchantBranch.setBranchName(request.getBranchName().isBlank() ? merchantBranch.getBranchName() : request.getBranchName());
-        merchantBranch.setAddress(request.getAddress().isBlank() ? merchantBranch.getAddress() : request.getAddress());
-        merchantBranch.setTimezone(request.getTimezone().isBlank() ? merchantBranch.getTimezone() : request.getTimezone());
-        merchantBranch.setBranchWorkingHoursID(request.getBranchWorkingHoursID().isBlank() ? merchantBranch.getBranchWorkingHoursID() : request.getBranchWorkingHoursID());
-        merchantBranch.setPicName(request.getPicName().isBlank() ? merchantBranch.getPicName() : request.getPicName());
-        merchantBranch.setPicNumber(request.getPicNumber().isBlank() ? merchantBranch.getPicNumber() : request.getPicNumber());
-        merchantBranch.setPicEmail(request.getPicEmail().isBlank() ? merchantBranch.getPicEmail() : request.getPicEmail());
-        merchantBranch.setImage(request.getImage().isEmpty() ? merchantBranch.getImage() : request.getImage().getBytes());
+        merchantBranch.setBranchName(request.getBranchName());
+        merchantBranch.setAddress(request.getAddress());
+        merchantBranch.setTimezone(request.getTimezone());
+        merchantBranch.setBranchWorkingHoursID(request.getBranchWorkingHoursID());
+        merchantBranch.setPicName(request.getPicName());
+        merchantBranch.setPicNumber(request.getPicNumber());
+        merchantBranch.setPicEmail(request.getPicEmail());
+        merchantBranch.setImage(request.getImage().getBytes());
         merchantBranch.setCity(City.builder()
                 .cityID(cityResponse.getCityID())
                 .cityName(cityResponse.getCityName())
