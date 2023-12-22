@@ -2,6 +2,8 @@ package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.constant.EMerchantBranchStatus;
 import com.enigma.x_food.constant.EMerchantStatus;
+import com.enigma.x_food.feature.city.City;
+import com.enigma.x_food.feature.city.dto.response.CityResponse;
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
@@ -142,7 +144,9 @@ public class MerchantServiceImpl implements MerchantService {
         List<MerchantBranchResponse> merchantBranchResponses = new ArrayList<>();
 
         if (merchant.getMerchantBranches() != null) {
+
             for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
+                City city = merchantBranch.getCity();
                 merchantBranchResponses.add(MerchantBranchResponse.builder()
                         .branchID(merchantBranch.getBranchID())
                         .merchantID(merchantBranch.getMerchant().getMerchantID())
@@ -152,7 +156,12 @@ public class MerchantServiceImpl implements MerchantService {
                         .createdAt(merchantBranch.getCreatedAt())
                         .updatedAt(merchantBranch.getUpdatedAt())
                         .branchWorkingHoursID(merchantBranch.getBranchWorkingHoursID())
-                        .city(merchantBranch.getCity().getCityName())
+                        .city( CityResponse.builder()
+                                .cityID(city.getCityID())
+                                .cityName(city.getCityName())
+                                .createdAt(city.getCreatedAt())
+                                .updatedAt(city.getUpdatedAt())
+                                .build())
                         .status(merchantBranch.getMerchantBranchStatus().getStatus().name())
                         .itemList(merchantBranch.getItemList())
                         .picName(merchant.getPicName())

@@ -183,6 +183,8 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     }
 
     private MerchantBranchResponse mapToResponse(MerchantBranch branch) {
+        City city = branch.getCity();
+
         return MerchantBranchResponse.builder()
                 .branchID(branch.getBranchID())
                 .merchantID(branch.getMerchant().getMerchantID())
@@ -192,7 +194,14 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .createdAt(branch.getCreatedAt())
                 .updatedAt(branch.getUpdatedAt())
                 .branchWorkingHoursID(branch.getBranchWorkingHoursID())
-                .city(branch.getCity().getCityName())
+                .city(
+                        CityResponse.builder()
+                                .cityID(city.getCityID())
+                                .cityName(city.getCityName())
+                                .createdAt(city.getCreatedAt())
+                                .updatedAt(city.getUpdatedAt())
+                                .build()
+                )
                 .status(branch.getMerchantBranchStatus().getStatus().name())
                 .itemList(branch.getItemList())
                 .picName(branch.getPicName())
