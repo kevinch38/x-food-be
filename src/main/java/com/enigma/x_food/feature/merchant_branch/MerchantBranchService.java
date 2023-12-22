@@ -12,7 +12,8 @@ public interface MerchantBranchService {
     MerchantBranchResponse createNew(NewMerchantBranchRequest request) throws IOException;
     MerchantBranchResponse update(UpdateMerchantBranchRequest request) throws IOException;
     void deleteById(String id);
-    MerchantBranch findById(String id);
+    MerchantBranchResponse findById(String id);
+    MerchantBranch getById(String id);
 //    List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request);
     List<MerchantBranchResponse> getAllActiveByMerchantId(SearchMerchantBranchRequest request);
 }

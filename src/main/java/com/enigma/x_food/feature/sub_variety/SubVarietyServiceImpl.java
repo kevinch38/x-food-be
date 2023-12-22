@@ -31,7 +31,7 @@ public class SubVarietyServiceImpl implements SubVarietyService {
             log.info("Start createNew");
             validationUtil.validate(request);
 
-            MerchantBranch merchantBranch = merchantBranchService.findById(request.getBranchID());
+            MerchantBranch merchantBranch = merchantBranchService.getById(request.getBranchID());
 
             SubVariety subVariety = SubVariety.builder()
                     .subVarName(request.getSubVarName())

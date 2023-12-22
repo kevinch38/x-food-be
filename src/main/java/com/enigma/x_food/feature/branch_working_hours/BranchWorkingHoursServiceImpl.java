@@ -32,7 +32,7 @@ public class BranchWorkingHoursServiceImpl implements BranchWorkingHoursService 
             log.info("Start createNew");
             validationUtil.validate(request);
 
-            MerchantBranch merchantBranch = merchantBranchService.findById(request.getMerchantBranchID());
+            MerchantBranch merchantBranch = merchantBranchService.getById(request.getMerchantBranchID());
 
             BranchWorkingHours branchWorkingHours = BranchWorkingHours.builder()
                     .openHour(request.getOpenHour())

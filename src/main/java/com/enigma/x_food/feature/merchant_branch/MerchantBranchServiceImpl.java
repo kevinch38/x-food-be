@@ -123,8 +123,13 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public MerchantBranch findById(String id) {
+    public MerchantBranchResponse findById(String id) {
         validationUtil.validate(id);
+        return mapToResponse(findByIdOrThrowException(id));
+    }
+
+    @Override
+    public MerchantBranch getById(String id) {
         return findByIdOrThrowException(id);
     }
 

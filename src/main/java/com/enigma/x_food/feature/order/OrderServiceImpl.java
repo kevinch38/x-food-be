@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
 
             History history = historyService.createNew(historyRequest);
             User user = userService.getUserById(request.getAccountID());
-            MerchantBranch merchantBranch = merchantBranchService.findById(request.getBranchID());
+            MerchantBranch merchantBranch = merchantBranchService.getById(request.getBranchID());
 
             Order order = Order.builder()
                     .user(entityManager.merge(user))
