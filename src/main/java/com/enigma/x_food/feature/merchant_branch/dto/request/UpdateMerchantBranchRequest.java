@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class UpdateMerchantBranchRequest {
     private String branchWorkingHoursID;
     @NotBlank(message = "City ID cannot be empty")
     private String cityID;
-    @NotBlank(message = "Image cannot be empty")
+    @NotNull(message = "Image cannot be empty")
     private MultipartFile image;
     @NotBlank(message = "PIC name cannot be empty")
     private String picName;
