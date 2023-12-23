@@ -53,9 +53,9 @@ public class Merchant extends BaseEntity {
     @Column(name = "logo_image", nullable = false)
     @Type(type = "org.hibernate.type.BinaryType")
     private byte[] logoImage;
-    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "merchant")
     @JsonManagedReference
     private List<MerchantBranch> merchantBranches;
-    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "merchant")
     private List<Promotion> promotions;
 }

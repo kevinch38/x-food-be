@@ -1,9 +1,12 @@
 package com.enigma.x_food.feature.item.dto.response;
 
+import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,4 +24,5 @@ public class ItemResponse {
     private Boolean isDiscounted;
     private Boolean isRecommended;
     private String itemDescription;
+    private List<ItemVarietyResponse> itemVarieties;
 }

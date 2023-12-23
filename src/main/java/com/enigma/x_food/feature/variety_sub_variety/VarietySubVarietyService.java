@@ -8,5 +8,6 @@ import java.util.List;
 public interface VarietySubVarietyService {
     VarietySubVarietyResponse createNew(VarietySubVarietyRequest request);
     VarietySubVarietyResponse getById(String id);
+    VarietySubVariety findById(String id);
     List<VarietySubVariety> getAll();
 }

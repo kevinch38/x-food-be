@@ -4,6 +4,8 @@ import com.enigma.x_food.constant.EMerchantBranchStatus;
 import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
+import com.enigma.x_food.feature.item.dto.response.ItemResponse;
+import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
@@ -141,35 +143,63 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     private MerchantResponse mapToResponse(Merchant merchant) {
-        List<MerchantBranchResponse> merchantBranchResponses = new ArrayList<>();
-
+        List<MerchantBranchResponse> merchantBranches = null;
         if (merchant.getMerchantBranches() != null) {
+            merchantBranches = merchant.getMerchantBranches().stream().map(
+                    mb -> {
+                        City city = mb.getCity();
 
-            for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
-                City city = merchantBranch.getCity();
-                merchantBranchResponses.add(MerchantBranchResponse.builder()
-                        .branchID(merchantBranch.getBranchID())
-                        .merchantID(merchantBranch.getMerchant().getMerchantID())
-                        .branchName(merchantBranch.getBranchName())
-                        .address(merchantBranch.getAddress())
-                        .timezone(merchantBranch.getTimezone())
-                        .createdAt(merchantBranch.getCreatedAt())
-                        .updatedAt(merchantBranch.getUpdatedAt())
-                        .branchWorkingHoursID(merchantBranch.getBranchWorkingHoursID())
-                        .city( CityResponse.builder()
-                                .cityID(city.getCityID())
-                                .cityName(city.getCityName())
-                                .createdAt(city.getCreatedAt())
-                                .updatedAt(city.getUpdatedAt())
-                                .build())
-                        .status(merchantBranch.getMerchantBranchStatus().getStatus().name())
-                        .itemList(merchantBranch.getItemList())
-                        .picName(merchant.getPicName())
-                        .picNumber(merchant.getPicNumber())
-                        .picEmail(merchant.getPicEmail())
-                        .image(merchantBranch.getImage())
-                        .build());
-            }
+                        List<ItemResponse> items = mb.getItems().stream().map(
+                                i -> {
+                                    List<ItemVarietyResponse> itemVarietyResponses = i.getItemVarieties().stream().map(
+                                            iv ->
+                                                    ItemVarietyResponse.builder()
+                                                            .itemVarietyID(iv.getItemVarietyID())
+                                                            .variety(iv.getVariety())
+                                                            .build()
+                                    ).collect(Collectors.toList());
+
+                                    return ItemResponse.builder()
+                                            .itemID(i.getItemID())
+                                            .itemName(i.getItemName())
+                                            .categoryID(i.getCategoryID())
+                                            .branchID(i.getMerchantBranch().getBranchID())
+                                            .image(i.getImage())
+                                            .initialPrice(i.getInitialPrice())
+                                            .discountedPrice(i.getDiscountedPrice())
+                                            .itemStock(i.getItemStock())
+                                            .isDiscounted(i.getIsDiscounted())
+                                            .isRecommended(i.getIsRecommended())
+                                            .itemDescription(i.getItemDescription())
+                                            .itemVarieties(itemVarietyResponses)
+                                            .build();
+                                }
+                        ).collect(Collectors.toList());
+
+                        return MerchantBranchResponse.builder()
+                                .branchID(mb.getBranchID())
+                                .merchantID(mb.getMerchant().getMerchantID())
+                                .branchName(mb.getBranchName())
+                                .address(mb.getAddress())
+                                .timezone(mb.getTimezone())
+                                .createdAt(mb.getCreatedAt())
+                                .updatedAt(mb.getUpdatedAt())
+                                .branchWorkingHoursID(mb.getBranchWorkingHoursID())
+                                .city(CityResponse.builder()
+                                        .cityID(city.getCityID())
+                                        .cityName(city.getCityName())
+                                        .createdAt(city.getCreatedAt())
+                                        .updatedAt(city.getUpdatedAt())
+                                        .build())
+                                .status(mb.getMerchantBranchStatus().getStatus().name())
+                                .items(items)
+                                .picName(merchant.getPicName())
+                                .picNumber(merchant.getPicNumber())
+                                .picEmail(merchant.getPicEmail())
+                                .image(mb.getImage())
+                                .build();
+                    }
+            ).collect(Collectors.toList());
         }
 
         return MerchantResponse.builder()
@@ -185,7 +215,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .updatedAt(merchant.getUpdatedAt())
                 .status(merchant.getMerchantStatus().getStatus().name())
                 .notes(merchant.getNotes())
-                .merchantBranches(merchantBranchResponses)
+                .merchantBranches(merchantBranches)
                 .image(merchant.getImage())
                 .logoImage(merchant.getLogoImage())
                 .build();

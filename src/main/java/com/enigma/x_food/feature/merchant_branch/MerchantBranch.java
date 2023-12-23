@@ -4,13 +4,13 @@ import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
+import com.enigma.x_food.feature.sub_variety.SubVariety;
 import com.enigma.x_food.shared.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -58,8 +58,11 @@ public class MerchantBranch extends BaseEntity {
     private City city;
     @OneToMany(mappedBy = "merchantBranch")
     @JsonBackReference
-    private List<Item> itemList;
+    private List<Item> items;
     @OneToOne
     @JoinColumn(name = "merchant_branch_status_id", nullable = false)
     private MerchantBranchStatus merchantBranchStatus;
+    @OneToMany(mappedBy = "merchantBranch")
+    @JsonBackReference
+    List<SubVariety> subVarieties;
 }

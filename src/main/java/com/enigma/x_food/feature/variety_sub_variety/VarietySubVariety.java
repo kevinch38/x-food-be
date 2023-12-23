@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.variety_sub_variety;
 
 import com.enigma.x_food.feature.sub_variety.SubVariety;
 import com.enigma.x_food.feature.variety.Variety;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class VarietySubVariety {
 
     @ManyToOne
     @JoinColumn(name = "sub_variety_id", nullable = false)
+    @JsonBackReference
     private SubVariety subVariety;
 
     @ManyToOne

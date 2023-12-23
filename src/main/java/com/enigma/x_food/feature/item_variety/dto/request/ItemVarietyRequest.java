@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.item_variety.dto.request;
 
+import com.enigma.x_food.feature.variety.Variety;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,5 +17,5 @@ public class ItemVarietyRequest {
     @NotBlank(message = "Item id cannot be empty")
     private String itemID;
     @NotNull(message = "Variety id cannot be empty")
-    private String varietyID;
+    private Variety variety;
 }

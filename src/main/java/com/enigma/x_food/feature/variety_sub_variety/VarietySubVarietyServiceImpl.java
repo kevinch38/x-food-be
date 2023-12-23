@@ -1,7 +1,5 @@
 package com.enigma.x_food.feature.variety_sub_variety;
 
-import com.enigma.x_food.feature.sub_variety.SubVariety;
-import com.enigma.x_food.feature.sub_variety.SubVarietyService;
 import com.enigma.x_food.feature.variety.Variety;
 import com.enigma.x_food.feature.variety.VarietyService;
 import com.enigma.x_food.feature.variety_sub_variety.dto.request.VarietySubVarietyRequest;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 @Service
@@ -24,8 +21,6 @@ import java.util.List;
 public class VarietySubVarietyServiceImpl implements VarietySubVarietyService {
     private final VarietySubVarietyRepository varietyRepository;
     private final VarietyService varietyService;
-    private final SubVarietyService subVarietyService;
-    private final EntityManager entityManager;
     private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
@@ -36,11 +31,10 @@ public class VarietySubVarietyServiceImpl implements VarietySubVarietyService {
             validationUtil.validate(request);
 
             Variety variety = varietyService.getById(request.getVarietyID());
-            SubVariety subVariety = subVarietyService.getById(request.getSubVarietyID());
 
             VarietySubVariety varietySubVariety = VarietySubVariety.builder()
-                    .variety(entityManager.merge(variety))
-                    .subVariety(entityManager.merge(subVariety))
+                    .variety(variety)
+                    .subVariety(request.getSubVariety())
                     .build();
             varietyRepository.saveAndFlush(varietySubVariety);
             log.info("End createNew");
@@ -60,6 +54,11 @@ public class VarietySubVarietyServiceImpl implements VarietySubVarietyService {
     @Override
     public VarietySubVarietyResponse getById(String id) {
         return mapToResponse(findByIdOrThrowNotFound(id));
+    }
+
+    @Override
+    public VarietySubVariety findById(String id) {
+        return findByIdOrThrowNotFound(id);
     }
 
     private VarietySubVariety findByIdOrThrowNotFound(String id) {

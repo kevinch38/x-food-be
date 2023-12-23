@@ -21,4 +21,6 @@ public class SubVarietyRequest {
     private Integer subVarStock;
     @NotNull(message = "Sub variety price cannot be empty")
     private Double subVarPrice;
+    @NotBlank(message = "Sub variety price cannot be empty")
+    private String varietyID;
 }

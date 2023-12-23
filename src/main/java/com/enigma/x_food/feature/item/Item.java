@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.item;
 
+import com.enigma.x_food.feature.item_variety.ItemVariety;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,4 +47,6 @@ public class Item {
     private Boolean isRecommended;
     @Column(name = "item_description", unique = true,  length = 150)
     private String itemDescription;
+    @OneToMany(mappedBy = "item")
+    private List<ItemVariety> itemVarieties;
 }

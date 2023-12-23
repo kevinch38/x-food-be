@@ -1,19 +1,12 @@
 package com.enigma.x_food.feature.variety;
 
-import com.enigma.x_food.feature.history.History;
-import com.enigma.x_food.feature.otp.OTP;
-import com.enigma.x_food.feature.pin.Pin;
-import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -19,20 +19,6 @@ import java.util.List;
 public class VarietySubVarietyController {
     private final VarietySubVarietyService varietyService;
 
-//    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<?> createNewVarietySubVariety(@RequestBody VarietySubVariety request) {
-//        VarietySubVariety varietyResponse = varietyService.createNew(request);
-//        CommonResponse<VarietySubVariety> response = CommonResponse.<VarietySubVariety>builder()
-//                .message("successfully create new variety")
-//                .statusCode(HttpStatus.CREATED.value())
-//                .data(varietyResponse)
-//                .build();
-//        return ResponseEntity
-//                .status(HttpStatus.CREATED)
-//                .body(response);
-//    }
-
-
     @GetMapping
     public ResponseEntity<?> getAll() {
         List<VarietySubVariety> varieties = varietyService.getAll();

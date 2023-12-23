@@ -2,6 +2,8 @@ package com.enigma.x_food.feature.merchant_branch.dto.response;
 
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
 import com.enigma.x_food.feature.item.Item;
+import com.enigma.x_food.feature.item.dto.response.ItemResponse;
+import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,11 +30,12 @@ public class MerchantBranchResponse {
     private String branchWorkingHoursID;
     private String status;
     private CityResponse city;
-    private List<Item> itemList;
+    private List<ItemResponse> items;
     private String picName;
     private String picNumber;
     private String picEmail;
     private byte[] image;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp joinDate;
+    private List<SubVarietyResponse> subVarieties;
 }

@@ -1,46 +1,47 @@
 package com.enigma.x_food.feature.variety;
 
-import com.enigma.x_food.security.BCryptUtil;
+import com.enigma.x_food.feature.item_variety.ItemVarietyService;
+import com.enigma.x_food.feature.item_variety.dto.request.ItemVarietyRequest;
+import com.enigma.x_food.feature.variety.request.VarietyRequest;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class VarietyServiceImpl implements VarietyService {
     private final VarietyRepository varietyRepository;
+    private final ItemVarietyService itemVarietyService;
     private final ValidationUtil validationUtil;
-    private final Random random;
-    private final BCryptUtil bCryptUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Variety createNew(Variety request) {
-        try {
-            log.info("Start createNew");
-            validationUtil.validate(request);
+    public Variety createNew(VarietyRequest request) {
+        log.info("Start createNew");
+        validationUtil.validate(request);
 
-            Variety variety = Variety.builder()
-                    .varietyName(request.getVarietyName())
-                    .isRequired(request.getIsRequired())
-                    .isMultiSelect(request.getIsMultiSelect())
-                    .build();
-            varietyRepository.saveAndFlush(variety);
-            log.info("End createNew");
-            return variety;
-        } catch (DataIntegrityViolationException e) {
-            log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone number already exist");
-        }
+        Variety variety = Variety.builder()
+                .varietyName(request.getVarietyName())
+                .isRequired(request.getIsRequired())
+                .isMultiSelect(request.getIsMultiSelect())
+                .build();
+        varietyRepository.saveAndFlush(variety);
+
+        ItemVarietyRequest itemVarietyRequest = ItemVarietyRequest.builder()
+                .itemID(request.getItemID())
+                .variety(variety)
+                .build();
+        itemVarietyService.createNew(itemVarietyRequest);
+
+        log.info("End createNew");
+        return variety;
     }
 
     @Override
