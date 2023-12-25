@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.variety.request;
+package com.enigma.x_food.feature.variety.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

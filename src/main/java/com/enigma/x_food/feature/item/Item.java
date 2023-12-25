@@ -3,7 +3,6 @@ package com.enigma.x_food.feature.item;
 import com.enigma.x_food.feature.category.Category;
 import com.enigma.x_food.feature.item_variety.ItemVariety;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
@@ -31,7 +30,6 @@ public class Item {
     private Category category;
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
-    @JsonBackReference
     private MerchantBranch merchantBranch;
     @Lob
     @Type(type = "org.hibernate.type.BinaryType")

@@ -4,7 +4,9 @@ import com.enigma.x_food.constant.EMerchantBranchStatus;
 import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
+import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.item.dto.response.ItemResponse;
+import com.enigma.x_food.feature.item_variety.ItemVariety;
 import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
@@ -16,6 +18,10 @@ import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatusService;
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
 import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
+import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
+import com.enigma.x_food.feature.variety.dto.response.VarietyResponse;
+import com.enigma.x_food.feature.user.variety_sub_variety.VarietySubVariety;
+import com.enigma.x_food.feature.user.variety_sub_variety.dto.response.VarietySubVarietyResponse;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -146,59 +152,7 @@ public class MerchantServiceImpl implements MerchantService {
         List<MerchantBranchResponse> merchantBranches = null;
         if (merchant.getMerchantBranches() != null) {
             merchantBranches = merchant.getMerchantBranches().stream().map(
-                    mb -> {
-                        City city = mb.getCity();
-
-                        List<ItemResponse> items = mb.getItems().stream().map(
-                                i -> {
-                                    List<ItemVarietyResponse> itemVarietyResponses = i.getItemVarieties().stream().map(
-                                            iv ->
-                                                    ItemVarietyResponse.builder()
-                                                            .itemVarietyID(iv.getItemVarietyID())
-                                                            .variety(iv.getVariety())
-                                                            .build()
-                                    ).collect(Collectors.toList());
-
-                                    return ItemResponse.builder()
-                                            .itemID(i.getItemID())
-                                            .itemName(i.getItemName())
-                                            .category(i.getCategory().getCategoryName().name())
-                                            .branchID(i.getMerchantBranch().getBranchID())
-                                            .image(i.getImage())
-                                            .initialPrice(i.getInitialPrice())
-                                            .discountedPrice(i.getDiscountedPrice())
-                                            .itemStock(i.getItemStock())
-                                            .isDiscounted(i.getIsDiscounted())
-                                            .isRecommended(i.getIsRecommended())
-                                            .itemDescription(i.getItemDescription())
-                                            .itemVarieties(itemVarietyResponses)
-                                            .build();
-                                }
-                        ).collect(Collectors.toList());
-
-                        return MerchantBranchResponse.builder()
-                                .branchID(mb.getBranchID())
-                                .merchantID(mb.getMerchant().getMerchantID())
-                                .branchName(mb.getBranchName())
-                                .address(mb.getAddress())
-                                .timezone(mb.getTimezone())
-                                .createdAt(mb.getCreatedAt())
-                                .updatedAt(mb.getUpdatedAt())
-                                .branchWorkingHoursID(mb.getBranchWorkingHoursID())
-                                .city(CityResponse.builder()
-                                        .cityID(city.getCityID())
-                                        .cityName(city.getCityName())
-                                        .createdAt(city.getCreatedAt())
-                                        .updatedAt(city.getUpdatedAt())
-                                        .build())
-                                .status(mb.getMerchantBranchStatus().getStatus().name())
-                                .items(items)
-                                .picName(merchant.getPicName())
-                                .picNumber(merchant.getPicNumber())
-                                .picEmail(merchant.getPicEmail())
-                                .image(mb.getImage())
-                                .build();
-                    }
+                    mb -> getMerchantBranchResponse(merchant, mb)
             ).collect(Collectors.toList());
         }
 
@@ -218,6 +172,98 @@ public class MerchantServiceImpl implements MerchantService {
                 .merchantBranches(merchantBranches)
                 .image(merchant.getImage())
                 .logoImage(merchant.getLogoImage())
+                .build();
+    }
+
+    private static MerchantBranchResponse getMerchantBranchResponse(Merchant merchant, MerchantBranch mb) {
+        City city = mb.getCity();
+
+        List<ItemResponse> items = mb.getItems().stream().map(
+                MerchantServiceImpl::getItemResponse
+        ).collect(Collectors.toList());
+
+        return MerchantBranchResponse.builder()
+                .branchID(mb.getBranchID())
+                .merchantID(mb.getMerchant().getMerchantID())
+                .branchName(mb.getBranchName())
+                .address(mb.getAddress())
+                .timezone(mb.getTimezone())
+                .createdAt(mb.getCreatedAt())
+                .updatedAt(mb.getUpdatedAt())
+                .branchWorkingHoursID(mb.getBranchWorkingHoursID())
+                .city(CityResponse.builder()
+                        .cityID(city.getCityID())
+                        .cityName(city.getCityName())
+                        .createdAt(city.getCreatedAt())
+                        .updatedAt(city.getUpdatedAt())
+                        .build())
+                .status(mb.getMerchantBranchStatus().getStatus().name())
+                .items(items)
+                .picName(merchant.getPicName())
+                .picNumber(merchant.getPicNumber())
+                .picEmail(merchant.getPicEmail())
+                .image(mb.getImage())
+                .build();
+    }
+
+    private static ItemResponse getItemResponse(Item i) {
+        List<ItemVarietyResponse> itemVarietyResponses = i.getItemVarieties().stream().map(
+                MerchantServiceImpl::getItemVarietyResponse
+                ).collect(Collectors.toList());
+
+        return ItemResponse.builder()
+                .itemID(i.getItemID())
+                .itemName(i.getItemName())
+                .category(i.getCategory().getCategoryName().name())
+                .branchID(i.getMerchantBranch().getBranchID())
+                .image(i.getImage())
+                .initialPrice(i.getInitialPrice())
+                .discountedPrice(i.getDiscountedPrice())
+                .itemStock(i.getItemStock())
+                .isDiscounted(i.getIsDiscounted())
+                .isRecommended(i.getIsRecommended())
+                .itemDescription(i.getItemDescription())
+                .itemVarieties(itemVarietyResponses)
+                .build();
+    }
+
+    private static ItemVarietyResponse getItemVarietyResponse(ItemVariety iv) {
+        VarietyResponse varietyResponse = null;
+        if (iv.getVariety() != null) {
+            List<VarietySubVarietyResponse> varietySubVarietyResponses = null;
+            if (iv.getVariety().getVarietySubVarieties() != null) {
+                varietySubVarietyResponses = iv.getVariety().getVarietySubVarieties().stream().map(
+                        MerchantServiceImpl::getVarietySubVarietyResponse
+                ).collect(Collectors.toList());
+            }
+            varietyResponse = VarietyResponse.builder()
+                    .varietyID(iv.getVariety().getVarietyID())
+                    .varietyName(iv.getVariety().getVarietyName())
+                    .isRequired(iv.getVariety().getIsRequired())
+                    .isMultiSelect(iv.getVariety().getIsMultiSelect())
+                    .varietySubVarieties(varietySubVarietyResponses)
+                    .build();
+        }
+        return ItemVarietyResponse.builder()
+                .itemVarietyID(iv.getItemVarietyID())
+                .variety(varietyResponse)
+                .build();
+    }
+
+    private static VarietySubVarietyResponse getVarietySubVarietyResponse(VarietySubVariety vsv) {
+        SubVarietyResponse subVarietyResponse = null;
+        if (vsv.getSubVariety()!= null){
+            subVarietyResponse = SubVarietyResponse.builder()
+                    .subVarietyID(vsv.getSubVariety().getSubVarietyID())
+                    .branchID(vsv.getSubVariety().getMerchantBranch().getBranchID())
+                    .subVarName(vsv.getSubVariety().getSubVarName())
+                    .subVarStock(vsv.getSubVariety().getSubVarStock())
+                    .build();
+        }
+
+        return VarietySubVarietyResponse.builder()
+                .varietySubVarietyID(vsv.getVarietySubVarietyID())
+                .subVariety(subVarietyResponse)
                 .build();
     }
 

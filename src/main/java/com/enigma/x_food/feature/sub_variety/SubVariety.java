@@ -1,9 +1,7 @@
 package com.enigma.x_food.feature.sub_variety;
 
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
-import com.enigma.x_food.feature.variety_sub_variety.VarietySubVariety;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.enigma.x_food.feature.user.variety_sub_variety.VarietySubVariety;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +26,6 @@ public class SubVariety {
 
     @ManyToOne
     @JoinColumn(name = "merchant_branch_id", nullable = false)
-    @JsonManagedReference
     private MerchantBranch merchantBranch;
 
     @Column(name = "sub_var_name", nullable = false, length = 100)
@@ -41,6 +38,5 @@ public class SubVariety {
     private Double subVarPrice;
 
     @OneToMany(mappedBy = "subVariety")
-    @JsonManagedReference
     private List<VarietySubVariety> varietySubVarieties;
 }

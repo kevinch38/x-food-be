@@ -2,7 +2,7 @@ package com.enigma.x_food.feature.variety;
 
 import com.enigma.x_food.feature.item_variety.ItemVarietyService;
 import com.enigma.x_food.feature.item_variety.dto.request.ItemVarietyRequest;
-import com.enigma.x_food.feature.variety.request.VarietyRequest;
+import com.enigma.x_food.feature.variety.dto.request.VarietyRequest;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

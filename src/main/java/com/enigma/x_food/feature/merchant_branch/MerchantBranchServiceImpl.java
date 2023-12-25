@@ -5,7 +5,9 @@ import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.CityService;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
+import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.item.dto.response.ItemResponse;
+import com.enigma.x_food.feature.item_variety.ItemVariety;
 import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
@@ -19,7 +21,9 @@ import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatusServ
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
 import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
 import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
-import com.enigma.x_food.feature.variety_sub_variety.dto.response.VarietySubVarietyResponse;
+import com.enigma.x_food.feature.variety.dto.response.VarietyResponse;
+import com.enigma.x_food.feature.user.variety_sub_variety.VarietySubVariety;
+import com.enigma.x_food.feature.user.variety_sub_variety.dto.response.VarietySubVarietyResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -175,62 +179,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     private MerchantBranchResponse mapToResponse(MerchantBranch branch) {
         City city = branch.getCity();
-        List<SubVarietyResponse> subVarietyResponses = null;
         List<ItemResponse> items = null;
-
-        if (branch.getSubVarieties() != null) {
-            subVarietyResponses = branch.getSubVarieties().stream().map(s -> {
-                List<VarietySubVarietyResponse> varietySubVarieties = null;
-                if (s.getVarietySubVarieties() != null) {
-                    varietySubVarieties = s.getVarietySubVarieties().stream().map(
-                                    vsv ->
-                                            VarietySubVarietyResponse.builder()
-                                                    .varietySubVarietyID(vsv.getVarietySubVarietyID())
-                                                    .subVarietyID(vsv.getSubVariety().getSubVarietyID())
-                                                    .varietyID(vsv.getVariety().getVarietyID())
-                                                    .build()
-                            )
-                            .collect(Collectors.toList());
-                }
-                return SubVarietyResponse.builder()
-                        .subVarietyID(s.getSubVarietyID())
-                        .branchID(s.getMerchantBranch().getBranchID())
-                        .subVarName(s.getSubVarName())
-                        .subVarStock(s.getSubVarStock())
-                        .varietySubVariety(varietySubVarieties)
-                        .build();
-            }).collect(Collectors.toList());
-        }
 
         if (branch.getItems() != null) {
             items = branch.getItems().stream().map(
-                    i -> {
-                        List<ItemVarietyResponse> itemVarietyResponses = null;
-                        if (i.getItemVarieties() != null) {
-                            itemVarietyResponses = i.getItemVarieties().stream().map(
-                                    iv ->
-                                            ItemVarietyResponse.builder()
-                                                    .itemVarietyID(iv.getItemVarietyID())
-                                                    .variety(iv.getVariety())
-                                                    .build()
-                            ).collect(Collectors.toList());
-                        }
-
-                        return ItemResponse.builder()
-                                .itemID(i.getItemID())
-                                .itemName(i.getItemName())
-                                .category(i.getCategory().getCategoryName().name())
-                                .branchID(i.getMerchantBranch().getBranchID())
-                                .image(i.getImage())
-                                .initialPrice(i.getInitialPrice())
-                                .discountedPrice(i.getDiscountedPrice())
-                                .itemStock(i.getItemStock())
-                                .isDiscounted(i.getIsDiscounted())
-                                .isRecommended(i.getIsRecommended())
-                                .itemDescription(i.getItemDescription())
-                                .itemVarieties(itemVarietyResponses)
-                                .build();
-                    }
+                    MerchantBranchServiceImpl::getItemResponse
             ).collect(Collectors.toList());
         }
 
@@ -258,7 +211,70 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .picEmail(branch.getPicEmail())
                 .image(branch.getImage())
                 .joinDate(branch.getJoinDate())
-                .subVarieties(subVarietyResponses)
+                .build();
+    }
+
+    private static ItemResponse getItemResponse(Item i) {
+        List<ItemVarietyResponse> itemVarietyResponses = null;
+        if (i.getItemVarieties() != null) {
+            itemVarietyResponses = i.getItemVarieties().stream().map(
+                    MerchantBranchServiceImpl::getItemVarietyResponse
+                    ).collect(Collectors.toList());
+        }
+
+        return ItemResponse.builder()
+                .itemID(i.getItemID())
+                .itemName(i.getItemName())
+                .category(i.getCategory().getCategoryName().name())
+                .branchID(i.getMerchantBranch().getBranchID())
+                .image(i.getImage())
+                .initialPrice(i.getInitialPrice())
+                .discountedPrice(i.getDiscountedPrice())
+                .itemStock(i.getItemStock())
+                .isDiscounted(i.getIsDiscounted())
+                .isRecommended(i.getIsRecommended())
+                .itemDescription(i.getItemDescription())
+                .itemVarieties(itemVarietyResponses)
+                .build();
+    }
+
+    private static ItemVarietyResponse getItemVarietyResponse(ItemVariety iv) {
+        VarietyResponse varietyResponse = null;
+        if (iv.getVariety() != null) {
+            List<VarietySubVarietyResponse> varietySubVarietyResponses = null;
+            if (iv.getVariety().getVarietySubVarieties() != null) {
+                varietySubVarietyResponses = iv.getVariety().getVarietySubVarieties().stream().map(
+                        MerchantBranchServiceImpl::getVarietySubVarietyResponse
+                ).collect(Collectors.toList());
+            }
+            varietyResponse = VarietyResponse.builder()
+                    .varietyID(iv.getVariety().getVarietyID())
+                    .varietyName(iv.getVariety().getVarietyName())
+                    .isRequired(iv.getVariety().getIsRequired())
+                    .isMultiSelect(iv.getVariety().getIsMultiSelect())
+                    .varietySubVarieties(varietySubVarietyResponses)
+                    .build();
+        }
+
+        return ItemVarietyResponse.builder()
+                .itemVarietyID(iv.getItemVarietyID())
+                .variety(varietyResponse)
+                .build();
+    }
+
+    private static VarietySubVarietyResponse getVarietySubVarietyResponse(VarietySubVariety vsv) {
+        SubVarietyResponse subVarietyResponse = null;
+        if (vsv.getSubVariety() != null) {
+            subVarietyResponse = SubVarietyResponse.builder()
+                    .subVarietyID(vsv.getSubVariety().getSubVarietyID())
+                    .branchID(vsv.getSubVariety().getMerchantBranch().getBranchID())
+                    .subVarName(vsv.getSubVariety().getSubVarName())
+                    .subVarStock(vsv.getSubVariety().getSubVarStock())
+                    .build();
+        }
+        return VarietySubVarietyResponse.builder()
+                .varietySubVarietyID(vsv.getVarietySubVarietyID())
+                .subVariety(subVarietyResponse)
                 .build();
     }
 

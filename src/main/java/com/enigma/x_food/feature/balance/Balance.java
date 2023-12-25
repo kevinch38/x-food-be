@@ -2,7 +2,6 @@ package com.enigma.x_food.feature.balance;
 
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,6 @@ public class Balance extends BaseEntity {
     private String balanceID;
     @OneToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference
     private User user;
     @Column(name = "total_balance", nullable = false, length = 11)
     private Double totalBalance;

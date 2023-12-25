@@ -2,8 +2,6 @@ package com.enigma.x_food.feature.city;
 
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.shared.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +28,5 @@ public class City extends BaseEntity {
     private String cityName;
 
     @OneToMany(mappedBy = "city")
-    @JsonManagedReference
     private List<MerchantBranch> merchantBranches;
 }

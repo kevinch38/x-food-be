@@ -1,8 +1,7 @@
-package com.enigma.x_food.feature.variety_sub_variety;
+package com.enigma.x_food.feature.user.variety_sub_variety;
 
 import com.enigma.x_food.feature.sub_variety.SubVariety;
 import com.enigma.x_food.feature.variety.Variety;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,12 +22,9 @@ public class VarietySubVariety {
     @GeneratedValue(generator = "uuid")
     @Column(name = "variety_sub_variety_id")
     private String varietySubVarietyID;
-
     @ManyToOne
     @JoinColumn(name = "sub_variety_id", nullable = false)
-    @JsonBackReference
     private SubVariety subVariety;
-
     @ManyToOne
     @JoinColumn(name = "variety_id", nullable = false)
     private Variety variety;

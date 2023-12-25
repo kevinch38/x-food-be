@@ -39,7 +39,7 @@ public class OrderController {
         List<OrderResponse> orderResponses = orderService.findByAccountId(request);
 
         CommonResponse<List<OrderResponse>> response = CommonResponse.<List<OrderResponse>>builder()
-                .message("successfully get all history")
+                .message("successfully get all order history")
                 .statusCode(HttpStatus.OK.value())
                 .data(orderResponses)
                 .build();

@@ -39,7 +39,7 @@ public class PaymentController {
         List<PaymentResponse> paymentResponses = paymentService.findByAccountId(request);
 
         CommonResponse<List<PaymentResponse>> response = CommonResponse.<List<PaymentResponse>>builder()
-                .message("successfully get all history")
+                .message("successfully get all payment history")
                 .statusCode(HttpStatus.OK.value())
                 .data(paymentResponses)
                 .build();

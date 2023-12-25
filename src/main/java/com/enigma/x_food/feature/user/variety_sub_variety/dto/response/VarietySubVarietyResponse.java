@@ -1,5 +1,6 @@
-package com.enigma.x_food.feature.variety_sub_variety.dto.response;
+package com.enigma.x_food.feature.user.variety_sub_variety.dto.response;
 
+import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,5 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class VarietySubVarietyResponse {
     private String varietySubVarietyID;
-    private String subVarietyID;
-    private String varietyID;
+    private SubVarietyResponse subVariety;
 }

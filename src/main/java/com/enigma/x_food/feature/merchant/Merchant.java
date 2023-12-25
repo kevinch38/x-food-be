@@ -4,7 +4,6 @@ import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_status.MerchantStatus;
 import com.enigma.x_food.feature.promotion.Promotion;
 import com.enigma.x_food.shared.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
@@ -54,7 +53,6 @@ public class Merchant extends BaseEntity {
     @Type(type = "org.hibernate.type.BinaryType")
     private byte[] logoImage;
     @OneToMany(mappedBy = "merchant")
-    @JsonManagedReference
     private List<MerchantBranch> merchantBranches;
     @OneToMany(mappedBy = "merchant")
     private List<Promotion> promotions;

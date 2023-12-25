@@ -1,9 +1,9 @@
-package com.enigma.x_food.feature.variety_sub_variety;
+package com.enigma.x_food.feature.user.variety_sub_variety;
 
-import com.enigma.x_food.feature.variety.Variety;
-import com.enigma.x_food.feature.variety.VarietyService;
-import com.enigma.x_food.feature.variety_sub_variety.dto.request.VarietySubVarietyRequest;
-import com.enigma.x_food.feature.variety_sub_variety.dto.response.VarietySubVarietyResponse;
+import com.enigma.x_food.feature.sub_variety.SubVariety;
+import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
+import com.enigma.x_food.feature.user.variety_sub_variety.dto.request.VarietySubVarietyRequest;
+import com.enigma.x_food.feature.user.variety_sub_variety.dto.response.VarietySubVarietyResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,6 @@ import java.util.List;
 @Slf4j
 public class VarietySubVarietyServiceImpl implements VarietySubVarietyService {
     private final VarietySubVarietyRepository varietyRepository;
-    private final VarietyService varietyService;
     private final ValidationUtil validationUtil;
 
     @Transactional(rollbackFor = Exception.class)
@@ -30,10 +29,7 @@ public class VarietySubVarietyServiceImpl implements VarietySubVarietyService {
             log.info("Start createNew");
             validationUtil.validate(request);
 
-            Variety variety = varietyService.getById(request.getVarietyID());
-
             VarietySubVariety varietySubVariety = VarietySubVariety.builder()
-                    .variety(variety)
                     .subVariety(request.getSubVariety())
                     .build();
             varietyRepository.saveAndFlush(varietySubVariety);
@@ -67,10 +63,19 @@ public class VarietySubVarietyServiceImpl implements VarietySubVarietyService {
     }
 
     private VarietySubVarietyResponse mapToResponse(VarietySubVariety varietySubVariety) {
+        SubVariety subVariety = varietySubVariety.getSubVariety();
+        SubVarietyResponse subVarietyResponse = SubVarietyResponse.builder()
+                .subVarietyID(subVariety.getSubVarietyID())
+                .branchID(subVariety.getMerchantBranch().getBranchID())
+                .subVarName(subVariety.getSubVarName())
+                .subVarStock(subVariety.getSubVarStock())
+                .build();
+
         return VarietySubVarietyResponse.builder()
                 .varietySubVarietyID(varietySubVariety.getVarietySubVarietyID())
-                .varietyID(varietySubVariety.getVariety().getVarietyID())
-                .subVarietyID(varietySubVariety.getSubVariety().getSubVarietyID())
+                .subVariety(subVarietyResponse)
                 .build();
     }
+
+
 }

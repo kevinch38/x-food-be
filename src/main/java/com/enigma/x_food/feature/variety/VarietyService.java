@@ -1,6 +1,6 @@
 package com.enigma.x_food.feature.variety;
 
-import com.enigma.x_food.feature.variety.request.VarietyRequest;
+import com.enigma.x_food.feature.variety.dto.request.VarietyRequest;
 
 import java.util.List;
 

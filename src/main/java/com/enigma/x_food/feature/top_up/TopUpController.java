@@ -39,7 +39,7 @@ public class TopUpController {
         List<TopUpResponse> topUpResponses = topUpService.findByAccountId(request);
 
         CommonResponse<List<TopUpResponse>> response = CommonResponse.<List<TopUpResponse>>builder()
-                .message("successfully get all history")
+                .message("successfully get all top up history")
                 .statusCode(HttpStatus.OK.value())
                 .data(topUpResponses)
                 .build();

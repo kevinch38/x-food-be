@@ -1,7 +1,5 @@
 package com.enigma.x_food.feature.order_item.dto.request;
 
-import com.enigma.x_food.feature.order.Order;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

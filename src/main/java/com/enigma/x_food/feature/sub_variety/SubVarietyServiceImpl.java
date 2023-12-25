@@ -4,9 +4,8 @@ import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranchService;
 import com.enigma.x_food.feature.sub_variety.dto.request.SubVarietyRequest;
 import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
-import com.enigma.x_food.feature.variety_sub_variety.VarietySubVarietyService;
-import com.enigma.x_food.feature.variety_sub_variety.dto.request.VarietySubVarietyRequest;
-import com.enigma.x_food.feature.variety_sub_variety.dto.response.VarietySubVarietyResponse;
+import com.enigma.x_food.feature.user.variety_sub_variety.VarietySubVarietyService;
+import com.enigma.x_food.feature.user.variety_sub_variety.dto.request.VarietySubVarietyRequest;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,24 +70,11 @@ public class SubVarietyServiceImpl implements SubVarietyService {
     }
 
     private SubVarietyResponse mapToResponse(SubVariety subVariety) {
-        List<VarietySubVarietyResponse> varietySubVarieties = null;
-        if (subVariety.getVarietySubVarieties()!= null){
-            varietySubVarieties = subVariety.getVarietySubVarieties().stream().map(
-                    vsv -> VarietySubVarietyResponse.builder()
-                            .varietySubVarietyID(vsv.getVarietySubVarietyID())
-                            .subVarietyID(vsv.getSubVariety().getSubVarietyID())
-                            .varietyID(vsv.getVariety().getVarietyID())
-                            .build()
-                    )
-                    .collect(Collectors.toList());
-        }
-
         return SubVarietyResponse.builder()
                 .subVarietyID(subVariety.getSubVarietyID())
                 .branchID(subVariety.getMerchantBranch().getBranchID())
                 .subVarName(subVariety.getSubVarName())
                 .subVarStock(subVariety.getSubVarStock())
-                .varietySubVariety(varietySubVarieties)
                 .build();
     }
 

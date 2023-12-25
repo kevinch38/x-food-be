@@ -6,7 +6,6 @@ import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
 import com.enigma.x_food.feature.sub_variety.SubVariety;
 import com.enigma.x_food.shared.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
@@ -30,7 +29,6 @@ public class MerchantBranch extends BaseEntity {
     private String branchID;
     @JoinColumn(name = "merchant_id", nullable = false)
     @ManyToOne
-    @JsonBackReference
     private Merchant merchant;
     @Column(name = "merchant_name", nullable = false, length = 100)
     private String branchName;
@@ -54,15 +52,12 @@ public class MerchantBranch extends BaseEntity {
     private byte[] image;
     @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
-    @JsonBackReference
     private City city;
     @OneToMany(mappedBy = "merchantBranch")
-    @JsonBackReference
     private List<Item> items;
     @ManyToOne
     @JoinColumn(name = "merchant_branch_status_id", nullable = false)
     private MerchantBranchStatus merchantBranchStatus;
     @OneToMany(mappedBy = "merchantBranch")
-    @JsonBackReference
     List<SubVariety> subVarieties;
 }
