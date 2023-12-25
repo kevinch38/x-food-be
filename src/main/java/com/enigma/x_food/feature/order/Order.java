@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.order;
 
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.order_status.OrderStatus;
 import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
@@ -38,8 +39,9 @@ public class Order extends BaseEntity {
     private String notes;
     @Column(name = "table_number", nullable = false, length = 11)
     private Integer tableNumber;
-    @Column(name = "order_status_id", nullable = false)
-    private Double orderStatusID;
+    @ManyToOne
+    @JoinColumn(name = "order_status_id", nullable = false)
+    private OrderStatus orderStatus;
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
     private MerchantBranch merchantBranch;

@@ -59,7 +59,7 @@ public class MerchantBranch extends BaseEntity {
     @OneToMany(mappedBy = "merchantBranch")
     @JsonBackReference
     private List<Item> items;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "merchant_branch_status_id", nullable = false)
     private MerchantBranchStatus merchantBranchStatus;
     @OneToMany(mappedBy = "merchantBranch")

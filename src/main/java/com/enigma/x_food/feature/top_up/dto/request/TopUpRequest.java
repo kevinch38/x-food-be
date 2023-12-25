@@ -15,8 +15,8 @@ import javax.validation.constraints.NotNull;
 public class TopUpRequest {
     @NotNull(message = "Top up amount cannot be empty")
     private Double topUpAmount;
-    @NotBlank(message = "Method ID cannot be empty")
-    private String methodID;
+    @NotBlank(message = "Method cannot be empty")
+    private String method;
     @NotNull(message = "Top up fee = cannot be empty")
     private Double topUpFee;
     @NotBlank(message = "Top up status ID cannot be empty")

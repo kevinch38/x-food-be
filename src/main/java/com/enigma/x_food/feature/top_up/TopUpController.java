@@ -31,8 +31,8 @@ public class TopUpController {
                 .body(response);
     }
 
-    @GetMapping("/{accountID}")
-    public ResponseEntity<?> getAll(@PathVariable String accountID) {
+    @GetMapping
+    public ResponseEntity<?> getAll(@RequestParam String accountID) {
         SearchTopUpRequest request = SearchTopUpRequest.builder()
                 .accountID(accountID)
                 .build();

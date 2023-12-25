@@ -41,7 +41,7 @@ public class Promotion extends BaseEntity {
     private Timestamp expiredDate;
     @Column(name = "admin_id", nullable = false, length = 36)
     private String adminID;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "promotion_status_id", nullable = false)
     private PromotionStatus promotionStatus;
     @Column(name = "notes", length = 150)

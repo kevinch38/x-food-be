@@ -1,30 +1,39 @@
 package com.enigma.x_food.feature.payment;
 
+import com.enigma.x_food.constant.EPaymentStatus;
 import com.enigma.x_food.constant.EPaymentType;
+import com.enigma.x_food.constant.ETransactionType;
+import com.enigma.x_food.feature.friend.Friend;
+import com.enigma.x_food.feature.friend.FriendService;
+import com.enigma.x_food.feature.friend.dto.request.SearchFriendRequest;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.order.Order;
-import com.enigma.x_food.feature.order.OrderService;
+import com.enigma.x_food.feature.order.OrderRepository;
 import com.enigma.x_food.feature.payment.dto.request.SearchPaymentRequest;
 import com.enigma.x_food.feature.payment.dto.request.PaymentRequest;
+import com.enigma.x_food.feature.payment.dto.request.SplitBillRequest;
 import com.enigma.x_food.feature.payment.dto.response.PaymentResponse;
+import com.enigma.x_food.feature.payment_status.PaymentStatus;
+import com.enigma.x_food.feature.payment_status.PaymentStatusService;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.UserService;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,55 +44,94 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
-    private final HistoryService historyService;
+    private final PaymentStatusService paymentStatusService;
+    private final FriendService friendService;
     private final UserService userService;
-    private final OrderService orderService;
+    private final HistoryService historyService;
+    private final OrderRepository orderRepository;
     private final ValidationUtil validationUtil;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PaymentResponse createNew(PaymentRequest request) {
-        try {
-            log.info("Start createNew");
-            validationUtil.validate(request);
+    public Payment createNew(PaymentRequest request) {
+        log.info("Start createNew");
+        validationUtil.validate(request);
 
+        PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
+
+        Payment payment = Payment.builder()
+                .paymentAmount(request.getPaymentAmount())
+                .user(request.getUser())
+                .paymentAmount(request.getPaymentAmount())
+                .paymentType("ORDER")
+                .expiredAt(request.getExpiredAt())
+                .paymentStatus(paymentStatus)
+                .history(request.getHistory())
+                .order(request.getOrder())
+                .build();
+
+        paymentRepository.saveAndFlush(payment);
+        log.info("End createNew");
+        return payment;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<PaymentResponse> createSplitBill(List<SplitBillRequest> splitBillRequests) {
+        log.info("Start createNew");
+        validationUtil.validate(splitBillRequests);
+
+        List<Payment> payments = splitBillRequests.stream().map(
+                request -> {
+                    PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
+
+                    SearchFriendRequest friendRequest = SearchFriendRequest.builder()
+                            .friendID(request.getFriendID())
+                            .accountID(request.getAccountID())
+                            .build();
+                    List<Friend> friend = friendService.findByFriendId(friendRequest);
+
+                    User user = userService.getUserById(request.getAccountID());
+                    Order order = orderRepository.findById(request.getOrderID())
+                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+                    Instant currentTime = Instant.now();
+                    Instant expiredTime = currentTime.plus(Duration.ofHours(1));
+                    Timestamp expiredAt = Timestamp.from(expiredTime);
+                    return Payment.builder()
+                            .paymentAmount(request.getPaymentAmount())
+                            .user(user)
+                            .paymentAmount(request.getPaymentAmount())
+                            .paymentType(EPaymentType.SPLIT_BILL.name())
+                            .expiredAt(expiredAt)
+                            .paymentStatus(paymentStatus)
+                            .friend(friend.get(0))
+                            .order(order)
+                            .build();
+
+                }).collect(Collectors.toList());
+
+        paymentRepository.saveAllAndFlush(payments);
+        for (Payment payment : payments) {
+            User user = userService.getUserById(payment.getUser().getAccountID());
             HistoryRequest historyRequest = HistoryRequest.builder()
-                    .transactionType("PAYMENT")
-                    .historyValue(request.getPaymentAmount())
+                    .transactionType(ETransactionType.PAYMENT.name())
+                    .historyValue(payment.getPaymentAmount())
                     .transactionDate(LocalDate.now())
-                    .credit(false)
-                    .debit(true)
+                    .credit(true)
+                    .debit(false)
                     .orderID(null)
+                    .paymentID(payment.getPaymentID())
                     .topUpID(null)
-                    .accountID(request.getAccountID())
+                    .accountID(user.getAccountID())
                     .build();
-
             History history = historyService.createNew(historyRequest);
-            User user = userService.getUserById(request.getAccountID());
-            Order order = orderService.findById(request.getOrderID());
 
-            Payment payment = Payment.builder()
-                    .paymentAmount(request.getPaymentAmount())
-                    .user(entityManager.merge(user))
-                    .paymentAmount(request.getPaymentAmount())
-                    .paymentType(EPaymentType.valueOf(request.getPaymentType()).toString())
-                    .expiredAt(request.getExpiredAt())
-                    .paymentStatusID(request.getPaymentStatusID())
-                    .history(entityManager.merge(history))
-                    .friendID(request.getFriendID())
-                    .order(entityManager.merge(order))
-                    .build();
-
-            history.setPayment(payment);
-
-            paymentRepository.saveAndFlush(payment);
-            log.info("End createNew");
-            return mapToResponse(payment);
-        } catch (DataIntegrityViolationException e) {
-            log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "top up already exist");
+            payment.setHistory(history);
         }
+        log.info("End createNew");
+        return payments.stream().map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -95,6 +143,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private PaymentResponse mapToResponse(Payment payment) {
+        String friendID = null;
+        if (payment.getFriend() != null)
+            friendID = payment.getFriend().getFriendID();
+
         return PaymentResponse.builder()
                 .paymentID(payment.getPaymentID())
                 .paymentAmount(payment.getPaymentAmount())
@@ -102,10 +154,12 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentAmount(payment.getPaymentAmount())
                 .paymentType(payment.getPaymentType())
                 .expiredAt(payment.getExpiredAt())
-                .paymentStatusID(payment.getPaymentStatusID())
+                .paymentStatus(payment.getPaymentStatus().getStatus().name())
                 .historyID(payment.getHistory().getHistoryID())
-                .friendID(payment.getFriendID())
+                .friendID(friendID)
                 .orderID(payment.getOrder().getOrderID())
+                .createdAt(payment.getCreatedAt())
+                .updatedAt(payment.getUpdatedAt())
                 .build();
     }
 
@@ -117,14 +171,14 @@ public class PaymentServiceImpl implements PaymentService {
                 Join<Payment, History> paymentHistoryJoin = root.join("history", JoinType.INNER);
 
                 Predicate predicate = criteriaBuilder.equal(
-                        criteriaBuilder.lower(paymentHistoryJoin.get("user").get("accountID")),
+                        criteriaBuilder.lower(root.get("user").get("accountID")),
                         request.getAccountID().toLowerCase()
                 );
                 predicates.add(predicate);
 
                 predicate = criteriaBuilder.equal(
                         criteriaBuilder.lower(paymentHistoryJoin.get("transactionType")),
-                        "topup"
+                        "payment"
                 );
                 predicates.add(predicate);
             }

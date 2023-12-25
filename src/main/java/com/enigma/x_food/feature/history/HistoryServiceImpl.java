@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -43,7 +42,6 @@ public class HistoryServiceImpl implements HistoryService {
     private final HistoryRepository historyRepository;
     private final UserService userService;
     private final ValidationUtil validationUtil;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -60,7 +58,7 @@ public class HistoryServiceImpl implements HistoryService {
                     .transactionDate(LocalDate.now())
                     .credit(request.getCredit())
                     .debit(request.getDebit())
-                    .user(entityManager.merge(user))
+                    .user(user)
                     .build();
 
             historyRepository.save(history);
@@ -81,6 +79,13 @@ public class HistoryServiceImpl implements HistoryService {
         List<History> histories = historyRepository.findAll(specification);
         return histories.stream().map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public History findById(String id) {
+        return historyRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "History not found")
+        );
     }
 
     @Override
@@ -117,7 +122,7 @@ public class HistoryServiceImpl implements HistoryService {
             topUpResponse = TopUpResponse.builder()
                     .topUpID(topUp.getTopUpID())
                     .topUpAmount(topUp.getTopUpAmount())
-                    .methodID(topUp.getMethodID())
+                    .method(topUp.getMethod().getMethodName().name())
                     .topUpFee(topUp.getTopUpFee())
                     .createdAt(topUp.getCreatedAt())
                     .updatedAt(topUp.getUpdatedAt())
@@ -133,10 +138,8 @@ public class HistoryServiceImpl implements HistoryService {
                     .orderValue(order.getOrderValue())
                     .notes(order.getNotes())
                     .tableNumber(order.getTableNumber())
-                    .orderStatusID(order.getOrderStatusID())
+                    .orderStatus(order.getOrderStatus().getStatus().name())
                     .branchID(order.getMerchantBranch().getBranchID())
-                    .createdAt(order.getCreatedAt())
-                    .updatedAt(order.getUpdatedAt())
                     .build();
         } else if (payment != null){
             paymentResponse = PaymentResponse.builder()
@@ -144,9 +147,9 @@ public class HistoryServiceImpl implements HistoryService {
                     .accountID(payment.getUser().getAccountID())
                     .paymentAmount(payment.getPaymentAmount())
                     .expiredAt(payment.getExpiredAt())
-                    .paymentStatusID(payment.getPaymentStatusID())
+                    .paymentStatus(payment.getPaymentStatus().getStatus().name())
                     .historyID(payment.getHistory().getHistoryID())
-                    .friendID(payment.getFriendID())
+                    .friendID(payment.getFriend().getFriendID())
                     .orderID(payment.getOrder().getOrderID())
                     .createdAt(payment.getCreatedAt())
                     .updatedAt(payment.getUpdatedAt())

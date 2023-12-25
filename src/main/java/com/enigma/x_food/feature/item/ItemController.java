@@ -24,7 +24,7 @@ import java.util.List;
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(
             @RequestParam String itemName,
-            @RequestParam String categoryID,
+            @RequestParam String category,
             @RequestParam String branchID,
             @RequestParam MultipartFile image,
             @RequestParam Double initialPrice,
@@ -36,7 +36,7 @@ import java.util.List;
     ) throws IOException {
         NewItemRequest request = NewItemRequest.builder()
                 .itemName(itemName)
-                .categoryID(categoryID)
+                .category(category)
                 .branchID(branchID)
                 .image(image)
                 .initialPrice(initialPrice)

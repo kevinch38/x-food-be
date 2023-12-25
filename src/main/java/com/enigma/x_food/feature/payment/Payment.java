@@ -1,12 +1,11 @@
 package com.enigma.x_food.feature.payment;
 
-import com.enigma.x_food.constant.EPaymentType;
-import com.enigma.x_food.feature.balance.Balance;
+import com.enigma.x_food.feature.friend.Friend;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.order.Order;
+import com.enigma.x_food.feature.payment_status.PaymentStatus;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,13 +36,15 @@ public class Payment extends BaseEntity {
     private String paymentType;
     @Column(name = "expired_at", nullable = false)
     private Timestamp expiredAt;
-    @Column(name = "payment_status_id", nullable = false)
-    private String paymentStatusID;
-    @OneToOne
-    @JoinColumn(name = "history_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "payment_status_id", nullable = false)
+    private PaymentStatus paymentStatus;
+    @ManyToOne
+    @JoinColumn(name = "history_id")
     private History history;
-    @Column(name = "friend_id")
-    private String friendID;
+    @ManyToOne
+    @JoinColumn(name = "friend_id")
+    private Friend friend;
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;

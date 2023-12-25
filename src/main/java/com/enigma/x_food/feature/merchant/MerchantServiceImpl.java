@@ -162,7 +162,7 @@ public class MerchantServiceImpl implements MerchantService {
                                     return ItemResponse.builder()
                                             .itemID(i.getItemID())
                                             .itemName(i.getItemName())
-                                            .categoryID(i.getCategoryID())
+                                            .category(i.getCategory().getCategoryName().name())
                                             .branchID(i.getMerchantBranch().getBranchID())
                                             .image(i.getImage())
                                             .initialPrice(i.getInitialPrice())

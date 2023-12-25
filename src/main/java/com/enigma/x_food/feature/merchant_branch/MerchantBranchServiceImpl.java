@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -46,7 +45,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     private final MerchantStatusService merchantStatusService;
     private final MerchantBranchStatusService merchantBranchStatusService;
     private final ValidationUtil validationUtil;
-    private final EntityManager entityManager;
     private final CityService cityService;
 
     @Override
@@ -67,7 +65,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .adminID(merchantResponse.getAdminId())
                 .createdAt(merchantResponse.getCreatedAt())
                 .updatedAt(merchantResponse.getUpdatedAt())
-                .merchantStatus(entityManager.merge(merchantStatus))
+                .merchantStatus(merchantStatus)
                 .notes(merchantResponse.getNotes())
                 .picName(request.getPicName())
                 .picNumber(merchantResponse.getPicNumber())
@@ -80,7 +78,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
         MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.ACTIVE);
         MerchantBranch branch = MerchantBranch.builder()
-                .merchant(entityManager.merge(merchant))
+                .merchant(merchant)
                 .branchName(request.getBranchName())
                 .address(request.getAddress())
                 .timezone(request.getTimezone())
@@ -93,7 +91,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                         .cityID(cityResponse.getCityID())
                         .cityName(cityResponse.getCityName())
                         .build())
-                .merchantBranchStatus(entityManager.merge(merchantBranchStatus))
+                .merchantBranchStatus(merchantBranchStatus)
                 .joinDate(request.getJoinDate())
                 .build();
 
@@ -221,7 +219,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                         return ItemResponse.builder()
                                 .itemID(i.getItemID())
                                 .itemName(i.getItemName())
-                                .categoryID(i.getCategoryID())
+                                .category(i.getCategory().getCategoryName().name())
                                 .branchID(i.getMerchantBranch().getBranchID())
                                 .image(i.getImage())
                                 .initialPrice(i.getInitialPrice())

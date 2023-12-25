@@ -1,23 +1,22 @@
 package com.enigma.x_food.feature.top_up;
 
+import com.enigma.x_food.constant.EMethod;
 import com.enigma.x_food.feature.balance.Balance;
 import com.enigma.x_food.feature.balance.BalanceService;
-import com.enigma.x_food.feature.balance.dto.response.BalanceResponse;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
+import com.enigma.x_food.feature.method.Method;
+import com.enigma.x_food.feature.method.MethodService;
 import com.enigma.x_food.feature.top_up.dto.request.SearchTopUpRequest;
 import com.enigma.x_food.feature.top_up.dto.request.TopUpRequest;
 import com.enigma.x_food.feature.top_up.dto.response.TopUpResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Join;
@@ -35,49 +34,46 @@ public class TopUpServiceImpl implements TopUpService {
     private final TopUpRepository topUpRepository;
     private final HistoryService historyService;
     private final BalanceService balanceService;
+    private final MethodService methodService;
     private final ValidationUtil validationUtil;
     private final EntityManager entityManager;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TopUpResponse createNew(TopUpRequest request) {
-        try {
-            log.info("Start createNew");
-            validationUtil.validate(request);
+        log.info("Start createNew");
+        validationUtil.validate(request);
 
-            Balance balance = balanceService.getById(request.getBalanceID());
+        Balance balance = balanceService.getById(request.getBalanceID());
 
-            HistoryRequest historyRequest = HistoryRequest.builder()
-                    .transactionType("TOP_UP")
-                    .historyValue(request.getTopUpAmount())
-                    .transactionDate(LocalDate.now())
-                    .credit(false)
-                    .debit(true)
-                    .orderID(null)
-                    .paymentID(null)
-                    .accountID(request.getAccountID())
-                    .build();
+        HistoryRequest historyRequest = HistoryRequest.builder()
+                .transactionType("TOP_UP")
+                .historyValue(request.getTopUpAmount())
+                .transactionDate(LocalDate.now())
+                .credit(false)
+                .debit(true)
+                .orderID(null)
+                .paymentID(null)
+                .accountID(request.getAccountID())
+                .build();
 
-            History history = historyService.createNew(historyRequest);
+        History history = historyService.createNew(historyRequest);
+        Method methodName = methodService.getByMethodName(EMethod.valueOf(request.getMethod()));
 
-            TopUp topUp = TopUp.builder()
-                    .topUpAmount(request.getTopUpAmount())
-                    .methodID(request.getMethodID())
-                    .topUpFee(request.getTopUpFee())
-                    .topUpStatusID(request.getTopUpStatusID())
-                    .balance(entityManager.merge(balance))
-                    .history(entityManager.merge(history))
-                    .build();
+        TopUp topUp = TopUp.builder()
+                .topUpAmount(request.getTopUpAmount())
+                .method(methodName)
+                .topUpFee(request.getTopUpFee())
+                .topUpStatusID(request.getTopUpStatusID())
+                .balance(entityManager.merge(balance))
+                .history(entityManager.merge(history))
+                .build();
 
-            history.setTopUp(topUp);
+        history.setTopUp(topUp);
 
-            topUpRepository.saveAndFlush(topUp);
-            log.info("End createNew");
-            return mapToResponse(topUp);
-        } catch (DataIntegrityViolationException e) {
-            log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "top up already exist");
-        }
+        topUpRepository.saveAndFlush(topUp);
+        log.info("End createNew");
+        return mapToResponse(topUp);
     }
 
     @Override
@@ -92,7 +88,7 @@ public class TopUpServiceImpl implements TopUpService {
         return TopUpResponse.builder()
                 .topUpID(topUp.getTopUpID())
                 .topUpAmount(topUp.getTopUpAmount())
-                .methodID(topUp.getMethodID())
+                .method(topUp.getMethod().getMethodName().name())
                 .topUpFee(topUp.getTopUpFee())
                 .topUpStatusID(topUp.getTopUpStatusID())
                 .balanceID(topUp.getBalance().getBalanceID())
@@ -117,7 +113,7 @@ public class TopUpServiceImpl implements TopUpService {
 
                 predicate = criteriaBuilder.equal(
                         criteriaBuilder.lower(topUpHistoryJoin.get("transactionType")),
-                        "topup"
+                        "top_up"
                 );
                 predicates.add(predicate);
             }

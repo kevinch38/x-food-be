@@ -1,7 +1,7 @@
 package com.enigma.x_food.feature.payment;
 
 import com.enigma.x_food.feature.payment.dto.request.SearchPaymentRequest;
-import com.enigma.x_food.feature.payment.dto.request.PaymentRequest;
+import com.enigma.x_food.feature.payment.dto.request.SplitBillRequest;
 import com.enigma.x_food.feature.payment.dto.response.PaymentResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +19,9 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNew(@RequestBody PaymentRequest request) {
-        PaymentResponse paymentResponse = paymentService.createNew(request);
-        CommonResponse<PaymentResponse> response = CommonResponse.<PaymentResponse>builder()
+    public ResponseEntity<?> createNew(@RequestBody List<SplitBillRequest> request) {
+        List<PaymentResponse> paymentResponse = paymentService.createSplitBill(request);
+        CommonResponse<List<PaymentResponse>> response = CommonResponse.<List<PaymentResponse>>builder()
                 .message("successfully create payment")
                 .statusCode(HttpStatus.CREATED.value())
                 .data(paymentResponse)
@@ -31,8 +31,8 @@ public class PaymentController {
                 .body(response);
     }
 
-    @GetMapping("/{accountID}")
-    public ResponseEntity<?> getAll(@PathVariable String accountID) {
+    @GetMapping
+    public ResponseEntity<?> getAll(@RequestParam String accountID) {
         SearchPaymentRequest request = SearchPaymentRequest.builder()
                 .accountID(accountID)
                 .build();

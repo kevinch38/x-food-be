@@ -17,7 +17,6 @@ import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -45,55 +43,49 @@ public class PromotionServiceImpl implements PromotionService {
     private final MerchantStatusService merchantStatusService;
     private final PromotionStatusService promotionStatusService;
     private final ValidationUtil validationUtil;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PromotionResponse createNew(NewPromotionRequest request) {
-        try {
-            log.info("Start createNew");
-            validationUtil.validate(request);
-            MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
-            MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.valueOf(merchantResponse.getStatus()));
+        log.info("Start createNew");
+        validationUtil.validate(request);
+        MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.valueOf(merchantResponse.getStatus()));
 
-            Merchant merchant = Merchant.builder()
-                    .merchantID(merchantResponse.getMerchantID())
-                    .joinDate(merchantResponse.getJoinDate())
-                    .merchantName(merchantResponse.getMerchantName())
-                    .picName(merchantResponse.getPicName())
-                    .picNumber(merchantResponse.getPicNumber())
-                    .picEmail(merchantResponse.getPicEmail())
-                    .merchantDescription(merchantResponse.getMerchantDescription())
-                    .adminID(merchantResponse.getAdminId())
-                    .createdAt(merchantResponse.getCreatedAt())
-                    .updatedAt(merchantResponse.getUpdatedAt())
-                    .merchantStatus(entityManager.merge(merchantStatus))
-                    .notes(merchantResponse.getNotes())
-                    .build();
+        Merchant merchant = Merchant.builder()
+                .merchantID(merchantResponse.getMerchantID())
+                .joinDate(merchantResponse.getJoinDate())
+                .merchantName(merchantResponse.getMerchantName())
+                .picName(merchantResponse.getPicName())
+                .picNumber(merchantResponse.getPicNumber())
+                .picEmail(merchantResponse.getPicEmail())
+                .merchantDescription(merchantResponse.getMerchantDescription())
+                .adminID(merchantResponse.getAdminId())
+                .createdAt(merchantResponse.getCreatedAt())
+                .updatedAt(merchantResponse.getUpdatedAt())
+                .merchantStatus(merchantStatus)
+                .notes(merchantResponse.getNotes())
+                .build();
 
-            PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
 
-            Promotion promotion = Promotion.builder()
-                    .merchant(entityManager.merge(merchant))
-                    .cost(request.getCost())
-                    .maxRedeem(request.getMaxRedeem())
-                    .promotionValue(request.getPromotionValue())
-                    .promotionDescription(request.getPromotionDescription())
-                    .promotionName(request.getPromotionName())
-                    .quantity(request.getQuantity())
-                    .adminID("adminID")
-                    .expiredDate(request.getExpiredDate())
-                    .promotionStatus(entityManager.merge(promotionStatus))
-                    .notes(request.getNotes())
-                    .build();
+        Promotion promotion = Promotion.builder()
+                .merchant(merchant)
+                .cost(request.getCost())
+                .maxRedeem(request.getMaxRedeem())
+                .promotionValue(request.getPromotionValue())
+                .promotionDescription(request.getPromotionDescription())
+                .promotionName(request.getPromotionName())
+                .quantity(request.getQuantity())
+                .adminID("adminID")
+                .expiredDate(request.getExpiredDate())
+                .promotionStatus(promotionStatus)
+                .notes(request.getNotes())
+                .build();
 
-            promotionRepository.saveAndFlush(promotion);
-            log.info("End createNew");
-            return mapToResponse(promotion);
-        } catch (DataIntegrityViolationException e) {
-            log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "promotion already exist");
-        }
+        promotionRepository.saveAndFlush(promotion);
+        log.info("End createNew");
+        return mapToResponse(promotion);
     }
 
     @Override
@@ -116,13 +108,13 @@ public class PromotionServiceImpl implements PromotionService {
                 .adminID(merchantResponse.getAdminId())
                 .createdAt(merchantResponse.getCreatedAt())
                 .updatedAt(merchantResponse.getUpdatedAt())
-                .merchantStatus(entityManager.merge(merchantStatus))
+                .merchantStatus(merchantStatus)
                 .notes(merchantResponse.getNotes())
                 .build();
 
         Promotion updated = Promotion.builder()
                 .promotionID(promotion.getPromotionID())
-                .merchant(entityManager.merge(merchant))
+                .merchant(merchant)
                 .cost(request.getCost())
                 .maxRedeem(request.getMaxRedeem())
                 .promotionValue(request.getPromotionValue())
@@ -274,7 +266,7 @@ public class PromotionServiceImpl implements PromotionService {
                 predicates.add(predicate);
             }
 
-            if (option.equalsIgnoreCase("active")){
+            if (option.equalsIgnoreCase("active")) {
                 Predicate predicate = criteriaBuilder.equal(
                         root.get("promotionStatus").get("status"),
                         EPromotionStatus.ACTIVE

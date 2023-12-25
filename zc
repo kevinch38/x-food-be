@@ -1,0 +1,100 @@
+[33me792d79[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m [FIX] fixing the relations and responses for ItemVariety, Variety, VarietySubVariety, and SubVariety
+[33m7e5a356[m Merge branch 'master' of git.enigmacamp.com:enigma-camp/oflline-class-lovelace/offline-class-lovelace/team/final-project/fantastic-five/back-end/x-food
+[33m8f05fa3[m [FIX] fix merchant branch response
+[33m3b96bec[m [FIX] Fixing Image NotNull Annotation In Merchant Branch
+[33m74d4c3d[m [ADD] adding get all merchantBranches
+[33m5fd6511[m [ADD] add getByID method for merchant branch
+[33m338093d[m [FEATURE] add payment and order with relation to history
+[33m3e2a966[m [FIX] fix merchant update
+[33m41eced3[m [FIX] fix update request
+[33m5ea637a[m [FIX] fixing error relations
+[33me8f3213[m [FIX] minor fixing setting user phone number
+[33m0c11bbb[m Merge branch 'master' of git.enigmacamp.com:enigma-camp/oflline-class-lovelace/offline-class-lovelace/team/final-project/fantastic-five/back-end/x-food
+[33m88caeb6[m[33m ([m[1;32mdev/kevin[m[33m)[m Merge branch 'dev/kevin' into 'master'
+[33m0a71880[m[33m ([m[1;31morigin/dev/kevin[m[33m)[m Merge branch 'master' into 'dev/kevin'
+[33m7af3ea9[m [FEATURE] add features for varieties, branch working hours, loyalty point, balance and build relations from the mentioned new features
+[33mbd16456[m Merge branch 'master' of git.enigmacamp.com:enigma-camp/oflline-class-lovelace/offline-class-lovelace/team/final-project/fantastic-five/back-end/x-food
+[33m16b7958[m [FIX] fixing misplaced promotion package
+[33m345e6b2[m Merge branch 'dev/kevin' into 'master'
+[33m45f5dc5[m [ADD] adding image to branch and merchant, add pic attributes to branch, add findbyid in MerchantController
+[33m6465d7c[m [FIX] fix null value when creating merchant
+[33m8446995[m [FIX] fix merchant response and branch response
+[33mc7302e9[m [FIX] fix endpoint for getting merchants and branches
+[33m4ed9bcd[m Merge branch 'dev/kevin' into 'master'
+[33m17e3827[m Merge branch 'dev/kevin' into 'master'
+[33mc75772c[m Merge branch 'dev/Irvan' into 'master'
+[33m4af1775[m [FIX] fix minor bug when updating merchant branch
+[33m824f268[m[33m ([m[1;31morigin/dev/Irvan[m[33m, [m[1;32mdev/Irvan[m[33m)[m [FIX] Fixing Update & Jsonformat for date
+[33m3f1227b[m [FIX] fix where one branch can only in one city
+[33meceedbc[m [FIX] fix where only get active status for getAll and merchant branch inactive following merchant
+[33m5aa7ab3[m [FEATURE] add status for merchant, branch, and promotion along with FK
+[33m476dd2e[m [FIX] fixing minor bug in paging util
+[33m8935f67[m Merge branch 'dev/kevin' into 'master'
+[33m71d2840[m Merge branch 'dev/Irvan' into 'master'
+[33mb0b28fb[m [FEATURE] get all items/menus feature
+[33m89c2948[m Adding Update Profile Picture Feature & Fixing Error Messages
+[33m1ac882c[m [FIX] Fixing Redundant City
+[33m20beb46[m [FEATURE] Adding City Feature
+[33m2078cc7[m [FIX] Fixing Unique Issue In User Email
+[33mbe8f1be[m Merge branch 'dev/kevin' into 'master'
+[33m2cb63ea[m Merge branch 'dev/Irvan' into 'master'
+[33mb9a94a6[m [ADD] adding get all top up histories
+[33m564755d[m [FIX] Minor Entity Fix
+[33mbf4c481[m [FEATURE] add top up and history feature
+[33mb91e40f[m [FIX] Minor Fix In User & Pin
+[33m82e6b3a[m [IMPROVE] Adding New Testing For User And Pin
+[33m10c0e0d[m Merge branch 'master' into dev/Irvan
+[33me0a63ef[m Merge branch 'master' into dev/Irvan
+[33m8f470e6[m Merge branch 'dev/kevin' into 'master'
+[33m005de03[m Merge branch 'master' into 'dev/kevin'
+[33m06792be[m Merge branch 'dev/Irvan' into 'master'
+[33m7ff3b56[m [FIX] fixing specification bugs
+[33m76abbf6[m [ADD] adding specifications for getAll methods and fixing bugs
+[33m6af99c0[m Merge branch 'dev/Irvan' of https://git.enigmacamp.com/enigma-camp/oflline-class-lovelace/offline-class-lovelace/team/final-project/fantastic-five/back-end/x-food into dev/Irvan
+[33md419849[m [FEATURE] Adding Check Pin Feature
+[33meb2e5cf[m Merge branch 'dev/Irvan' into 'master'
+[33m66f1398[m Merge branch 'master' into 'dev/Irvan'
+[33m1ec1dac[m Merge branch 'dev/kevin' into 'master'
+[33mecbd166[m [TEST] unit testing for promotion and user
+[33mda6d2d2[m [FIX] Fixing Status Code & Message For Pin
+[33mfdc7647[m [FIX] fixing unecessary request dto atribute and cascade type
+[33m63f3aeb[m Merge branch 'dev/Irvan' of https://git.enigmacamp.com/enigma-camp/oflline-class-lovelace/offline-class-lovelace/team/final-project/fantastic-five/back-end/x-food into dev/Irvan
+[33m0c2ad93[m [FEATURE] Adding Login Feature
+[33mfac3821[m [FIX] fixing unecessary set updatedAt and createdAt
+[33m7bf0d15[m Merge branch 'dev/Irvan' into 'master'
+[33mc3d17bf[m Merge branch 'master' into 'dev/Irvan'
+[33m378ab06[m [TEST] adding test structure
+[33mab9bf08[m [FEATURE] Adding Endpoint To Pin
+[33m164b124[m [FEATURE] Adding FK to Account For Pin, Adding CRUD to Account and Read to Pin
+[33m1e1f5e4[m [ADD] complete crud for promotion
+[33m800d05a[m [ADD] add getAll with specifications for promotion
+[33m129e097[m [FIX] fixing some details and adding relation between merchant and branches
+[33m85ae180[m [FIX] Fixing project structure
+[33m96014f8[m Merge branch 'dev/raswan' into 'master'
+[33m299cb88[m Merge branch 'dev/kevin' into 'master'
+[33m06f9515[m Merge branch 'master' into 'dev/kevin'
+[33m5c8ba51[m [FIX] fixing data type mistake
+[33m5a4939e[m[33m ([m[1;31morigin/dev/raswan[m[33m)[m Merge branch 'master' into 'dev/raswan'
+[33m30d1587[m Merge branch 'dev/Irvan' into 'master'
+[33ma87e68a[m [FIX] Fixing Endpoint And DTO For New User
+[33m60a96a3[m [IMPROVE]->change controller method name
+[33m3c648dd[m [FEATURE]->create merchant branch
+[33mfa9923b[m [FEATURE]->merchant creation
+[33m9b88ec4[m [IMPROVE] Adding Get User By ID Service & Controller Testing
+[33m25fb4cd[m [FEATURE] add feature create otp
+[33m66cbcc2[m [FEATURE] add feature create promotion
+[33m2421a3a[m Merge changes from remote dev/kevin
+[33m862b89a[m Merge branch
+[33m9378bbe[m Merge branch 'your-branch' into main
+[33m3f32fc8[m [FEATURE] Adding Get User By ID Feature
+[33mc9c5790[m [FEATURE] Adding Create New User Feature
+[33m7157302[m [IMPROVE] Improving CreatedAt & UpdatedAt In User & Pin Entity
+[33m37b0ee0[m [FIX] fix project structure
+[33m3d36e7a[m [FIX] fixing project structure
+[33mb23106d[m [FIX] fixing project structure
+[33m95ccac2[m Merge branch 'dev/Irvan' into 'master'
+[33m081d2b2[m [FIX] Fixing User View Feature
+[33m1db3445[m [FEATURE] Adding Specification Feature To User
+[33mb11c964[m [FEATURE] Adding Create Pin Feature
+[33m3201ee6[m [FEATURE] Adding View All User Feature
+[33mde000ca[m Initial Commit

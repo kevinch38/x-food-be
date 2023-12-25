@@ -40,7 +40,7 @@ public class Merchant extends BaseEntity {
     private String merchantDescription;
     @Column(name = "admin_id", nullable = false, length = 36)
     private String adminID;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "merchant_status_id", nullable = false)
     private MerchantStatus merchantStatus;
     @Column(name = "notes", length = 150)

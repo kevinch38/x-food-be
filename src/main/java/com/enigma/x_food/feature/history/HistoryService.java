@@ -10,5 +10,6 @@ import java.util.List;
 public interface HistoryService {
     History createNew(HistoryRequest request);
     List<HistoryResponse> findByAccountId(SearchHistoryRequest request);
+    History findById(String id);
     Page<HistoryResponse> findAll(SearchHistoryRequest request);
 }

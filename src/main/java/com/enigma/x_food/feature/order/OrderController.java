@@ -31,8 +31,8 @@ public class OrderController {
                 .body(response);
     }
 
-    @GetMapping("/{accountID}")
-    public ResponseEntity<?> getAll(@PathVariable String accountID) {
+    @GetMapping
+    public ResponseEntity<?> getAll(@RequestParam String accountID) {
         SearchOrderRequest request = SearchOrderRequest.builder()
                 .accountID(accountID)
                 .build();

@@ -1,6 +1,8 @@
 package com.enigma.x_food.feature.payment.dto.request;
 
-import com.enigma.x_food.constant.EPaymentType;
+import com.enigma.x_food.feature.history.History;
+import com.enigma.x_food.feature.order.Order;
+import com.enigma.x_food.feature.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,19 +17,14 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Builder
 public class PaymentRequest {
-    @NotBlank(message = "Account ID cannot be empty")
-    private String accountID;
-    @NotNull(message = "Top up amount cannot be empty")
+    @NotNull(message = "User cannot be empty")
+    private User user;
+    @NotNull(message = "Payment amount cannot be empty")
     private Double paymentAmount;
-    @NotBlank(message = "Payment type cannot be empty")
-    private String paymentType;
     @NotNull(message = "Expired at cannot be empty")
     private Timestamp expiredAt;
-    @NotBlank(message = "Payment status ID cannot be empty")
-    private String paymentStatusID;
-    @NotBlank(message = "History ID cannot be empty")
-    private String historyID;
-    private String friendID;
-    @NotBlank(message = "Order ID cannot be empty")
-    private String orderID;
+    @NotNull(message = "History cannot be empty")
+    private History history;
+    @NotNull(message = "Order cannot be empty")
+    private Order order;
 }

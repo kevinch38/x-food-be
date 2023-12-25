@@ -15,7 +15,7 @@ import java.util.List;
 public class ItemResponse {
     private String itemID;
     private String itemName;
-    private String categoryID;
+    private String category;
     private String branchID;
     private byte[] image;
     private Double initialPrice;

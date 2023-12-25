@@ -17,7 +17,7 @@ public class NewItemRequest {
     @NotBlank(message = "Item name cannot be empty")
     private String itemName;
     @NotBlank(message = "Category ID cannot be empty")
-    private String categoryID;
+    private String category;
     @NotBlank(message = "Branch ID cannot be empty")
     private String branchID;
     private MultipartFile image;

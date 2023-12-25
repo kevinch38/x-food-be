@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class TopUpResponse {
     private String topUpID;
     private Double topUpAmount;
-    private String methodID;
+    private String method;
     private Double topUpFee;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
