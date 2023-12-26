@@ -22,8 +22,8 @@ import com.enigma.x_food.feature.merchant_status.MerchantStatus;
 import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
 import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import com.enigma.x_food.feature.variety.dto.response.VarietyResponse;
-import com.enigma.x_food.feature.user.variety_sub_variety.VarietySubVariety;
-import com.enigma.x_food.feature.user.variety_sub_variety.dto.response.VarietySubVarietyResponse;
+import com.enigma.x_food.feature.variety_sub_variety.VarietySubVariety;
+import com.enigma.x_food.feature.variety_sub_variety.dto.response.VarietySubVarietyResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -270,6 +270,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                     .branchID(vsv.getSubVariety().getMerchantBranch().getBranchID())
                     .subVarName(vsv.getSubVariety().getSubVarName())
                     .subVarStock(vsv.getSubVariety().getSubVarStock())
+                    .subVarPrice(vsv.getSubVariety().getSubVarPrice())
                     .build();
         }
         return VarietySubVarietyResponse.builder()

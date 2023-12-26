@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.user.variety_sub_variety;
+package com.enigma.x_food.feature.variety_sub_variety;
 
 import com.enigma.x_food.feature.sub_variety.SubVariety;
 import com.enigma.x_food.feature.variety.Variety;

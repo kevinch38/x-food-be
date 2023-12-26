@@ -1,9 +1,9 @@
-package com.enigma.x_food.feature.user.variety_sub_variety;
+package com.enigma.x_food.feature.variety_sub_variety;
 
 import com.enigma.x_food.feature.sub_variety.SubVariety;
 import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
-import com.enigma.x_food.feature.user.variety_sub_variety.dto.request.VarietySubVarietyRequest;
-import com.enigma.x_food.feature.user.variety_sub_variety.dto.response.VarietySubVarietyResponse;
+import com.enigma.x_food.feature.variety_sub_variety.dto.request.VarietySubVarietyRequest;
+import com.enigma.x_food.feature.variety_sub_variety.dto.response.VarietySubVarietyResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +69,7 @@ public class VarietySubVarietyServiceImpl implements VarietySubVarietyService {
                 .branchID(subVariety.getMerchantBranch().getBranchID())
                 .subVarName(subVariety.getSubVarName())
                 .subVarStock(subVariety.getSubVarStock())
+                .subVarPrice(subVariety.getSubVarPrice())
                 .build();
 
         return VarietySubVarietyResponse.builder()

@@ -14,4 +14,5 @@ public class SubVarietyResponse {
     private String branchID;
     private String subVarName;
     private Integer subVarStock;
+    private Double subVarPrice;
 }

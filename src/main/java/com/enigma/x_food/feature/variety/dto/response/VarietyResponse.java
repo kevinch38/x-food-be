@@ -1,6 +1,6 @@
 package com.enigma.x_food.feature.variety.dto.response;
 
-import com.enigma.x_food.feature.user.variety_sub_variety.dto.response.VarietySubVarietyResponse;
+import com.enigma.x_food.feature.variety_sub_variety.dto.response.VarietySubVarietyResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.enigma.x_food.feature.variety;
 
-import com.enigma.x_food.feature.user.variety_sub_variety.VarietySubVariety;
+import com.enigma.x_food.feature.variety_sub_variety.VarietySubVariety;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
