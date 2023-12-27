@@ -18,7 +18,7 @@ public class NewPromotionRequest {
     @NotBlank(message = "Merchant ID cannot be empty")
     private String merchantID;
     @NotNull(message = "Cost cannot be empty")
-    private Double cost;
+    private Integer cost;
     @NotNull(message = "Max redeem ID cannot be empty")
     private Integer maxRedeem;
     @NotNull(message = "Promotion value cannot be empty")

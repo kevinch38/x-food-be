@@ -26,7 +26,7 @@ public class Promotion extends BaseEntity {
     @JoinColumn(name = "merchant_id", nullable = false)
     private Merchant merchant;
     @Column(name = "cost", nullable = false, length = 11)
-    private Double cost;
+    private Integer cost;
     @Column(name = "max_redeem", nullable = false, length = 11)
     private Integer maxRedeem;
     @Column(name = "promotion_value", nullable = false, length = 11)

@@ -122,6 +122,11 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
+    public Promotion getPromotionById(String id) {
+        return findByIdOrThrowException(id);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<PromotionResponse> getAll(SearchPromotionRequest request) {
         String fieldName = SortingUtil.sortByValidation(Promotion.class, request.getSortBy(), "promotionID");

@@ -13,6 +13,7 @@ public interface PromotionService {
     PromotionResponse update(UpdatePromotionRequest request);
     void deleteById(String id);
     PromotionResponse findById(String id);
+    Promotion getPromotionById(String id);
     Page<PromotionResponse> getAll(SearchPromotionRequest request);
     List<PromotionResponse> getAllActive(SearchPromotionRequest request);
 }
