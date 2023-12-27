@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class OTPController {
     private final OTPService otpService;
-    @PostMapping(value = "/check", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> checkOtp(@RequestBody CheckOTPRequest request) {
         Boolean isTrue = otpService.checkOtp(request);
         CommonResponse<Boolean> response = CommonResponse.<Boolean>builder()

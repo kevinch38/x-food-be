@@ -25,9 +25,6 @@ public class HistoryRequest {
     private Boolean credit;
     @NotNull(message = "Debit name cannot be empty")
     private Boolean debit;
-    private String orderID;
-    private String paymentID;
-    private String topUpID;
     @NotBlank(message = "Account ID cannot be empty")
     private String accountID;
 }

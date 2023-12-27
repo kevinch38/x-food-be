@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderRequest {
+public class NewOrderRequest {
     @NotBlank(message = "Account ID cannot be empty")
     private String accountID;
     @NotNull(message = "Order value cannot be empty")

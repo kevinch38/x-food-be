@@ -63,7 +63,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentAmount(request.getPaymentAmount())
                 .user(request.getUser())
                 .paymentAmount(request.getPaymentAmount())
-                .paymentType("ORDER")
+                .paymentType(EPaymentType.ORDER.name())
                 .expiredAt(request.getExpiredAt())
                 .paymentStatus(paymentStatus)
                 .history(request.getHistory())
@@ -102,7 +102,7 @@ public class PaymentServiceImpl implements PaymentService {
                             .paymentAmount(request.getPaymentAmount())
                             .user(user)
                             .paymentAmount(request.getPaymentAmount())
-                            .paymentType(EPaymentType.SPLIT_BILL.name())
+                            .paymentType(EPaymentType.FRIEND.name())
                             .expiredAt(expiredAt)
                             .paymentStatus(paymentStatus)
                             .friend(friend.get(0))
@@ -120,12 +120,10 @@ public class PaymentServiceImpl implements PaymentService {
                     .transactionDate(LocalDate.now())
                     .credit(true)
                     .debit(false)
-                    .orderID(null)
-                    .paymentID(payment.getPaymentID())
-                    .topUpID(null)
                     .accountID(user.getAccountID())
                     .build();
             History history = historyService.createNew(historyRequest);
+            history.setPayment(payment);
 
             payment.setHistory(history);
         }
@@ -176,10 +174,15 @@ public class PaymentServiceImpl implements PaymentService {
                 );
                 predicates.add(predicate);
 
-                predicate = criteriaBuilder.equal(
-                        criteriaBuilder.lower(paymentHistoryJoin.get("transactionType")),
-                        "payment"
-                );
+                predicate = criteriaBuilder.or(
+                        criteriaBuilder.equal(
+                                criteriaBuilder.lower(paymentHistoryJoin.get("transactionType")),
+                                "payment"
+                        ),
+                        criteriaBuilder.equal(
+                                criteriaBuilder.lower(paymentHistoryJoin.get("transactionType")),
+                                "order"
+                        ));
                 predicates.add(predicate);
             }
             return query

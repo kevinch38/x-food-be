@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
+import java.time.*;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -26,9 +29,16 @@ public class LoyaltyPointServiceImpl implements LoyaltyPointService {
             log.info("Start createNew");
             validationUtil.validate(request);
 
+            int currentYear = Year.now().getValue();
+            ZonedDateTime endOfYear = ZonedDateTime.of(
+                    currentYear, 12, 31, 23, 59, 59, 999,
+                    ZoneId.of("GMT+7"));
+            Instant expiredTime = endOfYear.toInstant();
+            Timestamp expiredDate = Timestamp.from(expiredTime);
+
             LoyaltyPoint loyaltyPoint = LoyaltyPoint.builder()
                     .loyaltyPointAmount(request.getLoyaltyPointAmount())
-                    .expiredDate(request.getExpiredAt())
+                    .expiredDate(expiredDate)
                     .build();
 
             loyaltyPointRepository.save(loyaltyPoint);
@@ -44,18 +54,18 @@ public class LoyaltyPointServiceImpl implements LoyaltyPointService {
     @Transactional(rollbackFor = Exception.class)
     public LoyaltyPointResponse update(UpdateLoyaltyPointRequest request) {
         validationUtil.validate(request);
+
         LoyaltyPoint loyaltyPoint = findByIdOrThrowException(request.getLoyaltyPointID());
-        loyaltyPoint.setLoyaltyPointAmount(request.getLoyaltyPointAmount());
-        loyaltyPoint.setExpiredDate(request.getExpiredAt());
+        loyaltyPoint.setLoyaltyPointAmount(loyaltyPoint.getLoyaltyPointAmount() + request.getLoyaltyPointAmount());
 
         return mapToResponse(loyaltyPointRepository.saveAndFlush(loyaltyPoint));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public LoyaltyPointResponse findById(String id) {
+    public LoyaltyPoint findById(String id) {
         validationUtil.validate(id);
-        return mapToResponse(findByIdOrThrowException(id));
+        return findByIdOrThrowException(id);
     }
 
     private LoyaltyPoint findByIdOrThrowException(String id) {

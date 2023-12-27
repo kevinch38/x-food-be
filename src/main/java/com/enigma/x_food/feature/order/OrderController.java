@@ -1,7 +1,8 @@
 package com.enigma.x_food.feature.order;
 
-import com.enigma.x_food.feature.order.dto.request.OrderRequest;
+import com.enigma.x_food.feature.order.dto.request.NewOrderRequest;
 import com.enigma.x_food.feature.order.dto.request.SearchOrderRequest;
+import com.enigma.x_food.feature.order.dto.request.UpdateOrderRequest;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,25 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNew(@RequestBody OrderRequest request) {
+    public ResponseEntity<?> createNew(@RequestBody NewOrderRequest request) {
         OrderResponse orderResponse = orderService.createNew(request);
         CommonResponse<OrderResponse> response = CommonResponse.<OrderResponse>builder()
                 .message("successfully create order")
                 .statusCode(HttpStatus.CREATED.value())
                 .data(orderResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> complete(@RequestBody UpdateOrderRequest request) {
+        OrderResponse order = orderService.complete(request);
+        CommonResponse<OrderResponse> response = CommonResponse.<OrderResponse>builder()
+                .message("successfully complete order")
+                .statusCode(HttpStatus.CREATED.value())
+                .data(order)
                 .build();
         return ResponseEntity
                 .status(HttpStatus.CREATED)

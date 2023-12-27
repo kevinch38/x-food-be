@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +14,5 @@ import java.sql.Timestamp;
 public class NewLoyaltyPointRequest {
     private String accountID;
     @NotNull(message = "Loyalty point amount cannot be empty")
-    private Double loyaltyPointAmount;
-    @NotNull(message = "Expired at cannot be empty")
-    private Timestamp expiredAt;
+    private Integer loyaltyPointAmount;
 }
