@@ -225,7 +225,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         return ItemResponse.builder()
                 .itemID(i.getItemID())
                 .itemName(i.getItemName())
-                .category(i.getCategory().getCategoryName().name())
+                .category(i.getCategory())
                 .branchID(i.getMerchantBranch().getBranchID())
                 .image(i.getImage())
                 .initialPrice(i.getInitialPrice())

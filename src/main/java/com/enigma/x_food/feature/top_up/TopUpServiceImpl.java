@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.top_up;
 
 import com.enigma.x_food.constant.EMethod;
+import com.enigma.x_food.constant.ETransactionType;
 import com.enigma.x_food.feature.balance.Balance;
 import com.enigma.x_food.feature.balance.BalanceService;
 import com.enigma.x_food.feature.history.History;
@@ -18,7 +19,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -36,7 +36,6 @@ public class TopUpServiceImpl implements TopUpService {
     private final BalanceService balanceService;
     private final MethodService methodService;
     private final ValidationUtil validationUtil;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -45,15 +44,14 @@ public class TopUpServiceImpl implements TopUpService {
         validationUtil.validate(request);
 
         Balance balance = balanceService.getById(request.getBalanceID());
+        balance.setTotalBalance(balance.getTotalBalance()+request.getTopUpAmount()-request.getTopUpFee());
 
         HistoryRequest historyRequest = HistoryRequest.builder()
-                .transactionType("TOP_UP")
+                .transactionType(ETransactionType.TOP_UP.name())
                 .historyValue(request.getTopUpAmount())
                 .transactionDate(LocalDate.now())
                 .credit(false)
                 .debit(true)
-                .orderID(null)
-                .paymentID(null)
                 .accountID(request.getAccountID())
                 .build();
 
@@ -65,8 +63,8 @@ public class TopUpServiceImpl implements TopUpService {
                 .method(methodName)
                 .topUpFee(request.getTopUpFee())
                 .topUpStatusID(request.getTopUpStatusID())
-                .balance(entityManager.merge(balance))
-                .history(entityManager.merge(history))
+                .balance(balance)
+                .history(history)
                 .build();
 
         history.setTopUp(topUp);

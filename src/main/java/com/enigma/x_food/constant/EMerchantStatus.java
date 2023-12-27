@@ -1,5 +1,5 @@
 package com.enigma.x_food.constant;
 
 public enum EMerchantStatus {
-    ACTIVE, INACTIVE
+    ACTIVE, INACTIVE, WAITING_FOR_DELETION_APPROVAL, WAITING_FOR_CREATION_APPROVAL, WAITING_FOR_UPDATE_APPROVAL
 }

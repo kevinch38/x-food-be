@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class LoyaltyPointResponse {
     private String loyaltyPointID;
     private String accountID;
-    private Double loyaltyPointAmount;
+    private Integer loyaltyPointAmount;
     private Timestamp expiredDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;

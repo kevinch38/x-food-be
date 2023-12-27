@@ -3,13 +3,15 @@ package com.enigma.x_food.feature.order;
 import com.enigma.x_food.constant.EOrderStatus;
 import com.enigma.x_food.constant.EPaymentStatus;
 import com.enigma.x_food.constant.EPaymentType;
+import com.enigma.x_food.constant.ETransactionType;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranchService;
-import com.enigma.x_food.feature.order.dto.request.OrderRequest;
+import com.enigma.x_food.feature.order.dto.request.NewOrderRequest;
 import com.enigma.x_food.feature.order.dto.request.SearchOrderRequest;
+import com.enigma.x_food.feature.order.dto.request.UpdateOrderRequest;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
 import com.enigma.x_food.feature.order_item.OrderItem;
 import com.enigma.x_food.feature.order_item.OrderItemService;
@@ -59,18 +61,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderResponse createNew(OrderRequest request) {
+    public OrderResponse createNew(NewOrderRequest request) {
         log.info("Start createNew");
         validationUtil.validate(request);
 
         HistoryRequest historyRequest = HistoryRequest.builder()
-                .transactionType("ORDER")
+                .transactionType(ETransactionType.ORDER.name())
                 .historyValue(request.getOrderValue())
                 .transactionDate(LocalDate.now())
                 .credit(false)
                 .debit(true)
-                .paymentID(null)
-                .topUpID(null)
                 .accountID(request.getAccountID())
                 .build();
 
@@ -138,6 +138,24 @@ public class OrderServiceImpl implements OrderService {
                 );
     }
 
+    @Override
+    public OrderResponse complete(UpdateOrderRequest request) {
+        validationUtil.validate(request);
+        Order order = findById(request.getOrderID());
+        User user = userService.getUserById(request.getAccountID());
+
+        OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.DONE);
+        order.setOrderStatus(orderStatus);
+
+        user.getLoyaltyPoint().setLoyaltyPointAmount((int) (order.getOrderValue() / 10000));
+        if (user.getBalance().getTotalBalance() < order.getOrderValue())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance to place the order");
+
+        user.getBalance().setTotalBalance(user.getBalance().getTotalBalance() - order.getOrderValue());
+
+        return mapToResponse(orderRepository.saveAndFlush(order));
+    }
+
     private OrderResponse mapToResponse(Order order) {
         return OrderResponse.builder()
                 .orderID(order.getOrderID())
@@ -148,6 +166,8 @@ public class OrderServiceImpl implements OrderService {
                 .tableNumber(order.getTableNumber())
                 .orderStatus(order.getOrderStatus().getStatus().name())
                 .branchID(order.getMerchantBranch().getBranchID())
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
                 .build();
     }
 
