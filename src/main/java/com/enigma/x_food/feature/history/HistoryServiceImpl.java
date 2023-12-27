@@ -148,6 +148,7 @@ public class HistoryServiceImpl implements HistoryService {
                     .paymentAmount(payment.getPaymentAmount())
                     .expiredAt(payment.getExpiredAt())
                     .paymentStatus(payment.getPaymentStatus().getStatus().name())
+                    .paymentType(payment.getPaymentType())
                     .historyID(payment.getHistory().getHistoryID())
                     .friendID(payment.getFriend().getFriendID())
                     .orderID(payment.getOrder().getOrderID())

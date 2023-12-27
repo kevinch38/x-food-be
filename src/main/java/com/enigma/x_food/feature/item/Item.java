@@ -45,7 +45,7 @@ public class Item {
     private Boolean isDiscounted;
     @Column(name = "is_recommended", nullable = false,  length = 5)
     private Boolean isRecommended;
-    @Column(name = "item_description", unique = true,  length = 150)
+    @Column(name = "item_description", length = 150)
     private String itemDescription;
     @OneToMany(mappedBy = "item")
     private List<ItemVariety> itemVarieties;

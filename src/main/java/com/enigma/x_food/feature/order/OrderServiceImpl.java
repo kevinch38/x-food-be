@@ -70,8 +70,6 @@ public class OrderServiceImpl implements OrderService {
                 .transactionDate(LocalDate.now())
                 .credit(false)
                 .debit(true)
-                .paymentID(null)
-                .topUpID(null)
                 .accountID(request.getAccountID())
                 .build();
 
@@ -145,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = findById(request.getOrderID());
         User user = userService.getUserById(request.getAccountID());
 
-        OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.COMPLETED);
+        OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.DONE);
         order.setOrderStatus(orderStatus);
 
         user.getLoyaltyPoint().setLoyaltyPointAmount((int) (order.getOrderValue() / 10000));
@@ -167,6 +165,8 @@ public class OrderServiceImpl implements OrderService {
                 .tableNumber(order.getTableNumber())
                 .orderStatus(order.getOrderStatus().getStatus().name())
                 .branchID(order.getMerchantBranch().getBranchID())
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
                 .build();
     }
 

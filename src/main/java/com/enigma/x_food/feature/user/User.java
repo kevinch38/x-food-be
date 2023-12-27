@@ -38,7 +38,7 @@ public class User extends BaseEntity {
     private String phoneNumber;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "pin_id", unique = true)
+    @JoinColumn(name = "pin_id")
     private Pin pin;
 
     @Column(name = "first_name", nullable = false, length = 30)
@@ -63,7 +63,7 @@ public class User extends BaseEntity {
     @JoinColumn(name = "loyalty_point_id", nullable = false)
     private LoyaltyPoint loyaltyPoint;
 
-    @JoinColumn(name = "otp_id", unique = true)
+    @JoinColumn(name = "otp_id")
     @OneToOne
     private OTP otp;
 

@@ -54,35 +54,28 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponse createNew(NewItemRequest request) {
-        try {
-            validationUtil.validate(request);
+    public ItemResponse createNew(NewItemRequest request) throws IOException {
+        validationUtil.validate(request);
 
-            MerchantBranch merchantBranch = merchantBranchService.getById(request.getBranchID());
-            Category category = categoryService.getByCategoryName(ECategory.valueOf(request.getCategory()));
+        MerchantBranch merchantBranch = merchantBranchService.getById(request.getBranchID());
+        Category category = categoryService.getByCategoryName(ECategory.valueOf(request.getCategory()));
 
-            Item item = Item.builder()
-                    .itemName(request.getItemName())
-                    .category(category)
-                    .merchantBranch(merchantBranch)
-                    .image(request.getImage().getBytes())
-                    .initialPrice(request.getInitialPrice())
-                    .discountedPrice(request.getDiscountedPrice())
-                    .itemStock(request.getItemStock())
-                    .isDiscounted(request.getIsDiscounted())
-                    .isRecommended(request.getIsRecommended())
-                    .itemDescription(request.getItemDescription())
-                    .build();
-            itemRepository.saveAndFlush(item);
+        Item item = Item.builder()
+                .itemName(request.getItemName())
+                .category(category)
+                .merchantBranch(merchantBranch)
+                .image(request.getImage().getBytes())
+                .initialPrice(request.getInitialPrice())
+                .discountedPrice(request.getDiscountedPrice())
+                .itemStock(request.getItemStock())
+                .isDiscounted(request.getIsDiscounted())
+                .isRecommended(request.getIsRecommended())
+                .itemDescription(request.getItemDescription())
+                .build();
+        itemRepository.saveAndFlush(item);
 
-            log.info("End createNew");
-            return mapToResponse(item);
-        } catch (DataIntegrityViolationException e) {
-            log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone number already exist");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        log.info("End createNew");
+        return mapToResponse(item);
     }
 
     @Transactional(rollbackFor = Exception.class)
