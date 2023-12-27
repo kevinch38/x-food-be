@@ -3,6 +3,7 @@ package com.enigma.x_food.feature.order;
 import com.enigma.x_food.constant.EOrderStatus;
 import com.enigma.x_food.constant.EPaymentStatus;
 import com.enigma.x_food.constant.EPaymentType;
+import com.enigma.x_food.constant.ETransactionType;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
@@ -65,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
         validationUtil.validate(request);
 
         HistoryRequest historyRequest = HistoryRequest.builder()
-                .transactionType("ORDER")
+                .transactionType(ETransactionType.ORDER.name())
                 .historyValue(request.getOrderValue())
                 .transactionDate(LocalDate.now())
                 .credit(false)

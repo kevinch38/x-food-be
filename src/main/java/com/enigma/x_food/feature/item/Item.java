@@ -1,6 +1,5 @@
 package com.enigma.x_food.feature.item;
 
-import com.enigma.x_food.feature.category.Category;
 import com.enigma.x_food.feature.item_variety.ItemVariety;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import lombok.*;
@@ -25,9 +24,8 @@ public class Item {
     private String itemID;
     @Column(name = "item_name", nullable = false, length = 100)
     private String itemName;
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    @Column(name = "category", nullable = false)
+    private String category;
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
     private MerchantBranch merchantBranch;

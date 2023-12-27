@@ -1,8 +1,5 @@
 package com.enigma.x_food.feature.item;
 
-import com.enigma.x_food.constant.ECategory;
-import com.enigma.x_food.feature.category.Category;
-import com.enigma.x_food.feature.category.CategoryService;
 import com.enigma.x_food.feature.item.dto.request.NewItemRequest;
 import com.enigma.x_food.feature.item.dto.request.SearchItemRequest;
 import com.enigma.x_food.feature.item.dto.response.ItemResponse;
@@ -11,7 +8,6 @@ import com.enigma.x_food.feature.merchant_branch.MerchantBranchService;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -32,7 +28,6 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final MerchantBranchService merchantBranchService;
     private final ValidationUtil validationUtil;
-    private final CategoryService categoryService;
 
     @Override
     @Transactional(readOnly = true)
@@ -58,11 +53,10 @@ public class ItemServiceImpl implements ItemService {
         validationUtil.validate(request);
 
         MerchantBranch merchantBranch = merchantBranchService.getById(request.getBranchID());
-        Category category = categoryService.getByCategoryName(ECategory.valueOf(request.getCategory()));
 
         Item item = Item.builder()
                 .itemName(request.getItemName())
-                .category(category)
+                .category(request.getCategory())
                 .merchantBranch(merchantBranch)
                 .image(request.getImage().getBytes())
                 .initialPrice(request.getInitialPrice())
@@ -95,7 +89,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemResponse.builder()
                 .itemID(item.getItemID())
                 .itemName(item.getItemName())
-                .category(item.getCategory().getCategoryName().name())
+                .category(item.getCategory())
                 .branchID(item.getMerchantBranch().getBranchID())
                 .image(item.getImage())
                 .initialPrice(item.getInitialPrice())

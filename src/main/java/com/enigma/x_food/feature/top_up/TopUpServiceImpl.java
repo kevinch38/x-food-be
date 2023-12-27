@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.top_up;
 
 import com.enigma.x_food.constant.EMethod;
+import com.enigma.x_food.constant.ETransactionType;
 import com.enigma.x_food.feature.balance.Balance;
 import com.enigma.x_food.feature.balance.BalanceService;
 import com.enigma.x_food.feature.history.History;
@@ -46,7 +47,7 @@ public class TopUpServiceImpl implements TopUpService {
         balance.setTotalBalance(balance.getTotalBalance()+request.getTopUpAmount()-request.getTopUpFee());
 
         HistoryRequest historyRequest = HistoryRequest.builder()
-                .transactionType("TOP_UP")
+                .transactionType(ETransactionType.TOP_UP.name())
                 .historyValue(request.getTopUpAmount())
                 .transactionDate(LocalDate.now())
                 .credit(false)
