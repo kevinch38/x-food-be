@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class PromotionResponse {
     private String promotionID;
     private String merchantID;
-    private Double cost;
+    private Integer cost;
     private Integer maxRedeem;
     private Integer promotionValue;
     private String promotionDescription;

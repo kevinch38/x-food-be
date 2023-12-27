@@ -16,6 +16,8 @@ import com.enigma.x_food.feature.user.dto.request.UpdateUserProfilePhotoRequest;
 import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
+import com.enigma.x_food.feature.voucher.Voucher;
+import com.enigma.x_food.feature.voucher.dto.response.VoucherResponse;
 import com.enigma.x_food.security.BCryptUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -199,6 +202,12 @@ public class UserServiceImpl implements UserService {
 
 
     private UserResponse mapToResponse(User user) {
+        List<VoucherResponse> vouchers = null;
+        if (user.getVouchers() != null) {
+            vouchers = user.getVouchers().stream().map(
+                    this::mapToResponse
+            ).collect(Collectors.toList());
+        }
         return UserResponse.builder()
                 .accountID(user.getAccountID())
                 .ktpID(user.getKtpID())
@@ -214,6 +223,21 @@ public class UserServiceImpl implements UserService {
                 .balanceID(user.getBalance().getBalanceID())
                 .loyaltyPointID(user.getLoyaltyPoint().getLoyaltyPointID())
                 .otpID(user.getOtp().getOtpID())
+                .vouchers(vouchers)
+                .build();
+    }
+
+    private VoucherResponse mapToResponse(Voucher voucher) {
+        return VoucherResponse.builder()
+                .voucherID(voucher.getVoucherID())
+                .promotionID(voucher.getPromotion().getPromotionID())
+                .userID(voucher.getUser().getAccountID())
+                .voucherValue(voucher.getVoucherValue())
+                .expiredDate(voucher.getExpiredDate())
+                .voucherCode(voucher.getVoucherCode())
+                .voucherStatus(voucher.getVoucherStatus().getStatus().name())
+                .createdAt(voucher.getCreatedAt())
+                .updatedAt(voucher.getUpdatedAt())
                 .build();
     }
 

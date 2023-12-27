@@ -71,6 +71,6 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<History> histories;
 
-    @OneToMany(mappedBy = "voucher")
-    private Voucher[] vouchers;
+    @OneToMany(mappedBy = "user")
+    private List<Voucher> vouchers;
 }

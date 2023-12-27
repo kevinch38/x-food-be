@@ -25,10 +25,4 @@ public class NewVoucherRequest {
 
     @NotBlank(message = "Account ID is required")
     private String accountID;
-
-    @NotNull(message = "Voucher value is required")
-    private Integer voucherValue;
-
-    @NotBlank(message = "Voucher code is required")
-    private String voucherCode;
 }

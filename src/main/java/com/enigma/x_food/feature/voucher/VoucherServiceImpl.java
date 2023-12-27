@@ -33,7 +33,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -64,6 +63,19 @@ public class VoucherServiceImpl implements VoucherService {
             Promotion promotion = promotionService.getPromotionById(request.getPromotionID());
 
             User user = userService.getUserById(request.getAccountID());
+            if (user.getLoyaltyPoint().getLoyaltyPointAmount() < promotion.getCost()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Loyalty point is not enough");
+            }
+            if (findByPromotionId(promotion).size()>= promotion.getMaxRedeem()){
+                log.info(String.valueOf(findByPromotionId(promotion).size()));
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have reached the maximum redeem amount");
+            }
+            if (promotion.getQuantity()<=0){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Promotion quantity is empty");
+            }
+            Random r = new Random( System.currentTimeMillis() );
+            String random = String.valueOf(10000 + r.nextInt(20000));
+            String voucherCode=promotion.getPromotionName()+random;
 
             VoucherStatus voucherStatus = voucherStatusService.getByStatus(EVoucherStatus.ACTIVE);
 
@@ -75,13 +87,16 @@ public class VoucherServiceImpl implements VoucherService {
             Voucher voucher = Voucher.builder()
                     .promotion(promotion)
                     .user(user)
-                    .voucherValue(request.getVoucherValue())
+                    .voucherValue(promotion.getPromotionValue())
                     .expiredDate(expiredAt)
-                    .voucherCode(request.getVoucherCode())
+                    .voucherCode(voucherCode)
                     .voucherStatus(voucherStatus)
                     .build();
 
             voucherRepository.saveAndFlush(voucher);
+
+            user.getLoyaltyPoint().setLoyaltyPointAmount(user.getLoyaltyPoint().getLoyaltyPointAmount()-promotion.getCost());
+            promotion.setQuantity(promotion.getQuantity()-1);
 
             log.info("End createNew");
             return mapToResponse(voucher);
@@ -123,6 +138,11 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Voucher getVoucherById(String id) {
         return (findByIdOrThrowNotFound(id));
+    }
+
+    @Override
+    public List<Voucher> getVoucherByPromotion(Promotion promotion) {
+        return findByPromotionId(promotion);
     }
 
     @Override
@@ -169,6 +189,10 @@ public class VoucherServiceImpl implements VoucherService {
     private Voucher findByIdOrThrowNotFound(String id) {
         return voucherRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "voucher not found"));
+    }
+
+    private List<Voucher> findByPromotionId(Promotion promotion) {
+        return voucherRepository.findByPromotion(promotion).orElse(List.of());
     }
 
     private Specification<Voucher> getVoucherSpecification(SearchVoucherRequest request) {

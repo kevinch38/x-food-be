@@ -49,7 +49,7 @@ public class Voucher extends BaseEntity {
     @Column(name="expired_date",nullable = false)
     private Timestamp expiredDate;
 
-    @Column(name="voucher_code",nullable = false, length = 30)
+    @Column(name="voucher_code",nullable = false, unique = true)
     private String voucherCode;
 
     @ManyToOne

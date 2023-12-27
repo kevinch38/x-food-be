@@ -41,7 +41,7 @@ public class VoucherController {
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "accountID") String sortBy,
+            @RequestParam(required = false, defaultValue = "voucherID") String sortBy,
             @RequestParam(required = false) String voucherID
     ) {
         page = PagingUtil.validatePage(page);
