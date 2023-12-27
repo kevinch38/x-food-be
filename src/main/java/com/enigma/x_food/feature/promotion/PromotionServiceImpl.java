@@ -30,7 +30,9 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,41 +96,22 @@ public class PromotionServiceImpl implements PromotionService {
         validationUtil.validate(request);
         Promotion promotion = findByIdOrThrowException(request.getPromotionID());
 
-        MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
-        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.valueOf(merchantResponse.getStatus()));
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(currentTimestamp.getTime());
+        calendar.add(Calendar.MONTH, 3);
 
-        Merchant merchant = Merchant.builder()
-                .merchantID(merchantResponse.getMerchantID())
-                .joinDate(merchantResponse.getJoinDate())
-                .merchantName(merchantResponse.getMerchantName())
-                .picName(merchantResponse.getPicName())
-                .picNumber(merchantResponse.getPicNumber())
-                .picEmail(merchantResponse.getPicEmail())
-                .merchantDescription(merchantResponse.getMerchantDescription())
-                .adminID(merchantResponse.getAdminId())
-                .createdAt(merchantResponse.getCreatedAt())
-                .updatedAt(merchantResponse.getUpdatedAt())
-                .merchantStatus(merchantStatus)
-                .notes(merchantResponse.getNotes())
-                .build();
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
 
-        Promotion updated = Promotion.builder()
-                .promotionID(promotion.getPromotionID())
-                .merchant(merchant)
-                .cost(request.getCost())
-                .maxRedeem(request.getMaxRedeem())
-                .promotionValue(request.getPromotionValue())
-                .promotionDescription(request.getPromotionDescription())
-                .promotionName(request.getPromotionName())
-                .quantity(request.getQuantity())
-                .adminID(promotion.getAdminID())
-                .expiredDate(request.getExpiredDate())
-                .promotionStatus(promotion.getPromotionStatus())
-                .createdAt(promotion.getCreatedAt())
-                .notes(request.getNotes())
-                .build();
+        Timestamp expiredDate = new Timestamp(calendar.getTimeInMillis());
 
-        return mapToResponse(promotionRepository.saveAndFlush(updated));
+        promotion.setQuantity(promotion.getQuantity()-1);
+        promotion.setExpiredDate(expiredDate);
+
+        return mapToResponse(promotionRepository.saveAndFlush(promotion));
     }
 
     @Override

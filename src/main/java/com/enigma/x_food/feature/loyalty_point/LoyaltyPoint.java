@@ -21,13 +21,13 @@ public class LoyaltyPoint extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
-    @Column(name = "balance_id")
+    @Column(name = "loyalty_point_id")
     private String loyaltyPointID;
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
     @Column(name = "loyalty_point_amount", nullable = false, length = 11)
-    private Double loyaltyPointAmount;
+    private Integer loyaltyPointAmount;
     @Column(name = "expired_date", nullable = false)
     private Timestamp expiredDate;
 }

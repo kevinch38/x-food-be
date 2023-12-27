@@ -33,7 +33,6 @@ import com.enigma.x_food.util.SortingUtil;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.Predicate;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,13 +62,9 @@ public class UserServiceImpl implements UserService {
             Balance balance = balanceService.createNew(NewBalanceRequest.builder()
                     .totalBalance(0D)
                     .build());
-            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-
-            Timestamp expiredAt = new Timestamp(currentTimestamp.toInstant().plusSeconds(3L * 30 * 24 * 60 * 60).toEpochMilli());
 
             LoyaltyPoint loyaltyPoint = loyaltyPointService.createNew(NewLoyaltyPointRequest.builder()
-                    .loyaltyPointAmount(0D)
-                    .expiredAt(expiredAt)
+                    .loyaltyPointAmount(0)
                     .build());
 
             User user = User.builder()
