@@ -146,7 +146,8 @@ public class VoucherServiceImpl implements VoucherService {
     public void deleteById(String id) {
         log.info("Start deleteById");
         Voucher voucher = findByIdOrThrowNotFound(id);
-        voucherRepository.delete(voucher);
+        VoucherStatus voucherStatus = voucherStatusService.getByStatus(EVoucherStatus.INACTIVE);
+        voucher.setVoucherStatus(voucherStatus);
         log.info("End deleteById");
     }
 
