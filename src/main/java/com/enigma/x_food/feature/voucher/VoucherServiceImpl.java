@@ -35,6 +35,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -70,6 +71,11 @@ public class VoucherServiceImpl implements VoucherService {
             Random r = new Random( System.currentTimeMillis() );
             String random = String.valueOf(10000 + r.nextInt(20000));
             String voucherCode=promotion.getPromotionName()+random;
+            Optional<Voucher> byVoucherCode = voucherRepository.findByVoucherCode(voucherCode);
+            while (byVoucherCode.isPresent()){
+                voucherCode=promotion.getPromotionName()+random;
+                byVoucherCode = voucherRepository.findByVoucherCode(voucherCode);
+            }
 
             VoucherStatus voucherStatus = voucherStatusService.getByStatus(EVoucherStatus.ACTIVE);
 
