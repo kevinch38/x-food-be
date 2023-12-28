@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -14,4 +15,6 @@ import javax.validation.constraints.NotBlank;
 public class OrderItemRequest {
     @NotBlank(message = "Item ID cannot be empty")
     private String itemID;
+    @NotNull(message = "Quantity cannot be empty")
+    private Integer quantity;
 }

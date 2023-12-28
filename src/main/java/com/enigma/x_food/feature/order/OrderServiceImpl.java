@@ -7,6 +7,8 @@ import com.enigma.x_food.constant.ETransactionType;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
+import com.enigma.x_food.feature.item.Item;
+import com.enigma.x_food.feature.item.ItemService;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranchService;
 import com.enigma.x_food.feature.order.dto.request.NewOrderRequest;
@@ -56,6 +58,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemService orderItemService;
     private final PaymentService paymentService;
     private final PaymentStatusService paymentStatusService;
+    private final ItemService itemService;
     private final UserService userService;
     private final ValidationUtil validationUtil;
 
@@ -65,30 +68,44 @@ public class OrderServiceImpl implements OrderService {
         log.info("Start createNew");
         validationUtil.validate(request);
 
-        HistoryRequest historyRequest = HistoryRequest.builder()
-                .transactionType(ETransactionType.ORDER.name())
-                .historyValue(request.getOrderValue())
-                .transactionDate(LocalDate.now())
-                .credit(false)
-                .debit(true)
-                .accountID(request.getAccountID())
-                .build();
+        double price = 0d;
 
-        History history = historyService.createNew(historyRequest);
         User user = userService.getUserById(request.getAccountID());
         MerchantBranch merchantBranch = merchantBranchService.getById(request.getBranchID());
-        OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.WAITING_FOR_PAYMENT);
-
+        OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.PLACED);
         Order order = Order.builder()
                 .user(user)
-                .history(history)
-                .orderValue(request.getOrderValue())
                 .notes(request.getNotes())
                 .tableNumber(request.getTableNumber())
                 .orderStatus(orderStatus)
                 .merchantBranch(merchantBranch)
                 .build();
 
+        for (OrderItemRequest orderItem : request.getOrderItems()) {
+            Item item = itemService.findById(orderItem.getItemID());
+            price += item.getDiscountedPrice() * orderItem.getQuantity();
+
+            OrderItemRequest orderItemRequest = OrderItemRequest.builder()
+                    .itemID(orderItem.getItemID())
+                    .quantity(orderItem.getQuantity())
+                    .build();
+            OrderItem newOrderItem = orderItemService.createNew(orderItemRequest);
+            newOrderItem.setOrder(order);
+        }
+
+        HistoryRequest historyRequest = HistoryRequest.builder()
+                .transactionType(ETransactionType.ORDER.name())
+                .historyValue(price)
+                .transactionDate(LocalDate.now())
+                .credit(true)
+                .debit(false)
+                .accountID(request.getAccountID())
+                .build();
+
+        History history = historyService.createNew(historyRequest);
+
+        order.setHistory(history);
+        order.setOrderValue(price);
         history.setOrder(order);
 
         orderRepository.saveAndFlush(order);
@@ -98,9 +115,10 @@ public class OrderServiceImpl implements OrderService {
         Timestamp expiredAt = Timestamp.from(expiredTime);
         PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
 
+
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .user(user)
-                .paymentAmount(request.getOrderValue())
+                .paymentAmount(price)
                 .expiredAt(expiredAt)
                 .order(order)
                 .history(history)
@@ -109,14 +127,6 @@ public class OrderServiceImpl implements OrderService {
         Payment payment = paymentService.createNew(paymentRequest);
         payment.setPaymentType(EPaymentType.ORDER.name());
         payment.setPaymentStatus(paymentStatus);
-
-        for (OrderItemRequest orderItem : request.getOrderItems()) {
-            OrderItemRequest orderItemRequest = OrderItemRequest.builder()
-                    .itemID(orderItem.getItemID())
-                    .build();
-            OrderItem newOrderItem = orderItemService.createNew(orderItemRequest);
-            newOrderItem.setOrder(order);
-        }
 
         log.info("End createNew");
         return mapToResponse(order);

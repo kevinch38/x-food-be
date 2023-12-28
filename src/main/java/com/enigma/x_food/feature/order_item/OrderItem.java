@@ -29,4 +29,6 @@ public class OrderItem extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
 }

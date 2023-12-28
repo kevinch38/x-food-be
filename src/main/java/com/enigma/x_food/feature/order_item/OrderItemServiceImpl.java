@@ -53,6 +53,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         Item item = itemService.findById(request.getItemID());
         OrderItem orderItem = OrderItem.builder()
                 .item(item)
+                .quantity(request.getQuantity())
                 .build();
         orderItemRepository.saveAndFlush(orderItem);
 
