@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.constant.EVoucherStatus;
 import com.enigma.x_food.feature.balance.Balance;
 import com.enigma.x_food.feature.balance.BalanceService;
 import com.enigma.x_food.feature.balance.dto.request.NewBalanceRequest;
@@ -199,8 +200,11 @@ public class UserServiceImpl implements UserService {
     private UserResponse mapToResponse(User user) {
         List<VoucherResponse> vouchers = null;
         if (user.getVouchers() != null) {
-            vouchers = user.getVouchers().stream().map(
-                    this::mapToResponse
+            vouchers = user.getVouchers().stream().map(voucher -> {
+                        if (voucher.getVoucherStatus().getStatus() == EVoucherStatus.ACTIVE)
+                            return mapToResponse(voucher);
+                        return null;
+                    }
             ).collect(Collectors.toList());
         }
         return UserResponse.builder()

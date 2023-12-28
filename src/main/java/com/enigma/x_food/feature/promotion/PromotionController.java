@@ -124,18 +124,18 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PutMapping
-    public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) {
-        PromotionResponse promotionResponse =promotionService.update(request);
-        CommonResponse<PromotionResponse> response = CommonResponse.<PromotionResponse>builder()
-                .message("successfully update promotion")
-                .statusCode(HttpStatus.OK.value())
-                .data(promotionResponse)
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
+//    @PutMapping
+//    public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) {
+//        PromotionResponse promotionResponse =promotionService.update(request);
+//        CommonResponse<PromotionResponse> response = CommonResponse.<PromotionResponse>builder()
+//                .message("successfully update promotion")
+//                .statusCode(HttpStatus.OK.value())
+//                .data(promotionResponse)
+//                .build();
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(response);
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
