@@ -198,15 +198,12 @@ public class UserServiceImpl implements UserService {
 
 
     private UserResponse mapToResponse(User user) {
-        List<VoucherResponse> vouchers = null;
+        List<Voucher> vouchers = null;
         if (user.getVouchers() != null) {
-            vouchers = user.getVouchers().stream().map(voucher -> {
-                        if (voucher.getVoucherStatus().getStatus() == EVoucherStatus.ACTIVE)
-                            return mapToResponse(voucher);
-                        return null;
-                    }
+            vouchers = user.getVouchers().stream().filter(voucher -> voucher.getVoucherStatus().getStatus() == EVoucherStatus.ACTIVE
             ).collect(Collectors.toList());
         }
+        List<VoucherResponse> voucherResponses = vouchers.stream().map(this::mapToResponse).collect(Collectors.toList());
         return UserResponse.builder()
                 .accountID(user.getAccountID())
                 .ktpID(user.getKtpID())
@@ -222,7 +219,7 @@ public class UserServiceImpl implements UserService {
                 .balanceID(user.getBalance().getBalanceID())
                 .loyaltyPointID(user.getLoyaltyPoint().getLoyaltyPointID())
                 .otpID(user.getOtp().getOtpID())
-                .vouchers(vouchers)
+                .vouchers(voucherResponses)
                 .build();
     }
 
