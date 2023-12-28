@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.voucher;
 
+import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.constant.EVoucherStatus;
 import com.enigma.x_food.feature.balance.BalanceService;
 import com.enigma.x_food.feature.loyalty_point.LoyaltyPointService;
@@ -174,6 +175,7 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucher = findByIdOrThrowNotFound(id);
         VoucherStatus voucherStatus = voucherStatusService.getByStatus(EVoucherStatus.INACTIVE);
         voucher.setVoucherStatus(voucherStatus);
+        voucherRepository.saveAndFlush(voucher);
         log.info("End deleteById");
     }
 
@@ -212,6 +214,13 @@ public class VoucherServiceImpl implements VoucherService {
                 );
                 predicates.add(predicate);
             }
+
+                Predicate predicate = criteriaBuilder.equal(
+                        root.get("voucherStatus").get("status"),
+                        EVoucherStatus.ACTIVE
+                );
+                predicates.add(predicate);
+
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))
