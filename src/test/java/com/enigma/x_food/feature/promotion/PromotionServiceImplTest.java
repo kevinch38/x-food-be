@@ -47,14 +47,13 @@ class PromotionServiceImplTest {
         String id ="1";
         NewPromotionRequest newPromotionRequest = NewPromotionRequest.builder()
                 .merchantID(id)
-                .cost(100d)
+                .cost(100)
                 .maxRedeem(3)
                 .promotionValue(200)
                 .promotionDescription("tes")
                 .promotionName("promotion tes")
                 .quantity(2)
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .promotionStatusID("1")
                 .build();
 
         MerchantResponse merchantResponse = MerchantResponse.builder()
@@ -68,7 +67,6 @@ class PromotionServiceImplTest {
                 .adminId("1")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
-                .merchantStatusID("1")
                 .notes("note")
                 .build();
 
@@ -83,7 +81,6 @@ class PromotionServiceImplTest {
                 .adminID(merchantResponse.getAdminId())
                 .createdAt(merchantResponse.getCreatedAt())
                 .updatedAt(merchantResponse.getUpdatedAt())
-                .merchantStatusID(merchantResponse.getMerchantStatusID())
                 .notes(merchantResponse.getNotes())
                 .build();
 
@@ -97,7 +94,6 @@ class PromotionServiceImplTest {
                 .quantity(newPromotionRequest.getQuantity())
                 .adminID("adminID")
                 .expiredDate(newPromotionRequest.getExpiredDate())
-                .promotionStatusID(newPromotionRequest.getPromotionStatusID())
                 .build();
 
         Mockito.doNothing().when(validationUtil).validate(newPromotionRequest);
@@ -124,7 +120,6 @@ class PromotionServiceImplTest {
                 .adminId("1")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
-                .merchantStatusID("1")
                 .notes("note")
                 .build();
 
@@ -139,28 +134,16 @@ class PromotionServiceImplTest {
                 .adminID(merchantResponse.getAdminId())
                 .createdAt(merchantResponse.getCreatedAt())
                 .updatedAt(merchantResponse.getUpdatedAt())
-                .merchantStatusID(merchantResponse.getMerchantStatusID())
                 .notes(merchantResponse.getNotes())
                 .build();
 
         UpdatePromotionRequest request = UpdatePromotionRequest.builder()
                 .promotionID("1")
-                .merchantID("1")
-                .cost(1d)
-                .maxRedeem(1)
-                .promotionValue(2)
-                .promotionDescription("tes")
-                .promotionName("promotion tes")
-                .quantity(3)
-                .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .promotionStatusID("1")
-                .notes("note")
                 .build();
 
         Promotion promotion = Promotion.builder()
                 .promotionID(id)
                 .merchant(Merchant.builder().merchantID("1").build())
-                .cost(1d)
                 .maxRedeem(1)
                 .promotionValue(2)
                 .promotionDescription("tes")
@@ -168,7 +151,6 @@ class PromotionServiceImplTest {
                 .quantity(3)
                 .adminID("1")
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .promotionStatusID("1")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
                 .build();
@@ -199,7 +181,7 @@ class PromotionServiceImplTest {
         Promotion promotion = Promotion.builder()
                 .promotionID("1")
                 .merchant(Merchant.builder().merchantID("1").build())
-                .cost(1d)
+                .cost(1)
                 .maxRedeem(1)
                 .promotionValue(2)
                 .promotionDescription("tes")
@@ -207,7 +189,6 @@ class PromotionServiceImplTest {
                 .quantity(3)
                 .adminID("1")
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .promotionStatusID("1")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
                 .build();
@@ -225,7 +206,7 @@ class PromotionServiceImplTest {
         Promotion promotion = Promotion.builder()
                 .promotionID("1")
                 .merchant(Merchant.builder().merchantID("1").build())
-                .cost(1d)
+                .cost(1)
                 .maxRedeem(1)
                 .promotionValue(2)
                 .promotionDescription("tes")
@@ -233,7 +214,6 @@ class PromotionServiceImplTest {
                 .quantity(3)
                 .adminID("1")
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .promotionStatusID("1")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
                 .build();

@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.order;
 
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
+import com.enigma.x_food.feature.order_item.OrderItem;
 import com.enigma.x_food.feature.order_status.OrderStatus;
 import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.user.User;
@@ -47,4 +48,6 @@ public class Order extends BaseEntity {
     private MerchantBranch merchantBranch;
     @OneToMany(mappedBy = "order")
     private List<Payment> payments;
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> orderItems;
 }

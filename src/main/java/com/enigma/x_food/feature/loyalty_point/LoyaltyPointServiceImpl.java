@@ -6,14 +6,15 @@ import com.enigma.x_food.feature.loyalty_point.dto.response.LoyaltyPointResponse
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,29 +26,24 @@ public class LoyaltyPointServiceImpl implements LoyaltyPointService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public LoyaltyPoint createNew(NewLoyaltyPointRequest request) {
-        try {
-            log.info("Start createNew");
-            validationUtil.validate(request);
+        log.info("Start createNew");
+        validationUtil.validate(request);
 
-            int currentYear = Year.now().getValue();
-            ZonedDateTime endOfYear = ZonedDateTime.of(
-                    currentYear, 12, 31, 23, 59, 59, 999,
-                    ZoneId.of("GMT+7"));
-            Instant expiredTime = endOfYear.toInstant();
-            Timestamp expiredDate = Timestamp.from(expiredTime);
+        int currentYear = Year.now().getValue();
+        ZonedDateTime endOfYear = ZonedDateTime.of(
+                currentYear, 12, 31, 23, 59, 0, 0,
+                ZoneId.of("GMT+7"));
+        Instant expiredTime = endOfYear.toInstant();
+        Timestamp expiredDate = Timestamp.from(expiredTime);
 
-            LoyaltyPoint loyaltyPoint = LoyaltyPoint.builder()
-                    .loyaltyPointAmount(request.getLoyaltyPointAmount())
-                    .expiredDate(expiredDate)
-                    .build();
+        LoyaltyPoint loyaltyPoint = LoyaltyPoint.builder()
+                .loyaltyPointAmount(request.getLoyaltyPointAmount())
+                .expiredDate(expiredDate)
+                .build();
 
-            loyaltyPointRepository.save(loyaltyPoint);
-            log.info("End createNew");
-            return loyaltyPoint;
-        } catch (DataIntegrityViolationException e) {
-            log.error("Error createNew: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "loyalty point already exist");
-        }
+        loyaltyPointRepository.save(loyaltyPoint);
+        log.info("End createNew");
+        return loyaltyPoint;
     }
 
     @Override
@@ -66,6 +62,26 @@ public class LoyaltyPointServiceImpl implements LoyaltyPointService {
     public LoyaltyPoint findById(String id) {
         validationUtil.validate(id);
         return findByIdOrThrowException(id);
+    }
+
+    @Scheduled(cron = "0 0 0 1 1 ?")
+    public void updateExpiredLoyaltyPoint() {
+        List<LoyaltyPoint> loyaltyPoints = loyaltyPointRepository.findAll();
+
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        int currentYear = Year.now().getValue();
+        ZonedDateTime endOfYear = ZonedDateTime.of(
+                currentYear, 12, 31, 23, 59, 0, 0,
+                ZoneId.of("GMT+7"));
+        Instant expiredTime = endOfYear.toInstant();
+        Timestamp expiredDate = Timestamp.from(expiredTime);
+
+        for (LoyaltyPoint loyaltyPoint : loyaltyPoints) {
+            if (loyaltyPoint.getExpiredDate().before(currentTimestamp)) {
+                loyaltyPoint.setLoyaltyPointAmount(0);
+                loyaltyPoint.setExpiredDate(expiredDate);
+            }
+        }
     }
 
     private LoyaltyPoint findByIdOrThrowException(String id) {

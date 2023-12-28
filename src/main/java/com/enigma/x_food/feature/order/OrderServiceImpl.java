@@ -39,9 +39,6 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
-import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,16 +107,11 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.saveAndFlush(order);
 
-        Instant currentTime = Instant.now();
-        Instant expiredTime = currentTime.plus(Duration.ofHours(1));
-        Timestamp expiredAt = Timestamp.from(expiredTime);
         PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
-
 
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .user(user)
                 .paymentAmount(price)
-                .expiredAt(expiredAt)
                 .order(order)
                 .history(history)
                 .build();
@@ -130,6 +122,28 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("End createNew");
         return mapToResponse(order);
+    }
+
+    @Override
+    public OrderResponse complete(UpdateOrderRequest request) {
+        validationUtil.validate(request);
+        Order order = findById(request.getOrderID());
+        User user = userService.getUserById(request.getAccountID());
+
+        OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.DONE);
+        order.setOrderStatus(orderStatus);
+        for (OrderItem orderItem : order.getOrderItems()) {
+            Item item = itemService.findById(order.getOrderID());
+            item.setItemStock(item.getItemStock() - orderItem.getQuantity());
+        }
+
+        user.getLoyaltyPoint().setLoyaltyPointAmount((int) (order.getOrderValue() / 10000));
+        if (user.getBalance().getTotalBalance() < order.getOrderValue())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance to place the order");
+
+        user.getBalance().setTotalBalance(user.getBalance().getTotalBalance() - order.getOrderValue());
+
+        return mapToResponse(orderRepository.saveAndFlush(order));
     }
 
     @Override
@@ -146,24 +160,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found")
                 );
-    }
-
-    @Override
-    public OrderResponse complete(UpdateOrderRequest request) {
-        validationUtil.validate(request);
-        Order order = findById(request.getOrderID());
-        User user = userService.getUserById(request.getAccountID());
-
-        OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.DONE);
-        order.setOrderStatus(orderStatus);
-
-        user.getLoyaltyPoint().setLoyaltyPointAmount((int) (order.getOrderValue() / 10000));
-        if (user.getBalance().getTotalBalance() < order.getOrderValue())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance to place the order");
-
-        user.getBalance().setTotalBalance(user.getBalance().getTotalBalance() - order.getOrderValue());
-
-        return mapToResponse(orderRepository.saveAndFlush(order));
     }
 
     private OrderResponse mapToResponse(Order order) {

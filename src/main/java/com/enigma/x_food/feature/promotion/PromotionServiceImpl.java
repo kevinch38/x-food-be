@@ -1,7 +1,9 @@
 package com.enigma.x_food.feature.promotion;
 
 import com.enigma.x_food.constant.EMerchantStatus;
+import com.enigma.x_food.constant.EPaymentStatus;
 import com.enigma.x_food.constant.EPromotionStatus;
+import com.enigma.x_food.feature.loyalty_point.LoyaltyPoint;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -90,28 +93,41 @@ public class PromotionServiceImpl implements PromotionService {
         return mapToResponse(promotion);
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public PromotionResponse update(UpdatePromotionRequest request) {
-        validationUtil.validate(request);
-        Promotion promotion = findByIdOrThrowException(request.getPromotionID());
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public PromotionResponse update(UpdatePromotionRequest request) {
+//        validationUtil.validate(request);
+//        Promotion promotion = findByIdOrThrowException(request.getPromotionID());
+//
+//        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(currentTimestamp.getTime());
+//        calendar.add(Calendar.MONTH, 3);
+//
+//        calendar.set(Calendar.HOUR_OF_DAY, 23);
+//        calendar.set(Calendar.MINUTE, 59);
+//        calendar.set(Calendar.SECOND, 59);
+//        calendar.set(Calendar.MILLISECOND, 999);
+//
+//        Timestamp expiredDate = new Timestamp(calendar.getTimeInMillis());
+//
+//        promotion.setQuantity(promotion.getQuantity()-1);
+//        promotion.setExpiredDate(expiredDate);
+//
+//        return mapToResponse(promotionRepository.saveAndFlush(promotion));
+//    }
 
+    @Scheduled(cron = "0 0 0 1 * ?")
+    public void updateExpiredPromotion() {
+        List<Promotion> promotions = promotionRepository.findAll();
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(currentTimestamp.getTime());
-        calendar.add(Calendar.MONTH, 3);
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.INACTIVE);
 
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        calendar.set(Calendar.MILLISECOND, 999);
-
-        Timestamp expiredDate = new Timestamp(calendar.getTimeInMillis());
-
-        promotion.setQuantity(promotion.getQuantity()-1);
-        promotion.setExpiredDate(expiredDate);
-
-        return mapToResponse(promotionRepository.saveAndFlush(promotion));
+        for (Promotion promotion : promotions) {
+            if (promotion.getExpiredDate().before(currentTimestamp)) {
+                promotion.setPromotionStatus(promotionStatus);
+            }
+        }
     }
 
     @Override

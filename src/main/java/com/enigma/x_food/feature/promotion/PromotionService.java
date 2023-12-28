@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface PromotionService {
     PromotionResponse createNew(NewPromotionRequest request);
-    PromotionResponse update(UpdatePromotionRequest request);
+//    PromotionResponse update(UpdatePromotionRequest request);
     void deleteById(String id);
     PromotionResponse findById(String id);
     Promotion getPromotionById(String id);

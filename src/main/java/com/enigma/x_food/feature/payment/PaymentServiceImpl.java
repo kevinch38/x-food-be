@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.payment;
 
+import com.enigma.x_food.constant.EOrderStatus;
 import com.enigma.x_food.constant.EPaymentStatus;
 import com.enigma.x_food.constant.EPaymentType;
 import com.enigma.x_food.constant.ETransactionType;
@@ -11,6 +12,8 @@ import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.OrderRepository;
+import com.enigma.x_food.feature.order_status.OrderStatus;
+import com.enigma.x_food.feature.order_status.OrderStatusService;
 import com.enigma.x_food.feature.payment.dto.request.SearchPaymentRequest;
 import com.enigma.x_food.feature.payment.dto.request.PaymentRequest;
 import com.enigma.x_food.feature.payment.dto.request.SplitBillRequest;
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,9 +36,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +51,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final UserService userService;
     private final HistoryService historyService;
     private final OrderRepository orderRepository;
+    private final OrderStatusService orderStatusService;
     private final ValidationUtil validationUtil;
 
     @Override
@@ -59,12 +62,20 @@ public class PaymentServiceImpl implements PaymentService {
 
         PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
 
+        Instant currentTime = Instant.now();
+        ZoneId gmtPlus7 = ZoneId.of("GMT+7");
+        Instant expiredTime = currentTime.plus(Duration.ofDays(1));
+        ZonedDateTime expiredTimeGmtPlus7 = ZonedDateTime.ofInstant(expiredTime, gmtPlus7)
+                .withSecond(59)
+                .withNano(0);
+        Timestamp expiredAt = Timestamp.from(expiredTimeGmtPlus7.toInstant());
+
         Payment payment = Payment.builder()
                 .paymentAmount(request.getPaymentAmount())
                 .user(request.getUser())
                 .paymentAmount(request.getPaymentAmount())
                 .paymentType(EPaymentType.ORDER.name())
-                .expiredAt(request.getExpiredAt())
+                .expiredAt(expiredAt)
                 .paymentStatus(paymentStatus)
                 .history(request.getHistory())
                 .order(request.getOrder())
@@ -82,34 +93,8 @@ public class PaymentServiceImpl implements PaymentService {
         validationUtil.validate(splitBillRequests);
 
         List<Payment> payments = splitBillRequests.stream().map(
-                request -> {
-                    PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
-
-                    SearchFriendRequest friendRequest = SearchFriendRequest.builder()
-                            .friendID(request.getFriendID())
-                            .accountID(request.getAccountID())
-                            .build();
-                    List<Friend> friend = friendService.findByFriendId(friendRequest);
-
-                    User user = userService.getUserById(request.getAccountID());
-                    Order order = orderRepository.findById(request.getOrderID())
-                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-
-                    Instant currentTime = Instant.now();
-                    Instant expiredTime = currentTime.plus(Duration.ofHours(1));
-                    Timestamp expiredAt = Timestamp.from(expiredTime);
-                    return Payment.builder()
-                            .paymentAmount(request.getPaymentAmount())
-                            .user(user)
-                            .paymentAmount(request.getPaymentAmount())
-                            .paymentType(EPaymentType.FRIEND.name())
-                            .expiredAt(expiredAt)
-                            .paymentStatus(paymentStatus)
-                            .friend(friend.get(0))
-                            .order(order)
-                            .build();
-
-                }).collect(Collectors.toList());
+                this::getPayment
+                ).collect(Collectors.toList());
 
         paymentRepository.saveAllAndFlush(payments);
         for (Payment payment : payments) {
@@ -132,6 +117,55 @@ public class PaymentServiceImpl implements PaymentService {
                 .collect(Collectors.toList());
     }
 
+    @Scheduled(cron = "0 0/1 * * * ?")
+    public void updateExpiredPayment() {
+        List<Payment> payments = paymentRepository.findAll();
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.EXPIRED);
+
+        for (Payment payment : payments) {
+            if (payment.getExpiredAt().before(currentTimestamp)) {
+                payment.setPaymentStatus(paymentStatus);
+                if (payment.getPaymentType().equalsIgnoreCase(EPaymentType.ORDER.name())){
+                    OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.REJECTED);
+                    payment.getOrder().setOrderStatus(orderStatus);
+                }
+            }
+        }
+    }
+
+    private Payment getPayment(SplitBillRequest request) {
+        PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
+
+        SearchFriendRequest friendRequest = SearchFriendRequest.builder()
+                .friendID(request.getFriendID())
+                .accountID(request.getAccountID())
+                .build();
+        List<Friend> friend = friendService.findByFriendId(friendRequest);
+
+        User user = userService.getUserById(request.getAccountID());
+        Order order = orderRepository.findById(request.getOrderID())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+
+        Instant currentTime = Instant.now();
+        ZoneId gmtPlus7 = ZoneId.of("GMT+7");
+        Instant expiredTime = currentTime.plus(Duration.ofDays(1));
+        ZonedDateTime expiredTimeGmtPlus7 = ZonedDateTime.ofInstant(expiredTime, gmtPlus7)
+                .withSecond(59)
+                .withNano(0);
+        Timestamp expiredAt = Timestamp.from(expiredTimeGmtPlus7.toInstant());
+
+        return Payment.builder()
+                .paymentAmount(request.getPaymentAmount())
+                .user(user)
+                .paymentAmount(request.getPaymentAmount())
+                .paymentType(EPaymentType.FRIEND.name())
+                .expiredAt(expiredAt)
+                .paymentStatus(paymentStatus)
+                .friend(friend.get(0))
+                .order(order)
+                .build();
+    }
     @Override
     @Transactional(readOnly = true)
     public List<PaymentResponse> findByAccountId(SearchPaymentRequest request) {

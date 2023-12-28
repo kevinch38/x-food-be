@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Builder
 public class NewLoyaltyPointRequest {
-    private String accountID;
     @NotNull(message = "Loyalty point amount cannot be empty")
     private Integer loyaltyPointAmount;
 }

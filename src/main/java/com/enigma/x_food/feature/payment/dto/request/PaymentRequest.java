@@ -8,9 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
@@ -21,8 +19,6 @@ public class PaymentRequest {
     private User user;
     @NotNull(message = "Payment amount cannot be empty")
     private Double paymentAmount;
-    @NotNull(message = "Expired at cannot be empty")
-    private Timestamp expiredAt;
     @NotNull(message = "History cannot be empty")
     private History history;
     @NotNull(message = "Order cannot be empty")

@@ -1,10 +1,6 @@
 package com.enigma.x_food.feature.voucher;
 
 import com.enigma.x_food.constant.EVoucherStatus;
-import com.enigma.x_food.feature.balance.BalanceService;
-import com.enigma.x_food.feature.loyalty_point.LoyaltyPointService;
-import com.enigma.x_food.feature.otp.OTPService;
-import com.enigma.x_food.feature.pin.PinService;
 import com.enigma.x_food.feature.promotion.Promotion;
 import com.enigma.x_food.feature.promotion.PromotionService;
 import com.enigma.x_food.feature.user.User;
@@ -15,7 +11,6 @@ import com.enigma.x_food.feature.voucher.dto.request.SearchVoucherRequest;
 import com.enigma.x_food.feature.voucher.dto.request.UpdateVoucherRequest;
 import com.enigma.x_food.feature.voucher_status.VoucherStatus;
 import com.enigma.x_food.feature.voucher_status.VoucherStatusService;
-import com.enigma.x_food.security.BCryptUtil;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +22,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -43,15 +43,9 @@ import java.util.Random;
 public class VoucherServiceImpl implements VoucherService {
     private final VoucherRepository voucherRepository;
     private final VoucherStatusService voucherStatusService ;
-    private final PinService pinService;
-    private final OTPService otpService;
-    private final BalanceService balanceService;
     private final PromotionService promotionService;
     private final UserService userService;
-    private final LoyaltyPointService loyaltyPointService;
     private final ValidationUtil validationUtil;
-    private final Random random;
-    private final BCryptUtil bCryptUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -79,10 +73,16 @@ public class VoucherServiceImpl implements VoucherService {
 
             VoucherStatus voucherStatus = voucherStatusService.getByStatus(EVoucherStatus.ACTIVE);
 
-            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+            Instant currentTime = Instant.now();
+            ZoneId gmtPlus7 = ZoneId.of("GMT+7");
+            Instant expiredTime = currentTime.plus(Duration.ofDays(90));
+            ZonedDateTime expiredTimeGmtPlus7 = ZonedDateTime.ofInstant(expiredTime, gmtPlus7)
+                    .withHour(23)
+                    .withMinute(59)
+                    .withSecond(59)
+                    .withNano(0);
 
-            Timestamp expiredAt = new Timestamp(currentTimestamp.toInstant().plusSeconds(3L * 30 * 24 * 60 * 60).toEpochMilli());
-
+            Timestamp expiredAt = Timestamp.from(expiredTimeGmtPlus7.toInstant());
 
             Voucher voucher = Voucher.builder()
                     .promotion(promotion)
@@ -125,6 +125,19 @@ public class VoucherServiceImpl implements VoucherService {
         Page<Voucher> vouchers = voucherRepository.findAll(specification, pageable);
         log.info("End getAll");
         return vouchers.map(this::mapToResponse);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void updateExpiredVoucher() {
+        List<Voucher> vouchers = voucherRepository.findAll();
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        VoucherStatus voucherStatus = voucherStatusService.getByStatus(EVoucherStatus.INACTIVE);
+
+        for (Voucher voucher : vouchers) {
+            if (voucher.getExpiredDate().before(currentTimestamp)) {
+                voucher.setVoucherStatus(voucherStatus);
+            }
+        }
     }
 
     @Override
