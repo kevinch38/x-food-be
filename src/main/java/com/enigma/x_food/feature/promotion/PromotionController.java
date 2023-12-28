@@ -136,6 +136,18 @@ public class PromotionController {
                 .status(HttpStatus.OK)
                 .body(response);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable String id) {
+        PromotionResponse promotionResponse = promotionService.findById(id);
+        CommonResponse<PromotionResponse> response = CommonResponse.<PromotionResponse>builder()
+                .message("successfully get promotion")
+                .statusCode(HttpStatus.OK.value())
+                .data(promotionResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
