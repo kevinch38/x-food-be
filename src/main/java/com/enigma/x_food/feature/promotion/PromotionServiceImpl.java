@@ -1,14 +1,8 @@
 package com.enigma.x_food.feature.promotion;
 
-import com.enigma.x_food.constant.EMerchantStatus;
-import com.enigma.x_food.constant.EPaymentStatus;
 import com.enigma.x_food.constant.EPromotionStatus;
-import com.enigma.x_food.feature.loyalty_point.LoyaltyPoint;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
-import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
-import com.enigma.x_food.feature.merchant_status.MerchantStatus;
-import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
 import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
@@ -35,7 +29,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +38,6 @@ import java.util.stream.Collectors;
 public class PromotionServiceImpl implements PromotionService {
     private final PromotionRepository promotionRepository;
     private final MerchantService merchantService;
-    private final MerchantStatusService merchantStatusService;
     private final PromotionStatusService promotionStatusService;
     private final ValidationUtil validationUtil;
 
@@ -54,24 +46,7 @@ public class PromotionServiceImpl implements PromotionService {
     public PromotionResponse createNew(NewPromotionRequest request) {
         log.info("Start createNew");
         validationUtil.validate(request);
-        MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
-        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.valueOf(merchantResponse.getStatus()));
-
-        Merchant merchant = Merchant.builder()
-                .merchantID(merchantResponse.getMerchantID())
-                .joinDate(merchantResponse.getJoinDate())
-                .merchantName(merchantResponse.getMerchantName())
-                .picName(merchantResponse.getPicName())
-                .picNumber(merchantResponse.getPicNumber())
-                .picEmail(merchantResponse.getPicEmail())
-                .merchantDescription(merchantResponse.getMerchantDescription())
-                .adminID(merchantResponse.getAdminId())
-                .createdAt(merchantResponse.getCreatedAt())
-                .updatedAt(merchantResponse.getUpdatedAt())
-                .merchantStatus(merchantStatus)
-                .notes(merchantResponse.getNotes())
-                .build();
-
+        Merchant merchant = merchantService.getById(request.getMerchantID());
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
 
         Promotion promotion = Promotion.builder()
@@ -93,29 +68,25 @@ public class PromotionServiceImpl implements PromotionService {
         return mapToResponse(promotion);
     }
 
-//    @Override
-//    @Transactional(rollbackFor = Exception.class)
-//    public PromotionResponse update(UpdatePromotionRequest request) {
-//        validationUtil.validate(request);
-//        Promotion promotion = findByIdOrThrowException(request.getPromotionID());
-//
-//        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTimeInMillis(currentTimestamp.getTime());
-//        calendar.add(Calendar.MONTH, 3);
-//
-//        calendar.set(Calendar.HOUR_OF_DAY, 23);
-//        calendar.set(Calendar.MINUTE, 59);
-//        calendar.set(Calendar.SECOND, 59);
-//        calendar.set(Calendar.MILLISECOND, 999);
-//
-//        Timestamp expiredDate = new Timestamp(calendar.getTimeInMillis());
-//
-//        promotion.setQuantity(promotion.getQuantity()-1);
-//        promotion.setExpiredDate(expiredDate);
-//
-//        return mapToResponse(promotionRepository.saveAndFlush(promotion));
-//    }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public PromotionResponse update(UpdatePromotionRequest request) {
+        validationUtil.validate(request);
+        Promotion promotion = findByIdOrThrowException(request.getPromotionID());
+
+        Merchant merchant = merchantService.getById(request.getMerchantID());
+        promotion.setQuantity(request.getQuantity());
+        promotion.setMerchant(merchant);
+        promotion.setCost(request.getCost());
+        promotion.setMaxRedeem(request.getMaxRedeem());
+        promotion.setPromotionValue(request.getPromotionValue());
+        promotion.setPromotionName(request.getPromotionName());
+        promotion.setQuantity(request.getQuantity());
+        promotion.setExpiredDate(request.getExpiredDate());
+        promotion.setNotes(request.getNotes());
+
+        return mapToResponse(promotionRepository.saveAndFlush(promotion));
+    }
 
     @Scheduled(cron = "0 0 0 1 * ?")
     public void updateExpiredPromotion() {

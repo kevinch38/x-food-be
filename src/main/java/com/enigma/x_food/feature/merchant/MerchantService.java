@@ -13,6 +13,7 @@ public interface MerchantService {
     MerchantResponse createNew(NewMerchantRequest request) throws IOException;
     MerchantResponse update(UpdateMerchantRequest request) throws IOException;
     MerchantResponse findById(String id);
+    Merchant getById(String id);
     void deleteById(String id);
     List<MerchantResponse> getAllActive(SearchMerchantRequest request);
     Page<MerchantResponse> getAll(SearchMerchantRequest request);

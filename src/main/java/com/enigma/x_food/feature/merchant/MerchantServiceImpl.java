@@ -99,6 +99,11 @@ public class MerchantServiceImpl implements MerchantService {
         return mapToResponse(findByIdOrThrowException(id));
     }
 
+    @Override
+    public Merchant getById(String id) {
+        return findByIdOrThrowException(id);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteById(String id) {
