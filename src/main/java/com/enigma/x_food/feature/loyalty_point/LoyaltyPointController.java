@@ -42,8 +42,8 @@ public class LoyaltyPointController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
-        LoyaltyPoint loyaltyPointResponse = loyaltyPointService.findById(id);
-        CommonResponse<LoyaltyPoint> response = CommonResponse.<LoyaltyPoint>builder()
+        LoyaltyPointResponse loyaltyPointResponse = loyaltyPointService.findById(id);
+        CommonResponse<LoyaltyPointResponse> response = CommonResponse.<LoyaltyPointResponse>builder()
                 .message("successfully get loyalty point")
                 .statusCode(HttpStatus.OK.value())
                 .data(loyaltyPointResponse)

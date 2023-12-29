@@ -59,9 +59,16 @@ public class LoyaltyPointServiceImpl implements LoyaltyPointService {
 
     @Override
     @Transactional(readOnly = true)
-    public LoyaltyPoint findById(String id) {
+    public LoyaltyPoint getById(String id) {
         validationUtil.validate(id);
         return findByIdOrThrowException(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LoyaltyPointResponse findById(String id) {
+        validationUtil.validate(id);
+        return mapToResponse(findByIdOrThrowException(id));
     }
 
     @Scheduled(cron = "0 0 0 1 1 ?")

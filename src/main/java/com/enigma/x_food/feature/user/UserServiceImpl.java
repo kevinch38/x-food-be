@@ -251,42 +251,28 @@ public class UserServiceImpl implements UserService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getAccountID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("accountID")),
-                        "%" + request.getAccountID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
-            if (request.getAccountEmail() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("accountEmail")),
-                        "%" + request.getAccountEmail().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
-            if (request.getFirstName() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("firstName")),
-                        "%" + request.getFirstName().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
-            if (request.getLastName() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("lastName")),
-                        "%" + request.getLastName().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
             if (request.getPhoneNumber() != null) {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("phoneNumber")),
                         "%" + request.getPhoneNumber().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getStartCreatedAt() != null && request.getEndCreatedAt() != null) {
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("createdAt"),
+                        request.getStartCreatedAt(),
+                        request.getEndCreatedAt()
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getStartUpdatedAt() != null && request.getEndUpdatedAt() != null) {
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("updatedAt"),
+                        request.getStartUpdatedAt(),
+                        request.getEndUpdatedAt()
                 );
                 predicates.add(predicate);
             }

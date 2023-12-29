@@ -7,5 +7,6 @@ import com.enigma.x_food.feature.loyalty_point.dto.response.LoyaltyPointResponse
 public interface LoyaltyPointService {
     LoyaltyPoint createNew(NewLoyaltyPointRequest request);
     LoyaltyPointResponse update(UpdateLoyaltyPointRequest request);
-    LoyaltyPoint findById(String id);
+    LoyaltyPoint getById(String id);
+    LoyaltyPointResponse findById(String id);
 }

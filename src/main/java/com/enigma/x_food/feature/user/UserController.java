@@ -2,7 +2,6 @@ package com.enigma.x_food.feature.user;
 
 import com.enigma.x_food.feature.user.dto.request.*;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
-import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.shared.PagingResponse;
@@ -10,9 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.x_food.util.PagingUtil;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,12 +62,11 @@ public class UserController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "accountID") String sortBy,
-            @RequestParam(required = false) String accountID,
-            @RequestParam(required = false) String accountEmail,
-            @RequestParam(required = false) String ktpID,
-            @RequestParam(required = false) String phoneNumber,
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName
+            @RequestParam(required = false) LocalDate startCreatedAt,
+            @RequestParam(required = false) LocalDate endCreatedAt,
+            @RequestParam(required = false) LocalDate starUpdatedAt,
+            @RequestParam(required = false) LocalDate endUpdatedAt,
+            @RequestParam(required = false) String phoneNumber
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
@@ -81,12 +77,11 @@ public class UserController {
                 .size(size)
                 .direction(direction)
                 .sortBy(sortBy)
-                .accountID(accountID)
-                .accountEmail(accountEmail)
-                .ktpID(ktpID)
                 .phoneNumber(phoneNumber)
-                .firstName(firstName)
-                .lastName(lastName)
+                .startCreatedAt(startCreatedAt)
+                .endCreatedAt(endCreatedAt)
+                .startUpdatedAt(starUpdatedAt)
+                .endUpdatedAt(endUpdatedAt)
                 .build();
         Page<UserResponse> users = userService.getAll(request);
 
