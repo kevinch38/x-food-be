@@ -185,14 +185,6 @@ public class PromotionServiceImpl implements PromotionService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getPromotionID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotionID")),
-                        "%" + request.getPromotionID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
             if (request.getMerchantID() != null) {
                 Join<Promotion, Merchant> promotionJoin = root.join("merchant", JoinType.INNER);
                 Predicate predicate = criteriaBuilder.like(
@@ -202,41 +194,43 @@ public class PromotionServiceImpl implements PromotionService {
                 predicates.add(predicate);
             }
 
-            if (request.getPromotionDescription() != null) {
+            if (request.getPromotionStatus() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotionDescription")),
-                        "%" + request.getPromotionDescription().toLowerCase() + "%"
+                        criteriaBuilder.lower(root.get("promotionStatus").get("status")),
+                        "%" + request.getPromotionStatus().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
 
-            if (request.getPromotionName() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotionName")),
-                        "%" + request.getPromotionName().toLowerCase() + "%"
+            if (request.getStartCreatedAt() != null && request.getEndCreatedAt() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartCreatedAt().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndCreatedAt().atStartOfDay());
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("createdAt"),
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }
 
-            if (request.getAdminID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("adminID")),
-                        "%" + request.getAdminID().toLowerCase() + "%"
+            if (request.getStartUpdatedAt() != null && request.getEndUpdatedAt() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartUpdatedAt().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndUpdatedAt().atStartOfDay());
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("updatedAt"),
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }
 
-            if (request.getPromotionStatusID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotionStatusID")),
-                        "%" + request.getPromotionStatusID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-            if (request.getNote() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("notes")),
-                        "%" + request.getNote().toLowerCase() + "%"
+            if (request.getStartExpiredDate() != null && request.getEndExpiredDate() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartExpiredDate().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndExpiredDate().atStartOfDay());
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("expiredDate"),
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }

@@ -37,6 +37,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -283,19 +284,19 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getBranchID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("branchID")),
-                        "%" + request.getBranchID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
             if (request.getMerchantID() != null) {
                 Join<MerchantBranch, Merchant> merchantJoin = root.join("merchant", JoinType.INNER);
                 Predicate predicate = criteriaBuilder.equal(
                         criteriaBuilder.lower(merchantJoin.get("merchantID")),
                         request.getMerchantID().toLowerCase()
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getBranchID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("branchID")),
+                        "%" + request.getBranchID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
@@ -308,57 +309,30 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 predicates.add(predicate);
             }
 
-            if (request.getAddress() != null) {
+
+            if (request.getCity() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("address")),
-                        "%" + request.getAddress().toLowerCase() + "%"
+                        criteriaBuilder.lower(root.get("city").get("cityName")),
+                        "%" + request.getCity().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
 
-            if (request.getTimezone() != null) {
+            if (request.getStatus() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("timezone")),
-                        "%" + request.getTimezone().toLowerCase() + "%"
+                        criteriaBuilder.lower(root.get("merchantStatus").get("status")),
+                        "%" + request.getStatus().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
 
-            if (request.getBranchWorkingHoursID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("branchWorkingHoursID")),
-                        "%" + request.getBranchWorkingHoursID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-            if (request.getCityID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("city").get("cityID")),
-                        "%" + request.getCityID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
-            if (request.getPicName() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("picName")),
-                        "%" + request.getPicName().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
-            if (request.getPicEmail() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("picEmail")),
-                        "%" + request.getPicEmail().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
-            if (request.getPicNumber() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("picNumber")),
-                        "%" + request.getPicNumber().toLowerCase() + "%"
+            if (request.getStartJoinDate() != null && request.getEndJoinDate() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartJoinDate().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndJoinDate().atStartOfDay());
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("joinDate"),
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }

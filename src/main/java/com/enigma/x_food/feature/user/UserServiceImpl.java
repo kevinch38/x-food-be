@@ -36,6 +36,7 @@ import com.enigma.x_food.util.SortingUtil;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.Predicate;
+import java.sql.Timestamp;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -260,19 +261,23 @@ public class UserServiceImpl implements UserService {
             }
 
             if (request.getStartCreatedAt() != null && request.getEndCreatedAt() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartCreatedAt().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndCreatedAt().atStartOfDay());
                 Predicate predicate = criteriaBuilder.between(
                         root.get("createdAt"),
-                        request.getStartCreatedAt(),
-                        request.getEndCreatedAt()
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }
 
             if (request.getStartUpdatedAt() != null && request.getEndUpdatedAt() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartUpdatedAt().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndUpdatedAt().atStartOfDay());
                 Predicate predicate = criteriaBuilder.between(
                         root.get("updatedAt"),
-                        request.getStartUpdatedAt(),
-                        request.getEndUpdatedAt()
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }

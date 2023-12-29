@@ -2,7 +2,6 @@ package com.enigma.x_food.feature.history;
 
 import com.enigma.x_food.feature.history.dto.request.SearchHistoryRequest;
 import com.enigma.x_food.feature.history.dto.response.HistoryResponse;
-import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.shared.PagingResponse;
 import com.enigma.x_food.util.PagingUtil;
@@ -12,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -25,15 +25,11 @@ public class HistoryController {
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "merchantID") String sortBy,
-            @RequestParam(required = false) String historyID,
-            @RequestParam(required = false) String transactionType,
-            @RequestParam(required = false) Boolean credit,
-            @RequestParam(required = false) Boolean debit,
-            @RequestParam(required = false) String orderID,
-            @RequestParam(required = false) String paymentID,
-            @RequestParam(required = false) String topUpID,
+            @RequestParam(required = false, defaultValue = "historyID") String sortBy,
             @RequestParam(required = false) String accountID,
+            @RequestParam(required = false) String transactionType,
+            @RequestParam(required = false) LocalDate startTransactionDate,
+            @RequestParam(required = false) LocalDate endTransactionDate,
             @RequestParam(required = false, defaultValue = "false") Boolean paging
                                     ) {
         page = PagingUtil.validatePage(page);
@@ -45,14 +41,10 @@ public class HistoryController {
                 .size(size)
                 .direction(direction)
                 .sortBy(sortBy)
-                .historyID(historyID)
-                .transactionType(transactionType)
-                .credit(credit)
-                .debit(debit)
-                .orderID(orderID)
-                .paymentID(paymentID)
-                .topUpID(topUpID)
                 .accountID(accountID)
+                .transactionType(transactionType)
+                .startTransactionDate(startTransactionDate)
+                .endTransactionDate(endTransactionDate)
                 .build();
         if  (paging){
             Page<HistoryResponse> histories = historyService.findAll(request);

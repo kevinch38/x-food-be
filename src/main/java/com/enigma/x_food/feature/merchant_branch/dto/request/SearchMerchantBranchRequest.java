@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,14 +16,11 @@ public class SearchMerchantBranchRequest {
     private Integer size;
     private String direction;
     private String sortBy;
-    private String branchID;
     private String merchantID;
+    private String branchID;
     private String branchName;
-    private String address;
-    private String timezone;
-    private String branchWorkingHoursID;
-    private String cityID;
-    private String picName;
-    private String picNumber;
-    private String picEmail;
+    private String status;
+    private String city;
+    private LocalDate startJoinDate;
+    private LocalDate endJoinDate;
 }

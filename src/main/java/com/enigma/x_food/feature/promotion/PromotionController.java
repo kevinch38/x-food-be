@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,13 +42,15 @@ public class PromotionController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "promotionID") String sortBy,
-            @RequestParam(required = false) String promotionID,
             @RequestParam(required = false) String merchantID,
-            @RequestParam(required = false) String promotionDescription,
-            @RequestParam(required = false) String promotionName,
-            @RequestParam(required = false) String adminID,
-            @RequestParam(required = false) String promotionStatusID,
-            @RequestParam(required = false) String notes
+            @RequestParam(required = false) String promotionStatus,
+            @RequestParam(required = false) LocalDate startCreatedAt,
+            @RequestParam(required = false) LocalDate endCreatedAt,
+            @RequestParam(required = false) LocalDate startUpdatedAt,
+            @RequestParam(required = false) LocalDate endUpdatedAt,
+            @RequestParam(required = false) LocalDate startExpiredDate,
+            @RequestParam(required = false) LocalDate endExpiredDate,
+            @RequestParam Boolean active
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
@@ -58,14 +61,29 @@ public class PromotionController {
                 .size(size)
                 .direction(direction)
                 .sortBy(sortBy)
-                .promotionID(promotionID)
                 .merchantID(merchantID)
-                .promotionDescription(promotionDescription)
-                .promotionName(promotionName)
-                .adminID(adminID)
-                .promotionStatusID(promotionStatusID)
-                .note(notes)
+                .promotionStatus(promotionStatus)
+                .startCreatedAt(startCreatedAt)
+                .endCreatedAt(endCreatedAt)
+                .startUpdatedAt(startUpdatedAt)
+                .endUpdatedAt(endUpdatedAt)
+                .startExpiredDate(startExpiredDate)
+                .endExpiredDate(endExpiredDate)
                 .build();
+        if (active){
+            List<PromotionResponse> promotions = promotionService.getAllActive(request);
+
+            CommonResponse<List<PromotionResponse>> response = CommonResponse.<List<PromotionResponse>>builder()
+                    .message("successfully get all active promotion")
+                    .statusCode(HttpStatus.OK.value())
+                    .data(promotions)
+                    .build();
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+        }
+
         Page<PromotionResponse> promotions = promotionService.getAll(request);
 
         PagingResponse pagingResponse = PagingResponse.builder()
@@ -80,43 +98,6 @@ public class PromotionController {
                 .statusCode(HttpStatus.OK.value())
                 .data(promotions.getContent())
                 .paging(pagingResponse)
-                .build();
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
-
-    @GetMapping("/active")
-    public ResponseEntity<?> getAllActive(
-            @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "promotionID") String sortBy,
-            @RequestParam(required = false) String promotionID,
-            @RequestParam(required = false) String merchantID,
-            @RequestParam(required = false) String promotionDescription,
-            @RequestParam(required = false) String promotionName,
-            @RequestParam(required = false) String adminID,
-            @RequestParam(required = false) String promotionStatusID,
-            @RequestParam(required = false) String notes
-    ) {
-        SearchPromotionRequest request = SearchPromotionRequest.builder()
-                .direction(direction)
-                .sortBy(sortBy)
-                .promotionID(promotionID)
-                .merchantID(merchantID)
-                .promotionDescription(promotionDescription)
-                .promotionName(promotionName)
-                .adminID(adminID)
-                .promotionStatusID(promotionStatusID)
-                .note(notes)
-                .build();
-        List<PromotionResponse> promotions = promotionService.getAllActive(request);
-
-
-        CommonResponse<List<PromotionResponse>> response = CommonResponse.<List<PromotionResponse>>builder()
-                .message("successfully get all active promotion")
-                .statusCode(HttpStatus.OK.value())
-                .data(promotions)
                 .build();
 
         return ResponseEntity

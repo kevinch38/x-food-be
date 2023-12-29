@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,13 +16,14 @@ public class SearchMerchantRequest {
     private Integer size;
     private String direction;
     private String sortBy;
-    private String merchantID;
     private String merchantName;
-    private String picName;
-    private String picNumber;
-    private String picEmail;
-    private String merchantDescription;
-    private String adminID;
-    private String merchantStatusID;
-    private String notes;
+    private String merchantStatus;
+    private LocalDate startCreatedAt;
+    private LocalDate endCreatedAt;
+    private LocalDate startUpdatedAt;
+    private LocalDate endUpdatedAt;
+    private LocalDate startExpiredDate;
+    private LocalDate endExpiredDate;
+    private LocalDate startJoinDate;
+    private LocalDate endJoinDate;
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,12 +16,8 @@ public class SearchHistoryRequest {
     private Integer size;
     private String direction;
     private String sortBy;
-    private String historyID;
-    private String transactionType;
-    private Boolean credit;
-    private Boolean debit;
-    private String orderID;
-    private String paymentID;
-    private String topUpID;
     private String accountID;
+    private String transactionType;
+    private LocalDate startTransactionDate;
+    private LocalDate endTransactionDate;
 }

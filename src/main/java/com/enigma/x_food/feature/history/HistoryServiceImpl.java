@@ -30,6 +30,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -196,52 +197,10 @@ public class HistoryServiceImpl implements HistoryService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getHistoryID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("historyID")),
-                        "%" + request.getHistoryID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
             if (request.getTransactionType() != null) {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("transactionType")),
                         "%" + request.getTransactionType().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-            if (request.getCredit() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("credit")),
-                        "%" + request.getCredit().toString().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-            if (request.getDebit() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("debit")),
-                        "%" + request.getDebit().toString().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-            if (request.getOrderID() != null && root.get("order") != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("order").get("orderID")),
-                        "%" + request.getOrderID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-            if (request.getPaymentID() != null && root.get("payment") != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("payment").get("paymentID")),
-                        "%" + request.getPaymentID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-            if (request.getTopUpID() != null && root.get("topUp") != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("topUp").get("topUpID")),
-                        "%" + request.getTopUpID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
@@ -252,6 +211,15 @@ public class HistoryServiceImpl implements HistoryService {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(userHistoryJoin.get("accountID")),
                         "%" + request.getAccountID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getEndTransactionDate() != null && request.getEndTransactionDate() != null) {
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("joinDate"),
+                        request.getStartTransactionDate(),
+                        request.getEndTransactionDate()
                 );
                 predicates.add(predicate);
             }

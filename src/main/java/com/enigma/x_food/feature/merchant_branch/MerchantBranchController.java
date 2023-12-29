@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -39,7 +40,7 @@ public class MerchantBranchController {
             @RequestParam String picEmail,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String joinDate,
             @RequestParam MultipartFile image
-                                       ) throws IOException {
+    ) throws IOException {
         Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(joinDate, DateTimeFormatter.ISO_DATE_TIME));
 
         NewMerchantBranchRequest request = NewMerchantBranchRequest.builder()
@@ -70,30 +71,28 @@ public class MerchantBranchController {
     @GetMapping
     public ResponseEntity<?> findAll(@RequestParam String merchantID,
                                      @RequestParam(required = false, defaultValue = "asc") String direction,
-                                     @RequestParam(required = false, defaultValue = "branchName") String sortBy,
-                                     @RequestParam(required = false) String branchID,
+                                     @RequestParam(required = false, defaultValue = "branchID") String sortBy,
                                      @RequestParam(required = false) String branchName,
-                                     @RequestParam(required = false) String address,
-                                     @RequestParam(required = false) String timeZone,
-                                     @RequestParam(required = false) String branchWorkingHoursID,
-                                     @RequestParam(required = false) String cityID,
-                                     @RequestParam(required = false, defaultValue = "all") String status
+                                     @RequestParam(required = false) String city,
+                                     @RequestParam(required = false) String status,
+                                     @RequestParam(required = false) LocalDate startJoinDate,
+                                     @RequestParam(required = false) LocalDate endJoinDate,
+                                     @RequestParam(required = false, defaultValue = "all") Boolean active
     ) {
         direction = PagingUtil.validateDirection(direction);
 
         SearchMerchantBranchRequest request = SearchMerchantBranchRequest.builder()
                 .direction(direction)
                 .sortBy(sortBy)
-                .branchID(branchID)
                 .merchantID(merchantID)
                 .branchName(branchName)
-                .address(address)
-                .timezone(timeZone)
-                .branchWorkingHoursID(branchWorkingHoursID)
-                .cityID(cityID)
+                .city(city)
+                .status(status)
+                .startJoinDate(startJoinDate)
+                .endJoinDate(endJoinDate)
                 .build();
 
-        if (status.equalsIgnoreCase("active")){
+        if (active) {
             List<MerchantBranchResponse> merchantBranches = merchantBranchService.findAllActiveByMerchantId(request);
 
             CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
@@ -106,19 +105,18 @@ public class MerchantBranchController {
                     .status(HttpStatus.OK)
                     .body(response);
         }
-        else {
-            List<MerchantBranchResponse> merchantBranches = merchantBranchService.findAllByMerchantId(request);
+        List<MerchantBranchResponse> merchantBranches = merchantBranchService.findAllByMerchantId(request);
 
-            CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
-                    .message("successfully get all merchant branch")
-                    .statusCode(HttpStatus.OK.value())
-                    .data(merchantBranches)
-                    .build();
+        CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
+                .message("successfully get all merchant branch")
+                .statusCode(HttpStatus.OK.value())
+                .data(merchantBranches)
+                .build();
 
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(response);
-        }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+
     }
 
     @GetMapping("/{branchID}")

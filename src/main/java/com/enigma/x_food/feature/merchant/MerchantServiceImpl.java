@@ -38,6 +38,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -283,14 +284,6 @@ public class MerchantServiceImpl implements MerchantService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getMerchantID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("merchantID")),
-                        "%" + request.getMerchantID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
             if (request.getMerchantName() != null) {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("merchantName")),
@@ -299,57 +292,54 @@ public class MerchantServiceImpl implements MerchantService {
                 predicates.add(predicate);
             }
 
-            if (request.getPicName() != null) {
+            if (request.getMerchantStatus() != null) {
                 Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("picName")),
-                        "%" + request.getPicName().toLowerCase() + "%"
+                        criteriaBuilder.lower(root.get("merchantStatus").get("status")),
+                        "%" + request.getMerchantStatus().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
 
-            if (request.getPicNumber() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("picNumber")),
-                        "%" + request.getPicNumber().toLowerCase() + "%"
+            if (request.getStartCreatedAt() != null && request.getEndCreatedAt() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartCreatedAt().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndCreatedAt().atStartOfDay());
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("createdAt"),
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }
 
-            if (request.getPicEmail() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("picEmail")),
-                        "%" + request.getPicEmail().toLowerCase() + "%"
+            if (request.getStartUpdatedAt() != null && request.getEndUpdatedAt() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartUpdatedAt().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndUpdatedAt().atStartOfDay());
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("updatedAt"),
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }
 
-            if (request.getMerchantDescription() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("merchantDescription")),
-                        "%" + request.getMerchantDescription().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-            if (request.getAdminID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("adminID")),
-                        "%" + request.getAdminID().toLowerCase() + "%"
+            if (request.getStartExpiredDate() != null && request.getEndExpiredDate() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartExpiredDate().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndExpiredDate().atStartOfDay());
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("expiredDate"),
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }
 
-            if (request.getMerchantStatusID() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("merchantStatusID")),
-                        "%" + request.getMerchantStatusID().toLowerCase() + "%"
-                );
-                predicates.add(predicate);
-            }
-
-            if (request.getNotes() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("notes")),
-                        "%" + request.getNotes().toLowerCase() + "%"
+            if (request.getStartJoinDate() != null && request.getEndJoinDate() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartJoinDate().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndJoinDate().atStartOfDay());
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("joinDate"),
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }

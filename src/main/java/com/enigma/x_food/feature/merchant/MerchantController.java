@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -69,15 +70,16 @@ public class MerchantController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "merchantID") String sortBy,
-            @RequestParam(required = false) String merchantID,
             @RequestParam(required = false) String merchantName,
-            @RequestParam(required = false) String picName,
-            @RequestParam(required = false) String picNumber,
-            @RequestParam(required = false) String picEmail,
-            @RequestParam(required = false) String merchantDescription,
-            @RequestParam(required = false) String adminID,
-            @RequestParam(required = false) String merchantStatusID,
-            @RequestParam(required = false) String notes,
+            @RequestParam(required = false) String merchantStatus,
+            @RequestParam(required = false) LocalDate startCreatedAt,
+            @RequestParam(required = false) LocalDate endCreatedAt,
+            @RequestParam(required = false) LocalDate startUpdatedAt,
+            @RequestParam(required = false) LocalDate endUpdatedAt,
+            @RequestParam(required = false) LocalDate startExpiredDate,
+            @RequestParam(required = false) LocalDate endExpiredDate,
+            @RequestParam(required = false) LocalDate startJoinDate,
+            @RequestParam(required = false) LocalDate endJoinDate,
             @RequestParam(required = false, defaultValue = "false") Boolean paging
     ) {
         page = PagingUtil.validatePage(page);
@@ -89,15 +91,16 @@ public class MerchantController {
                 .size(size)
                 .direction(direction)
                 .sortBy(sortBy)
-                .merchantID(merchantID)
                 .merchantName(merchantName)
-                .picName(picName)
-                .picNumber(picNumber)
-                .picEmail(picEmail)
-                .merchantDescription(merchantDescription)
-                .adminID(adminID)
-                .merchantStatusID(merchantStatusID)
-                .notes(notes)
+                .merchantStatus(merchantStatus)
+                .startCreatedAt(startCreatedAt)
+                .endCreatedAt(endCreatedAt)
+                .startUpdatedAt(startUpdatedAt)
+                .endUpdatedAt(endUpdatedAt)
+                .startExpiredDate(startExpiredDate)
+                .endExpiredDate(endExpiredDate)
+                .startJoinDate(startJoinDate)
+                .endJoinDate(endJoinDate)
                 .build();
 
         if (paging) {
