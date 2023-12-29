@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.admin.dto.response;
+package com.enigma.x_food.feature.admin_monitoring.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -12,11 +12,13 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdminResponse {
-    private String adminID;
+public class AdminMonitoringResponse {
+    private String adminMonitoringID;
+    private String activity;
     private String adminName;
+    private String adminRole;
+    private String adminID;
     private String adminEmail;
-    private Boolean isSuperAdmin;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")

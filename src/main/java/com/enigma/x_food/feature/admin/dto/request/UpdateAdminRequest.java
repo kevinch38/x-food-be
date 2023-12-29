@@ -7,23 +7,20 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UpdateAdminRequest {
-    @NotBlank(message = "ID is required")
-    private String accountID;
-    @NotNull(message = "KTP ID is required")
-    private String ktpID;
-    @NotNull(message = "Email is required")
-    private String accountEmail;
-    @NotNull(message = "First name is required")
-    private String firstName;
-    @NotNull(message = "Last name is required")
-    private String lastName;
-    @NotNull(message = "Date of birth is required")
-    private LocalDate dateOfBirth;
+    @NotBlank(message = "Admin ID is required")
+    private String adminID;
+    @NotNull(message = "Admin name is required")
+    private String adminName;
+    @NotNull(message = "Admin email is required")
+    private String adminEmail;
+    @NotNull(message = "Is super admin is required")
+    private String isSuperAdmin;
+    @NotNull(message = "Role is required")
+    private String role;
 }
