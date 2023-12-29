@@ -199,12 +199,14 @@ public class UserServiceImpl implements UserService {
 
 
     private UserResponse mapToResponse(User user) {
-        List<Voucher> vouchers = null;
+        List<VoucherResponse> voucherResponses = null;
+        List<Voucher> vouchers;
         if (user.getVouchers() != null) {
             vouchers = user.getVouchers().stream().filter(voucher -> voucher.getVoucherStatus().getStatus() == EVoucherStatus.ACTIVE
             ).collect(Collectors.toList());
+            voucherResponses = vouchers.stream().map(this::mapToResponse).collect(Collectors.toList());
         }
-        List<VoucherResponse> voucherResponses = vouchers.stream().map(this::mapToResponse).collect(Collectors.toList());
+
         return UserResponse.builder()
                 .accountID(user.getAccountID())
                 .ktpID(user.getKtpID())
