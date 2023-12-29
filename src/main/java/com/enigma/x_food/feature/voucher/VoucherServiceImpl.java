@@ -1,6 +1,5 @@
 package com.enigma.x_food.feature.voucher;
 
-import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.constant.EVoucherStatus;
 import com.enigma.x_food.feature.promotion.Promotion;
 import com.enigma.x_food.feature.promotion.PromotionService;
@@ -205,8 +204,8 @@ public class VoucherServiceImpl implements VoucherService {
                 .voucherStatus(voucher.getVoucherStatus().getStatus().name())
                 .createdAt(voucher.getCreatedAt())
                 .updatedAt(voucher.getUpdatedAt())
-                .description(voucher.getPromotion().getPromotionDescription())
-                .name(voucher.getPromotion().getPromotionName())
+                .promotionDescription(voucher.getPromotion().getPromotionDescription())
+                .promotionName(voucher.getPromotion().getPromotionName())
                 .logoImage(voucher.getPromotion().getMerchant().getLogoImage())
                 .build();
     }

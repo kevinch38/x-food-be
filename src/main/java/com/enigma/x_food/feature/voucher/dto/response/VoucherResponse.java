@@ -40,9 +40,9 @@ public class VoucherResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;
 
-    private String description;
+    private String promotionDescription;
 
-    private String name;
+    private String promotionName;
 
     private byte[] logoImage;
 }
