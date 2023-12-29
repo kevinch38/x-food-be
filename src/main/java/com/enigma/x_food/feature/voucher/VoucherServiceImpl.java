@@ -194,6 +194,7 @@ public class VoucherServiceImpl implements VoucherService {
 
 
     private VoucherResponse mapToResponse(Voucher voucher) {
+
         return VoucherResponse.builder()
                 .voucherID(voucher.getVoucherID())
                 .promotionID(voucher.getPromotion().getPromotionID())
@@ -204,6 +205,9 @@ public class VoucherServiceImpl implements VoucherService {
                 .voucherStatus(voucher.getVoucherStatus().getStatus().name())
                 .createdAt(voucher.getCreatedAt())
                 .updatedAt(voucher.getUpdatedAt())
+                .description(voucher.getPromotion().getPromotionDescription())
+                .name(voucher.getPromotion().getPromotionName())
+                .logoImage(voucher.getPromotion().getMerchant().getLogoImage())
                 .build();
     }
 
