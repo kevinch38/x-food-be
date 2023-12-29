@@ -72,18 +72,24 @@ public class MerchantBranchController {
     public ResponseEntity<?> findAll(@RequestParam String merchantID,
                                      @RequestParam(required = false, defaultValue = "asc") String direction,
                                      @RequestParam(required = false, defaultValue = "branchID") String sortBy,
+                                     @RequestParam(required = false, defaultValue = "1") Integer page,
+                                     @RequestParam(required = false, defaultValue = "10") Integer size,
                                      @RequestParam(required = false) String branchName,
                                      @RequestParam(required = false) String city,
                                      @RequestParam(required = false) String status,
                                      @RequestParam(required = false) LocalDate startJoinDate,
                                      @RequestParam(required = false) LocalDate endJoinDate,
-                                     @RequestParam(required = false, defaultValue = "all") Boolean active
+                                     @RequestParam(required = false, defaultValue = "false") Boolean active
     ) {
+        page = PagingUtil.validatePage(page);
+        size = PagingUtil.validateSize(size);
         direction = PagingUtil.validateDirection(direction);
 
         SearchMerchantBranchRequest request = SearchMerchantBranchRequest.builder()
                 .direction(direction)
                 .sortBy(sortBy)
+                .page(page)
+                .size(size)
                 .merchantID(merchantID)
                 .branchName(branchName)
                 .city(city)

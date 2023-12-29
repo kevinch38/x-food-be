@@ -50,7 +50,7 @@ public class PromotionController {
             @RequestParam(required = false) LocalDate endUpdatedAt,
             @RequestParam(required = false) LocalDate startExpiredDate,
             @RequestParam(required = false) LocalDate endExpiredDate,
-            @RequestParam Boolean active
+            @RequestParam(required = false, defaultValue = "false") Boolean active
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
