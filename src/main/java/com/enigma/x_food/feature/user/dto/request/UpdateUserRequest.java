@@ -20,6 +20,8 @@ public class UpdateUserRequest {
     private String ktpID;
     @NotNull(message = "Email is required")
     private String accountEmail;
+    @NotNull(message = "Phone number name is required")
+    private String phoneNumber;
     @NotNull(message = "First name is required")
     private String firstName;
     @NotNull(message = "Last name is required")
