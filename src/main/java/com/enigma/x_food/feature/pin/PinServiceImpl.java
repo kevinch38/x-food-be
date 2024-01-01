@@ -93,6 +93,7 @@ public class PinServiceImpl implements PinService {
     private PinResponse mapToResponse(Pin pin) {
         return PinResponse.builder()
                 .pinID(pin.getPinID())
+                .pin(pin.getPin())
                 .createdAt(pin.getCreatedAt())
                 .updatedAt(pin.getUpdatedAt())
                 .build();
