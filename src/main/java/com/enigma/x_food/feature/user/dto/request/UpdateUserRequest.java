@@ -24,7 +24,6 @@ public class UpdateUserRequest {
     private String phoneNumber;
     @NotNull(message = "First name is required")
     private String firstName;
-    @NotNull(message = "Last name is required")
     private String lastName;
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
