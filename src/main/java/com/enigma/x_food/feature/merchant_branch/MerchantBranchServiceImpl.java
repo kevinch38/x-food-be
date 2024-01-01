@@ -319,9 +319,9 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
             }
 
             if (request.getStatus() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("merchantStatus").get("status")),
-                        "%" + request.getStatus().toLowerCase() + "%"
+                Predicate predicate = criteriaBuilder.equal(
+                        criteriaBuilder.lower(root.get("merchantBranchStatus").get("status").as(String.class)),
+                        request.getStatus().toLowerCase()
                 );
                 predicates.add(predicate);
             }
