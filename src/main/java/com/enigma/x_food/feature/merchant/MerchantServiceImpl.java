@@ -299,9 +299,9 @@ public class MerchantServiceImpl implements MerchantService {
             }
 
             if (request.getMerchantStatus() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("merchantStatus").get("status")),
-                        "%" + request.getMerchantStatus().toLowerCase() + "%"
+                Predicate predicate = criteriaBuilder.equal(
+                        criteriaBuilder.lower(root.get("merchantStatus").get("status").as(String.class)),
+                        request.getMerchantStatus().toLowerCase()
                 );
                 predicates.add(predicate);
             }

@@ -72,14 +72,14 @@ public class MerchantController {
             @RequestParam(required = false, defaultValue = "merchantID") String sortBy,
             @RequestParam(required = false) String merchantName,
             @RequestParam(required = false) String merchantStatus,
-            @RequestParam(required = false) LocalDate startCreatedAt,
-            @RequestParam(required = false) LocalDate endCreatedAt,
-            @RequestParam(required = false) LocalDate startUpdatedAt,
-            @RequestParam(required = false) LocalDate endUpdatedAt,
-            @RequestParam(required = false) LocalDate startExpiredDate,
-            @RequestParam(required = false) LocalDate endExpiredDate,
-            @RequestParam(required = false) LocalDate startJoinDate,
-            @RequestParam(required = false) LocalDate endJoinDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startCreatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endCreatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startUpdatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endUpdatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startExpiredDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endExpiredDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startJoinDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endJoinDate,
             @RequestParam(required = false, defaultValue = "false") Boolean paging
     ) {
         page = PagingUtil.validatePage(page);

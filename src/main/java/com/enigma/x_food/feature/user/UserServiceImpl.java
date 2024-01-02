@@ -40,6 +40,7 @@ import java.sql.Timestamp;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -138,9 +139,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserByPhoneNumber(String phoneNumber) {
         log.info("Start getOneByPhoneNumber");
-        User user = findByPhoneNumberOrThrowNotFound(phoneNumber);
+//        User user = findByPhoneNumberOrThrowNotFound(phoneNumber);
+        Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
         log.info("End getOneById");
-        return mapToResponse(user);
+        return byPhoneNumber.map(this::mapToResponse).orElse(null);
     }
 
     @Override

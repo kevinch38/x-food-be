@@ -120,14 +120,24 @@ public class UserController {
     @GetMapping(value = "/{phoneNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getUserByPhoneNumber(@PathVariable String phoneNumber) {
         UserResponse userResponse = userService.getUserByPhoneNumber(phoneNumber);
+        if (userResponse != null){
+            CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+                    .message("successfully get user")
+                    .statusCode(HttpStatus.OK.value())
+                    .data(userResponse)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+        }
         CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-                .message("successfully get user")
+                .message("user not found")
                 .statusCode(HttpStatus.OK.value())
-                .data(userResponse)
                 .build();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
+
     }
 
 
