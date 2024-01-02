@@ -133,19 +133,6 @@ public class VoucherServiceImpl implements VoucherService {
         return vouchers.map(this::mapToResponse);
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void updateExpiredVoucher() {
-        List<Voucher> vouchers = voucherRepository.findAll();
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        VoucherStatus voucherStatus = voucherStatusService.getByStatus(EVoucherStatus.INACTIVE);
-
-        for (Voucher voucher : vouchers) {
-            if (voucher.getExpiredDate().before(currentTimestamp)) {
-                voucher.setVoucherStatus(voucherStatus);
-            }
-        }
-    }
-
     @Override
     public VoucherResponse findById(String id) {
         log.info("Start getOneById");
@@ -189,6 +176,19 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setVoucherStatus(voucherStatus);
         voucherRepository.saveAndFlush(voucher);
         log.info("End deleteById");
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?", zone = "GMT+7")
+    public void updateExpiredVoucher() {
+        List<Voucher> vouchers = voucherRepository.findAll();
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        VoucherStatus voucherStatus = voucherStatusService.getByStatus(EVoucherStatus.INACTIVE);
+
+        for (Voucher voucher : vouchers) {
+            if (voucher.getExpiredDate().before(currentTimestamp)) {
+                voucher.setVoucherStatus(voucherStatus);
+            }
+        }
     }
 
 

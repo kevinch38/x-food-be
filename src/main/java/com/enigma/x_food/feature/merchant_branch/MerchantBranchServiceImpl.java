@@ -1,7 +1,9 @@
 package com.enigma.x_food.feature.merchant_branch;
 
+import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EMerchantBranchStatus;
-import com.enigma.x_food.constant.EMerchantStatus;
+import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
+import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.CityService;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
@@ -11,15 +13,12 @@ import com.enigma.x_food.feature.item_variety.ItemVariety;
 import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
-import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatusService;
-import com.enigma.x_food.feature.merchant_status.MerchantStatus;
-import com.enigma.x_food.feature.merchant_status.MerchantStatusService;
 import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import com.enigma.x_food.feature.variety.dto.response.VarietyResponse;
 import com.enigma.x_food.feature.variety_sub_variety.VarietySubVariety;
@@ -47,37 +46,16 @@ import java.util.stream.Collectors;
 public class MerchantBranchServiceImpl implements MerchantBranchService {
     private final MerchantBranchRepository merchantBranchRepository;
     private final MerchantService merchantService;
-    private final MerchantStatusService merchantStatusService;
     private final MerchantBranchStatusService merchantBranchStatusService;
     private final ValidationUtil validationUtil;
     private final CityService cityService;
+    private final AdminMonitoringService adminMonitoringService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MerchantBranchResponse createNew(NewMerchantBranchRequest request) throws IOException {
         validationUtil.validate(request);
-        MerchantResponse merchantResponse = merchantService.findById(request.getMerchantID());
-        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.valueOf(merchantResponse.getStatus()));
-
-        Merchant merchant = Merchant.builder()
-                .merchantID(merchantResponse.getMerchantID())
-                .joinDate(merchantResponse.getJoinDate())
-                .merchantName(merchantResponse.getMerchantName())
-                .picName(merchantResponse.getPicName())
-                .picNumber(merchantResponse.getPicNumber())
-                .picEmail(merchantResponse.getPicEmail())
-                .merchantDescription(merchantResponse.getMerchantDescription())
-                .adminID(merchantResponse.getAdminId())
-                .createdAt(merchantResponse.getCreatedAt())
-                .updatedAt(merchantResponse.getUpdatedAt())
-                .merchantStatus(merchantStatus)
-                .notes(merchantResponse.getNotes())
-                .picName(request.getPicName())
-                .picNumber(merchantResponse.getPicNumber())
-                .picEmail(merchantResponse.getPicEmail())
-                .image(merchantResponse.getImage())
-                .logoImage(merchantResponse.getLogoImage())
-                .build();
+        Merchant merchant = merchantService.getById(request.getMerchantID());
 
         CityResponse cityResponse = cityService.getById(request.getCityID());
 
@@ -100,6 +78,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .joinDate(request.getJoinDate())
                 .build();
 
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(EActivity.CREATE_BRANCH.name())
+                .adminID("1")
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
         merchantBranchRepository.saveAndFlush(branch);
         return mapToResponse(branch);
     }
@@ -125,6 +108,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .cityName(cityResponse.getCityName())
                 .build());
 
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(EActivity.UPDATE_BRANCH.name())
+                .adminID("1")
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
         return mapToResponse(merchantBranchRepository.saveAndFlush(merchantBranch));
     }
 
@@ -170,6 +158,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
         merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
 
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(EActivity.DELETE_BRANCH.name())
+                .adminID("1")
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
         merchantBranchRepository.saveAndFlush(merchantBranch);
     }
 

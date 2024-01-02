@@ -17,7 +17,7 @@ public class CityController {
     private final CityService cityService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllCity() {
+    public ResponseEntity<?> getAll() {
         List<CityResponse> cityResponse = cityService.getAll();
         CommonResponse<List<CityResponse>> response = CommonResponse.<List<CityResponse>>builder()
                 .message("successfully get city")
@@ -30,7 +30,7 @@ public class CityController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getCityById(@PathVariable String id) {
+    public ResponseEntity<?> getById(@PathVariable String id) {
         CityResponse cityResponse = cityService.getById(id);
         CommonResponse<CityResponse> response = CommonResponse.<CityResponse>builder()
                 .message("successfully get city")

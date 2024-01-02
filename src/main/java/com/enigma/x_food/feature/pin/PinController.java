@@ -16,21 +16,8 @@ import org.springframework.web.bind.annotation.*;
 public class PinController {
     private final PinService pinService;
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNewPin(@RequestBody UpdatePinRequest request) {
-        PinResponse pinResponse = pinService.update(request);
-        CommonResponse<PinResponse> response = CommonResponse.<PinResponse>builder()
-                .message("successfully create new pin")
-                .statusCode(HttpStatus.CREATED.value())
-                .data(pinResponse)
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
-    }
-
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getPinById(@PathVariable String id) {
+    public ResponseEntity<?> getById(@PathVariable String id) {
         PinResponse pinResponse = pinService.getById(id);
         CommonResponse<PinResponse> response = CommonResponse.<PinResponse>builder()
                 .message("successfully get pin")

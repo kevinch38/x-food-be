@@ -25,7 +25,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping(path = "/register",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNewUser(@RequestBody NewUserRequest request) {
+    public ResponseEntity<?> createNew(@RequestBody NewUserRequest request) {
         UserResponse userResponse = userService.createNew(request);
         CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                 .message("successfully create new user")
@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUser(
+    public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
@@ -105,21 +105,21 @@ public class UserController {
                 .body(response);
     }
 
-//    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<?> getUserById(@PathVariable String id) {
-//        UserResponse userResponse = userService.getById(id);
-//        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-//                .message("successfully get user")
-//                .statusCode(HttpStatus.OK.value())
-//                .data(userResponse)
-//                .build();
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(response);
-//    }
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getById(@PathVariable String id) {
+        UserResponse userResponse = userService.getById(id);
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+                .message("successfully get user")
+                .statusCode(HttpStatus.OK.value())
+                .data(userResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 
     @GetMapping(value = "/{phoneNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getUserByPhoneNumber(@PathVariable String phoneNumber) {
+    public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {
         UserResponse userResponse = userService.getUserByPhoneNumber(phoneNumber);
         if (userResponse != null){
             CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
@@ -143,7 +143,7 @@ public class UserController {
 
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequest request) {
+    public ResponseEntity<?> update(@RequestBody UpdateUserRequest request) {
         UserResponse userResponse = userService.update(request);
         CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                 .message("successfully update user")
@@ -156,7 +156,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable String id) {
+    public ResponseEntity<?> delete(@PathVariable String id) {
         userService.deleteById(id);
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .message("successfully delete user")

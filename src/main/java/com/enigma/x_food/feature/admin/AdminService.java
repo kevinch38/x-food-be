@@ -8,5 +8,6 @@ public interface AdminService {
     AdminResponse createNew(NewAdminRequest request);
     AdminResponse findById(String id);
     Admin getById(String id);
+    Admin findByEmail(String email);
     AdminResponse update(UpdateAdminRequest request);
 }

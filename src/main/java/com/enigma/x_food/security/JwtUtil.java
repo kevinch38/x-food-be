@@ -51,18 +51,18 @@ public class JwtUtil {
         }
     }
 
-//    public JwtClaim getUserInfoByToken(String token) {
-//        try {
-//            Algorithm algorithm = Algorithm.HMAC256(jwtSecret.getBytes(StandardCharsets.UTF_8));
-//            JWTVerifier verifier = JWT.require(algorithm).build();
-//            DecodedJWT decodedJWT = verifier.verify(token);
-//            return JwtClaim.builder()
-//                    .userId(decodedJWT.getSubject())
-//                    .role(decodedJWT.getClaim("role").asString())
-//                    .build();
-//        } catch (JWTVerificationException e) {
-//            log.error("invalid verification JWT: {}", e.getMessage());
-//            return null;
-//        }
-//    }
+    public JwtClaim getAdminInfoByToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(jwtSecret.getBytes(StandardCharsets.UTF_8));
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            DecodedJWT decodedJWT = verifier.verify(token);
+            return JwtClaim.builder()
+                    .adminId(decodedJWT.getSubject())
+                    .role(decodedJWT.getClaim("role").asString())
+                    .build();
+        } catch (JWTVerificationException e) {
+            log.error("invalid verification JWT: {}", e.getMessage());
+            return null;
+        }
+    }
 }

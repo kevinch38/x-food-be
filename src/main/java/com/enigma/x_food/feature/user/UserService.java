@@ -5,7 +5,6 @@ import com.enigma.x_food.feature.user.dto.request.UpdateUserProfilePhotoRequest;
 import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
-import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import org.springframework.data.domain.Page;
 
 public interface UserService {

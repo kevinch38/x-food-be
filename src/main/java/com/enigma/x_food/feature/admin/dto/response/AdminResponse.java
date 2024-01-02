@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.admin.dto.response;
 
+import com.enigma.x_food.feature.role.response.RoleResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ public class AdminResponse {
     private String adminName;
     private String adminEmail;
     private Boolean isSuperAdmin;
+    private String role;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")

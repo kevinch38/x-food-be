@@ -1,19 +1,11 @@
 package com.enigma.x_food.feature.voucher.dto.request;
 
-import com.enigma.x_food.feature.promotion.Promotion;
-import com.enigma.x_food.feature.user.User;
-import com.enigma.x_food.feature.voucher_status.VoucherStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor

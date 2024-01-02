@@ -23,7 +23,7 @@ public class MerchantResponse {
     private String picNumber;
     private String picEmail;
     private String merchantDescription;
-    private String adminId;
+    private String adminName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")

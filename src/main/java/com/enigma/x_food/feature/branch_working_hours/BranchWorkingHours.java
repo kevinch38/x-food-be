@@ -1,7 +1,6 @@
 package com.enigma.x_food.feature.branch_working_hours;
 
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
-import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
