@@ -6,6 +6,7 @@ import com.enigma.x_food.feature.admin.dto.request.UpdateAdminRequest;
 import com.enigma.x_food.feature.admin.dto.response.AdminResponse;
 import com.enigma.x_food.feature.role.Role;
 import com.enigma.x_food.feature.role.RoleService;
+import com.enigma.x_food.feature.role.response.RoleResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class AdminServiceImpl implements AdminService {
         log.info("Start createNew");
         validationUtil.validate(request);
 
-        Role role = roleService.getByRole(ERole.valueOf(request.getRole()));
+        Role role = roleService.getByRole(ERole.valueOf(request.getRole().toUpperCase()));
         Admin admin = Admin.builder()
                 .adminName(request.getAdminName())
                 .adminEmail(request.getAdminEmail())
@@ -51,6 +52,13 @@ public class AdminServiceImpl implements AdminService {
         return findByIdOrThrowNotFound(id);
     }
 
+    @Override
+    public Admin findByEmail(String email) {
+        return adminRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found"));
+    }
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -68,6 +76,7 @@ public class AdminServiceImpl implements AdminService {
                 .adminName(admin.getAdminName())
                 .adminEmail(admin.getAdminEmail())
                 .isSuperAdmin(admin.getIsSuperAdmin())
+                .role(admin.getRole().getRole().name())
                 .createdAt(admin.getCreatedAt())
                 .updatedAt(admin.getUpdatedAt())
                 .build();

@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.constant.EMerchantBranchStatus;
 import com.enigma.x_food.constant.EMerchantStatus;
+import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
 import com.enigma.x_food.feature.item.Item;
@@ -31,6 +32,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -56,8 +59,11 @@ public class MerchantServiceImpl implements MerchantService {
     @Transactional(rollbackFor = Exception.class)
     public MerchantResponse createNew(NewMerchantRequest request) throws IOException {
         validationUtil.validate(request);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.ACTIVE);
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL);
+
+//        Admin admin = (Admin) authentication.getPrincipal();
         Merchant merchant = Merchant.builder()
                 .joinDate(request.getJoinDate())
                 .merchantName(request.getMerchantName())
@@ -65,7 +71,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .picNumber(request.getPicNumber())
                 .picEmail(request.getPicEmail())
                 .merchantDescription(request.getMerchantDescription())
-                .adminID("")
+                .adminID("admin")
                 .merchantStatus(entityManager.merge(merchantStatus))
                 .notes(request.getNotes())
                 .image(request.getImage().getBytes())
