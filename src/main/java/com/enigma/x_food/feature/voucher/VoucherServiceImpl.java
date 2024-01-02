@@ -133,7 +133,7 @@ public class VoucherServiceImpl implements VoucherService {
         return vouchers.map(this::mapToResponse);
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "GMT+7")
     public void updateExpiredVoucher() {
         List<Voucher> vouchers = voucherRepository.findAll();
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());

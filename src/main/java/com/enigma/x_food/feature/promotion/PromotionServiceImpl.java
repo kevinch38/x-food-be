@@ -88,7 +88,7 @@ public class PromotionServiceImpl implements PromotionService {
         return mapToResponse(promotionRepository.saveAndFlush(promotion));
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "GMT+7")
     public void updateExpiredPromotion() {
         List<Promotion> promotions = promotionRepository.findAll();
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());

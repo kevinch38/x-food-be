@@ -119,7 +119,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .collect(Collectors.toList());
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "GMT+7")
     public void updateExpiredPayment() {
         List<Payment> payments = paymentRepository.findAll();
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
@@ -154,6 +154,8 @@ public class PaymentServiceImpl implements PaymentService {
         Instant expiredTime = currentTime.plus(Duration.ofDays(1));
         ZonedDateTime expiredTimeGmtPlus7 = ZonedDateTime.ofInstant(expiredTime, gmtPlus7)
                 .withSecond(59)
+                .withMinute(59)
+                .withHour(23)
                 .withNano(0);
         Timestamp expiredAt = Timestamp.from(expiredTimeGmtPlus7.toInstant());
 

@@ -71,7 +71,7 @@ public class LoyaltyPointServiceImpl implements LoyaltyPointService {
         return mapToResponse(findByIdOrThrowException(id));
     }
 
-    @Scheduled(cron = "0 0 0 1 1 ?")
+    @Scheduled(cron = "0 0 0 1 1 ?", zone = "GMT+7")
     public void updateExpiredLoyaltyPoint() {
         List<LoyaltyPoint> loyaltyPoints = loyaltyPointRepository.findAll();
 
