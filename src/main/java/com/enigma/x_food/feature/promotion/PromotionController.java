@@ -9,6 +9,7 @@ import com.enigma.x_food.shared.PagingResponse;
 import com.enigma.x_food.util.PagingUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,12 +45,12 @@ public class PromotionController {
             @RequestParam(required = false, defaultValue = "promotionID") String sortBy,
             @RequestParam(required = false) String merchantID,
             @RequestParam(required = false) String promotionStatus,
-            @RequestParam(required = false) LocalDate startCreatedAt,
-            @RequestParam(required = false) LocalDate endCreatedAt,
-            @RequestParam(required = false) LocalDate startUpdatedAt,
-            @RequestParam(required = false) LocalDate endUpdatedAt,
-            @RequestParam(required = false) LocalDate startExpiredDate,
-            @RequestParam(required = false) LocalDate endExpiredDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startCreatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endCreatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startUpdatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endUpdatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startExpiredDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endExpiredDate,
             @RequestParam(required = false, defaultValue = "false") Boolean active
     ) {
         page = PagingUtil.validatePage(page);
