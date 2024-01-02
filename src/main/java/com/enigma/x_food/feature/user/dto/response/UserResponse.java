@@ -1,6 +1,5 @@
 package com.enigma.x_food.feature.user.dto.response;
 
-import com.enigma.x_food.feature.voucher.Voucher;
 import com.enigma.x_food.feature.voucher.dto.response.VoucherResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

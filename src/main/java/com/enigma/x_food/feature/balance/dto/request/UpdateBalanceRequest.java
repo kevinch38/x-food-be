@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Builder
 public class UpdateBalanceRequest {
-    @NotBlank(message = "Promotion ID cannot be empty")
+    @NotBlank(message = "Balance ID cannot be empty")
     private String balanceID;
     @NotBlank(message = "Total balance cannot be empty")
     private Double totalBalance;

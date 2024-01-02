@@ -6,7 +6,6 @@ import com.enigma.x_food.feature.admin.dto.request.UpdateAdminRequest;
 import com.enigma.x_food.feature.admin.dto.response.AdminResponse;
 import com.enigma.x_food.feature.role.Role;
 import com.enigma.x_food.feature.role.RoleService;
-import com.enigma.x_food.feature.role.response.RoleResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

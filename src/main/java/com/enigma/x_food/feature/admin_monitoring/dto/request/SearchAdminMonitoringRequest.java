@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.admin_monitoring.dto.response;
+package com.enigma.x_food.feature.admin_monitoring.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

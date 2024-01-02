@@ -33,7 +33,7 @@ public class OrderController {
     }
 
     @PutMapping
-    public ResponseEntity<?> complete(@RequestBody UpdateOrderRequest request) {
+    public ResponseEntity<?> update(@RequestBody UpdateOrderRequest request) {
         OrderResponse order = orderService.complete(request);
         CommonResponse<OrderResponse> response = CommonResponse.<OrderResponse>builder()
                 .message("successfully complete order")

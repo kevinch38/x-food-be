@@ -1,6 +1,5 @@
 package com.enigma.x_food.feature.item_variety;
 
-import com.enigma.x_food.feature.item_variety.dto.request.ItemVarietyRequest;
 import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import lombok.RequiredArgsConstructor;

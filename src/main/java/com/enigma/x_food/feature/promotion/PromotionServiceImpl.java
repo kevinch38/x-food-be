@@ -1,6 +1,11 @@
 package com.enigma.x_food.feature.promotion;
 
+import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EPromotionStatus;
+import com.enigma.x_food.feature.admin.Admin;
+import com.enigma.x_food.feature.admin.AdminService;
+import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
+import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
 import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
@@ -38,8 +43,10 @@ import java.util.stream.Collectors;
 public class PromotionServiceImpl implements PromotionService {
     private final PromotionRepository promotionRepository;
     private final MerchantService merchantService;
+    private final AdminService adminService;
     private final PromotionStatusService promotionStatusService;
     private final ValidationUtil validationUtil;
+    private final AdminMonitoringService adminMonitoringService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -49,6 +56,7 @@ public class PromotionServiceImpl implements PromotionService {
         Merchant merchant = merchantService.getById(request.getMerchantID());
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
 
+        Admin admin = adminService.getById("1");
         Promotion promotion = Promotion.builder()
                 .merchant(merchant)
                 .cost(request.getCost())
@@ -57,13 +65,20 @@ public class PromotionServiceImpl implements PromotionService {
                 .promotionDescription(request.getPromotionDescription())
                 .promotionName(request.getPromotionName())
                 .quantity(request.getQuantity())
-                .adminID("adminID")
+                .admin(admin)
                 .expiredDate(request.getExpiredDate())
                 .promotionStatus(promotionStatus)
                 .notes(request.getNotes())
                 .build();
 
         promotionRepository.saveAndFlush(promotion);
+
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(EActivity.CREATE_PROMOTION.name())
+                .adminID("1")
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
+
         log.info("End createNew");
         return mapToResponse(promotion);
     }
@@ -85,7 +100,29 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setExpiredDate(request.getExpiredDate());
         promotion.setNotes(request.getNotes());
 
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(EActivity.UPDATE_PROMOTION.name())
+                .adminID("1")
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
+
         return mapToResponse(promotionRepository.saveAndFlush(promotion));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteById(String id) {
+        validationUtil.validate(id);
+        Promotion promotion = findByIdOrThrowException(id);
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.INACTIVE);
+        promotion.setPromotionStatus(promotionStatus);
+
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(EActivity.DELETE_PROMOTION.name())
+                .adminID("1")
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
+        promotionRepository.saveAndFlush(promotion);
     }
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "GMT+7")
@@ -146,17 +183,6 @@ public class PromotionServiceImpl implements PromotionService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void deleteById(String id) {
-        validationUtil.validate(id);
-        Promotion promotion = findByIdOrThrowException(id);
-        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.INACTIVE);
-        promotion.setPromotionStatus(promotionStatus);
-
-        promotionRepository.saveAndFlush(promotion);
-    }
-
     private Promotion findByIdOrThrowException(String id) {
         return promotionRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Promotion not found"));
@@ -172,7 +198,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .promotionDescription(promotion.getPromotionDescription())
                 .promotionName(promotion.getPromotionName())
                 .quantity(promotion.getQuantity())
-                .adminID(promotion.getAdminID())
+                .adminName(promotion.getAdmin().getAdminName())
                 .expiredDate(promotion.getExpiredDate())
                 .status(promotion.getPromotionStatus().getStatus().name())
                 .createdAt(promotion.getCreatedAt())

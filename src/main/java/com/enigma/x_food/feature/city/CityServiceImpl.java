@@ -64,10 +64,6 @@ public class CityServiceImpl implements CityService {
         return mapToResponse(findByIdOrThrowNotFound(id));
     }
 
-    public City getByCityName(String name) {
-        return null;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public List<CityResponse> getAll() {

@@ -69,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
 
         User user = userService.getUserById(request.getAccountID());
         MerchantBranch merchantBranch = merchantBranchService.getById(request.getBranchID());
-        OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.PLACED);
+        OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.WAITING_FOR_PAYMENT);
         Order order = Order.builder()
                 .user(user)
                 .notes(request.getNotes())

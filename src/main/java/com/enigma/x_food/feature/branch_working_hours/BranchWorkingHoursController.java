@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/branch/working-hours")
 @RequiredArgsConstructor
 public class BranchWorkingHoursController {
-    private final BranchWorkingHoursService balanceService;
+    private final BranchWorkingHoursService branchWorkingHoursService;
 
 //    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    public ResponseEntity<?> createNew(@RequestBody NewBranchWorkingHoursRequest request) {
-//        BranchWorkingHours balance = balanceService.createNew(request);
+//        BranchWorkingHours branchWorkingHours = branchWorkingHoursService.createNew(request);
 //        CommonResponse<BranchWorkingHours> response = CommonResponse.<BranchWorkingHours>builder()
-//                .message("successfully create new balance")
+//                .message("successfully create new branchWorkingHours")
 //                .statusCode(HttpStatus.CREATED.value())
-//                .data(balance)
+//                .data(branchWorkingHours)
 //                .build();
 //        return ResponseEntity
 //                .status(HttpStatus.CREATED)
@@ -29,11 +29,11 @@ public class BranchWorkingHoursController {
 
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdateBranchWorkingHoursRequest request) {
-        BranchWorkingHoursResponse balanceResponse = balanceService.update(request);
+        BranchWorkingHoursResponse branchWorkingHoursResponse = branchWorkingHoursService.update(request);
         CommonResponse<BranchWorkingHoursResponse> response = CommonResponse.<BranchWorkingHoursResponse>builder()
-                .message("successfully update balance")
+                .message("successfully update branchWorkingHours")
                 .statusCode(HttpStatus.OK.value())
-                .data(balanceResponse)
+                .data(branchWorkingHoursResponse)
                 .build();
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -42,11 +42,11 @@ public class BranchWorkingHoursController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
-        BranchWorkingHoursResponse balanceResponse = balanceService.findById(id);
+        BranchWorkingHoursResponse branchWorkingHoursResponse = branchWorkingHoursService.findById(id);
         CommonResponse<BranchWorkingHoursResponse> response = CommonResponse.<BranchWorkingHoursResponse>builder()
-                .message("successfully get balance")
+                .message("successfully get branchWorkingHours")
                 .statusCode(HttpStatus.OK.value())
-                .data(balanceResponse)
+                .data(branchWorkingHoursResponse)
                 .build();
         return ResponseEntity
                 .status(HttpStatus.OK)

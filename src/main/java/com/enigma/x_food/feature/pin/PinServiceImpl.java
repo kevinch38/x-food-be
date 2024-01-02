@@ -8,7 +8,6 @@ import com.enigma.x_food.security.BCryptUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,26 +63,6 @@ public class PinServiceImpl implements PinService {
         Pin pin = findByIdOrThrowNotFound(request.getPinID());
         return bCryptUtil.check(request.getPin(), pin.getPin());
     }
-
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Page<PinResponse> getAll(SearchPinRequest request) {
-//        log.info("Start getAll");
-//        String fieldName = SortingUtil.sortByValidation(Pin.class, request.getSortBy(), "pinID");
-//        request.setSortBy(fieldName);
-//
-//        Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
-//        Pageable pageable = PageRequest.of(
-//                request.getPage() - 1,
-//                request.getSize(),
-//                direction,
-//                request.getSortBy()
-//        );
-//
-//        Page<Pin> pins = pinRepository.findAll(pageable);
-//        log.info("End getAll");
-//        return pins.map(this::mapToResponse);
-//    }
 
     private Pin findByIdOrThrowNotFound(String id) {
         return pinRepository.findById(id)

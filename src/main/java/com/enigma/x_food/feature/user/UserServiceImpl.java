@@ -139,7 +139,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserByPhoneNumber(String phoneNumber) {
         log.info("Start getOneByPhoneNumber");
-//        User user = findByPhoneNumberOrThrowNotFound(phoneNumber);
         Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
         log.info("End getOneById");
         return byPhoneNumber.map(this::mapToResponse).orElse(null);

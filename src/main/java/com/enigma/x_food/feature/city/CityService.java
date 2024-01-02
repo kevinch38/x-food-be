@@ -1,6 +1,5 @@
 package com.enigma.x_food.feature.city;
 
-import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
 
 import java.util.List;

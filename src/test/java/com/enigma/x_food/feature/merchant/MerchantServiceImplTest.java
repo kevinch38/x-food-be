@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,7 +45,7 @@ class MerchantServiceImplTest {
     }
 
     @Test
-    void testCreateNew() {
+    void testCreateNew() throws IOException {
         NewMerchantRequest request = new NewMerchantRequest(/* provide necessary parameters */);
 
         doNothing().when(validationUtil).validate(request);
@@ -58,7 +59,7 @@ class MerchantServiceImplTest {
     }
 
     @Test
-    void testUpdate() {
+    void testUpdate() throws IOException {
         UpdateMerchantRequest request = UpdateMerchantRequest.builder().merchantID("1").build();
 
         doNothing().when(validationUtil).validate(request);

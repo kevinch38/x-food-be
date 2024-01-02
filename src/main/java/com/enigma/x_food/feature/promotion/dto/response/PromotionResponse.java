@@ -23,7 +23,7 @@ public class PromotionResponse {
     private Integer quantity;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp expiredDate;
-    private String adminID;
+    private String adminName;
     private String status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;

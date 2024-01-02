@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class VoucherController {
     private final VoucherService voucherService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNewVoucher(@RequestBody NewVoucherRequest request) {
+    public ResponseEntity<?> createNew(@RequestBody NewVoucherRequest request) {
         VoucherResponse voucherResponse = voucherService.createNew(request);
         CommonResponse<VoucherResponse> response = CommonResponse.<VoucherResponse>builder()
                 .message("successfully create new voucher")
@@ -37,7 +36,7 @@ public class VoucherController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllVoucher(
+    public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
@@ -77,7 +76,7 @@ public class VoucherController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getVoucherById(@PathVariable String id) {
+    public ResponseEntity<?> getById(@PathVariable String id) {
         VoucherResponse voucherResponse = voucherService.findById(id);
         CommonResponse<VoucherResponse> response = CommonResponse.<VoucherResponse>builder()
                 .message("successfully get voucher")
@@ -91,7 +90,7 @@ public class VoucherController {
 
 
     @PutMapping
-    public ResponseEntity<?> updateVoucher(@RequestBody UpdateVoucherRequest request) {
+    public ResponseEntity<?> update(@RequestBody UpdateVoucherRequest request) {
         VoucherResponse voucherResponse = voucherService.update(request);
         CommonResponse<VoucherResponse> response = CommonResponse.<VoucherResponse>builder()
                 .message("successfully update voucher")
@@ -104,7 +103,7 @@ public class VoucherController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteVoucherById(@PathVariable String id) {
+    public ResponseEntity<?> deleteById(@PathVariable String id) {
         voucherService.deleteById(id);
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .message("successfully delete voucher")
