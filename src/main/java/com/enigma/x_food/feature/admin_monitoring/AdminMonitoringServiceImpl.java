@@ -87,6 +87,8 @@ public class AdminMonitoringServiceImpl implements AdminMonitoringService {
         return AdminMonitoringResponse.builder()
                 .adminMonitoringID(adminMonitoring.getAdminMonitoringID())
                 .activity(adminMonitoring.getActivity().getActivity().name())
+                .activityID(adminMonitoring.getActivity().getActivityID())
+                .activityTime(adminMonitoring.getActivity().getUpdatedAt())
                 .adminName(adminMonitoring.getAdmin().getAdminName())
                 .adminRole(adminMonitoring.getAdmin().getRole().getRole().name())
                 .adminID(adminMonitoring.getAdmin().getAdminID())
