@@ -75,7 +75,6 @@ public class LoyaltyPointServiceImpl implements LoyaltyPointService {
     public void updateExpiredLoyaltyPoint() {
         List<LoyaltyPoint> loyaltyPoints = loyaltyPointRepository.findAll();
 
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         int currentYear = Year.now().getValue();
         ZonedDateTime endOfYear = ZonedDateTime.of(
                 currentYear, 12, 31, 23, 59, 0, 0,
@@ -84,10 +83,9 @@ public class LoyaltyPointServiceImpl implements LoyaltyPointService {
         Timestamp expiredDate = Timestamp.from(expiredTime);
 
         for (LoyaltyPoint loyaltyPoint : loyaltyPoints) {
-            if (loyaltyPoint.getExpiredDate().before(currentTimestamp)) {
-                loyaltyPoint.setLoyaltyPointAmount(0);
-                loyaltyPoint.setExpiredDate(expiredDate);
-            }
+            loyaltyPoint.setLoyaltyPointAmount(0);
+            loyaltyPoint.setExpiredDate(expiredDate);
+
         }
     }
 

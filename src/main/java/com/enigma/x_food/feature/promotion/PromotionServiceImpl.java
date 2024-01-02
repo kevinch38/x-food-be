@@ -88,7 +88,7 @@ public class PromotionServiceImpl implements PromotionService {
         return mapToResponse(promotionRepository.saveAndFlush(promotion));
     }
 
-    @Scheduled(cron = "0 0 0 1 * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void updateExpiredPromotion() {
         List<Promotion> promotions = promotionRepository.findAll();
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
@@ -165,7 +165,7 @@ public class PromotionServiceImpl implements PromotionService {
     private PromotionResponse mapToResponse(Promotion promotion) {
         return PromotionResponse.builder()
                 .promotionID(promotion.getPromotionID())
-                .merchantID(promotion.getMerchant().getMerchantID())
+                .merchantName(promotion.getMerchant().getMerchantName())
                 .cost(promotion.getCost())
                 .maxRedeem(promotion.getMaxRedeem())
                 .promotionValue(promotion.getPromotionValue())
