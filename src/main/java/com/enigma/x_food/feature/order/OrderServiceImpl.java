@@ -172,6 +172,7 @@ public class OrderServiceImpl implements OrderService {
                 .tableNumber(order.getTableNumber())
                 .orderStatus(order.getOrderStatus().getStatus().name())
                 .branchID(order.getMerchantBranch().getBranchID())
+                .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
                 .image(order.getMerchantBranch().getImage())
                 .items(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
                 .createdAt(order.getCreatedAt())

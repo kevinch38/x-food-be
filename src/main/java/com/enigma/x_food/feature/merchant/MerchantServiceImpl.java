@@ -4,7 +4,6 @@ import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EMerchantBranchStatus;
 import com.enigma.x_food.constant.EMerchantStatus;
 import com.enigma.x_food.feature.admin.Admin;
-import com.enigma.x_food.feature.admin.AdminService;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
 import com.enigma.x_food.feature.city.City;
@@ -36,6 +35,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -55,7 +56,6 @@ public class MerchantServiceImpl implements MerchantService {
     private final ValidationUtil validationUtil;
     private final EntityManager entityManager;
     private final MerchantStatusService merchantStatusService;
-    private final AdminService adminService;
     private final AdminMonitoringService adminMonitoringService;
     private final MerchantBranchStatusService merchantBranchStatusService;
 
@@ -66,7 +66,8 @@ public class MerchantServiceImpl implements MerchantService {
 
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL);
 
-        Admin admin = adminService.getById("1");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Admin admin = (Admin) authentication.getPrincipal();
         Merchant merchant = Merchant.builder()
                 .joinDate(request.getJoinDate())
                 .merchantName(request.getMerchantName())
@@ -82,9 +83,10 @@ public class MerchantServiceImpl implements MerchantService {
                 .build();
         merchantRepository.saveAndFlush(merchant);
 
+
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.CREATE_MERCHANT.name())
-                .adminID("1")
+                .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
         return mapToResponse(merchant);
@@ -105,9 +107,11 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setImage(request.getImage().getBytes());
         merchant.setLogoImage(request.getLogoImage().getBytes());
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Admin admin = (Admin) authentication.getPrincipal();
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_MERCHANT.name())
-                .adminID("1")
+                .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
         return mapToResponse(merchantRepository.saveAndFlush(merchant));
@@ -138,9 +142,11 @@ public class MerchantServiceImpl implements MerchantService {
             merchantBranch.setMerchantBranchStatus(status);
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Admin admin = (Admin) authentication.getPrincipal();
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.DELETE_MERCHANT.name())
-                .adminID("1")
+                .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
         merchantRepository.saveAndFlush(merchant);
