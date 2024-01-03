@@ -15,6 +15,8 @@ import javax.validation.constraints.NotNull;
 public class OrderItemRequest {
     @NotBlank(message = "Item ID cannot be empty")
     private String itemID;
+    @NotBlank(message = "Variety ID cannot be empty")
+    private String varietyID;
     @NotNull(message = "Quantity cannot be empty")
     private Integer quantity;
 }

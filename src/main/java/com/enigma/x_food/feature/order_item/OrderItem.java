@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.order_item;
 
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.order.Order;
+import com.enigma.x_food.feature.variety.Variety;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,9 @@ public class OrderItem extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
+    @ManyToOne
+    @JoinColumn(name = "variety_id", nullable = false)
+    private Variety variety;
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 }
