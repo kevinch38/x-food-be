@@ -16,6 +16,7 @@ import com.enigma.x_food.security.JwtUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import java.util.Optional;
@@ -84,20 +86,25 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse loginAdmin(AdminAuthRequest request) {
         log.info("Start login");
         validationUtil.validate(request);
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
-                request.getPassword()
-        ));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
+//        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+//                request.getEmail(),
+//                request.getPassword()
+//        ));
+//        SecurityContextHolder.getContext().setAuthentication(authenticate);
 
         Admin admin = adminService.findByEmail(request.getEmail());
-        String token = jwtUtil.generateTokenAdmin(admin);
-        log.info("End login");
 
-        return LoginResponse.builder()
-                .token(token)
-                .role(admin.getRole().getRole().name())
-                .build();
+        if(bCryptUtil.check(request.getPassword(), admin.getPassword())){
+            String token = jwtUtil.generateTokenAdmin(admin);
+            log.info("End login");
+
+            return LoginResponse.builder()
+                    .token(token)
+                    .role(admin.getRole().getRole().name())
+                    .build();
+        }
+        log.error("Error login: {}", "Wrong Password");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong password");
     }
 
 
