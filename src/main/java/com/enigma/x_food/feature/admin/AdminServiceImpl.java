@@ -37,6 +37,7 @@ public class AdminServiceImpl implements AdminService, UserDetailsService {
                 .adminName(request.getAdminName())
                 .adminEmail(request.getAdminEmail())
                 .isSuperAdmin(request.getIsSuperAdmin())
+                .password(request.getPassword())
                 .role(role)
                 .build();
 
