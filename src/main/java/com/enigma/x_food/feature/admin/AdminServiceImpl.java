@@ -10,6 +10,9 @@ import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AdminServiceImpl implements AdminService {
+public class AdminServiceImpl implements AdminService, UserDetailsService {
     private final AdminRepository adminRepository;
     private final ValidationUtil validationUtil;
     private final RoleService roleService;
@@ -52,13 +55,6 @@ public class AdminServiceImpl implements AdminService {
         return findByIdOrThrowNotFound(id);
     }
 
-    @Override
-    public Admin findByEmail(String email) {
-        return adminRepository.findByAdminEmail(email)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found"));
-    }
-
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -68,6 +64,16 @@ public class AdminServiceImpl implements AdminService {
         admin.setAdminEmail(request.getAdminEmail());
 
         return mapToResponse(adminRepository.saveAndFlush(admin));
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return findAdminByUsernameOrThrowException(username);
+    }
+
+    @Override
+    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
+        return findAdminByUsernameOrThrowException(email);
     }
 
     private AdminResponse mapToResponse(Admin admin) {
@@ -85,5 +91,11 @@ public class AdminServiceImpl implements AdminService {
     private Admin findByIdOrThrowNotFound(String id) {
         return adminRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "admin not found"));
+    }
+
+    private Admin findAdminByUsernameOrThrowException(String username) {
+        return adminRepository.findByAdminEmail(username)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Admin not found"));
     }
 }

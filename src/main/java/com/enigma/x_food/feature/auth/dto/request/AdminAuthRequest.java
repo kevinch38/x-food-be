@@ -12,8 +12,8 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Builder
 public class AdminAuthRequest {
-    @NotBlank(message = "Email is required")
-    private String email;
+    @NotBlank(message = "Admin email is required")
+    private String adminEmail;
     @NotBlank(message = "Password is required")
     private String password;
 }

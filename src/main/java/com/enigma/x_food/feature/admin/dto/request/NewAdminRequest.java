@@ -21,4 +21,6 @@ public class NewAdminRequest {
     private Boolean isSuperAdmin;
     @NotBlank(message = "Role is required")
     private String role;
+    @NotBlank(message = "Password is required")
+    private String password;
 }
