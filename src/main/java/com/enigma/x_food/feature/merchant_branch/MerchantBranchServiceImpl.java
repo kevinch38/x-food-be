@@ -26,6 +26,7 @@ import com.enigma.x_food.feature.variety_sub_variety.VarietySubVariety;
 import com.enigma.x_food.feature.variety_sub_variety.dto.response.VarietySubVarietyResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -56,7 +57,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MerchantBranchResponse createNew(NewMerchantBranchRequest request) throws IOException {
+    public MerchantBranchResponse createNew(NewMerchantBranchRequest request) throws IOException, AuthenticationException {
         validationUtil.validate(request);
         Merchant merchant = merchantService.getById(request.getMerchantID());
 
@@ -80,9 +81,14 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .merchantBranchStatus(merchantBranchStatus)
                 .joinDate(request.getJoinDate())
                 .build();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
+        Admin admin;
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        }
+        catch (Exception e){
+            throw new AuthenticationException("Not Authorized");
+        }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.CREATE_BRANCH.name())
                 .admin(admin)
@@ -94,7 +100,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MerchantBranchResponse update(UpdateMerchantBranchRequest request) throws IOException {
+    public MerchantBranchResponse update(UpdateMerchantBranchRequest request) throws IOException, AuthenticationException {
         validationUtil.validate(request);
         MerchantBranch merchantBranch = findByIdOrThrowException(request.getBranchID());
 
@@ -112,9 +118,14 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .cityID(cityResponse.getCityID())
                 .cityName(cityResponse.getCityName())
                 .build());
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
+        Admin admin;
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        }
+        catch (Exception e){
+            throw new AuthenticationException("Not Authorized");
+        }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_BRANCH.name())
                 .admin(admin)
@@ -158,15 +169,21 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteById(String id) {
+    public void deleteById(String id) throws AuthenticationException {
         validationUtil.validate(id);
         MerchantBranch merchantBranch = findByIdOrThrowException(id);
         MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.INACTIVE);
 
         merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
+        Admin admin;
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        }
+        catch (Exception e){
+            throw new AuthenticationException("Not Authorized");
+        }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.DELETE_BRANCH.name())
                 .admin(admin)

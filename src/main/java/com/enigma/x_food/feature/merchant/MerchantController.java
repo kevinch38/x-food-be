@@ -8,6 +8,7 @@ import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.shared.PagingResponse;
 import com.enigma.x_food.util.PagingUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,7 @@ public class MerchantController {
             @RequestParam String notes,
             @RequestParam MultipartFile image,
             @RequestParam MultipartFile logoImage
-                                               ) throws IOException {
+                                               ) throws IOException, AuthenticationException {
         Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(joinDate, DateTimeFormatter.ISO_DATE_TIME));
 
         NewMerchantRequest request = NewMerchantRequest.builder()
@@ -163,7 +164,7 @@ public class MerchantController {
             @RequestParam String notes,
             @RequestParam MultipartFile image,
             @RequestParam MultipartFile logoImage
-    ) throws IOException {
+    ) throws IOException, AuthenticationException {
         UpdateMerchantRequest request = UpdateMerchantRequest.builder()
                 .merchantID(merchantID)
                 .merchantDescription(merchantDescription)
@@ -188,7 +189,7 @@ public class MerchantController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteMerchantById(@PathVariable String id) {
+    public ResponseEntity<?> deleteMerchantById(@PathVariable String id) throws AuthenticationException {
         merchantService.deleteById(id);
         CommonResponse<?> response = CommonResponse.builder()
                 .message("successfully delete merchant")

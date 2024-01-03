@@ -17,6 +17,7 @@ import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,13 +51,19 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PromotionResponse createNew(NewPromotionRequest request) {
+    public PromotionResponse createNew(NewPromotionRequest request) throws AuthenticationException {
         log.info("Start createNew");
         validationUtil.validate(request);
         Merchant merchant = merchantService.getById(request.getMerchantID());
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        }
+        catch (Exception e){
+            throw new AuthenticationException("Not Authorized");
+        }
 
         Promotion promotion = Promotion.builder()
                 .merchant(merchant)
@@ -86,7 +93,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PromotionResponse update(UpdatePromotionRequest request) {
+    public PromotionResponse update(UpdatePromotionRequest request) throws AuthenticationException {
         validationUtil.validate(request);
         Promotion promotion = findByIdOrThrowException(request.getPromotionID());
 
@@ -101,8 +108,14 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setExpiredDate(request.getExpiredDate());
         promotion.setNotes(request.getNotes());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
+        Admin admin;
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        }
+        catch (Exception e){
+            throw new AuthenticationException("Not Authorized");
+        }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_PROMOTION.name())
                 .admin(admin)
@@ -114,14 +127,20 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteById(String id) {
+    public void deleteById(String id) throws AuthenticationException {
         validationUtil.validate(id);
         Promotion promotion = findByIdOrThrowException(id);
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.INACTIVE);
         promotion.setPromotionStatus(promotionStatus);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
+        Admin admin;
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        }
+        catch (Exception e){
+            throw new AuthenticationException("Not Authorized");
+        }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.DELETE_PROMOTION.name())
                 .admin(admin)

@@ -4,14 +4,15 @@ import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRe
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
+import org.apache.tomcat.websocket.AuthenticationException;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface MerchantBranchService {
-    MerchantBranchResponse createNew(NewMerchantBranchRequest request) throws IOException;
-    MerchantBranchResponse update(UpdateMerchantBranchRequest request) throws IOException;
-    void deleteById(String id);
+    MerchantBranchResponse createNew(NewMerchantBranchRequest request) throws IOException, AuthenticationException;
+    MerchantBranchResponse update(UpdateMerchantBranchRequest request) throws IOException, AuthenticationException;
+    void deleteById(String id) throws AuthenticationException;
     MerchantBranchResponse findById(String id);
     MerchantBranch getById(String id);
     List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request);

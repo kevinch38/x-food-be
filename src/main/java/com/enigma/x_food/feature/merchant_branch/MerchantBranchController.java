@@ -7,6 +7,7 @@ import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranc
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.util.PagingUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,7 +41,7 @@ public class MerchantBranchController {
             @RequestParam String picEmail,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String joinDate,
             @RequestParam MultipartFile image
-    ) throws IOException {
+    ) throws IOException, AuthenticationException {
         Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(joinDate, DateTimeFormatter.ISO_DATE_TIME));
 
         NewMerchantBranchRequest request = NewMerchantBranchRequest.builder()
@@ -150,7 +151,7 @@ public class MerchantBranchController {
             @RequestParam String picNumber,
             @RequestParam String picEmail,
             @RequestParam MultipartFile image
-    ) throws IOException {
+    ) throws IOException, AuthenticationException {
         UpdateMerchantBranchRequest request = UpdateMerchantBranchRequest.builder()
                 .branchID(branchID)
                 .branchName(branchName)
@@ -176,7 +177,7 @@ public class MerchantBranchController {
     }
 
     @DeleteMapping("/{branchID}")
-    public ResponseEntity<?> delete(@PathVariable String branchID) {
+    public ResponseEntity<?> delete(@PathVariable String branchID) throws AuthenticationException {
         merchantBranchService.deleteById(branchID);
         CommonResponse<?> response = CommonResponse.builder()
                 .message("successfully delete merchant branch")

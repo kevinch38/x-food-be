@@ -29,6 +29,7 @@ import com.enigma.x_food.feature.variety_sub_variety.dto.response.VarietySubVari
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,14 +62,19 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MerchantResponse createNew(NewMerchantRequest request) throws IOException {
+    public MerchantResponse createNew(NewMerchantRequest request) throws IOException, AuthenticationException {
         validationUtil.validate(request);
 
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
-        Merchant merchant = Merchant.builder()
+        Admin admin;
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        }
+            catch (Exception e){
+            throw new AuthenticationException("Not Authorized");
+        }
+    Merchant merchant = Merchant.builder()
                 .joinDate(request.getJoinDate())
                 .merchantName(request.getMerchantName())
                 .picName(request.getPicName())
@@ -94,7 +100,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MerchantResponse update(UpdateMerchantRequest request) throws IOException {
+    public MerchantResponse update(UpdateMerchantRequest request) throws IOException, AuthenticationException {
         validationUtil.validate(request);
         Merchant merchant = findByIdOrThrowException(request.getMerchantID());
 
@@ -107,9 +113,15 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setImage(request.getImage().getBytes());
         merchant.setLogoImage(request.getLogoImage().getBytes());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
-        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+        Admin admin;
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        }
+        catch (Exception e){
+            throw new AuthenticationException("Not Authorized");
+        }
+    AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_MERCHANT.name())
                 .admin(admin)
                 .build();
@@ -131,7 +143,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteById(String id) {
+    public void deleteById(String id) throws AuthenticationException {
         validationUtil.validate(id);
         Merchant merchant = findByIdOrThrowException(id);
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.INACTIVE);
@@ -142,8 +154,14 @@ public class MerchantServiceImpl implements MerchantService {
             merchantBranch.setMerchantBranchStatus(status);
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Admin admin = (Admin) authentication.getPrincipal();
+        Admin admin;
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        }
+        catch (Exception e){
+            throw new AuthenticationException("Not Authorized");
+        }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.DELETE_MERCHANT.name())
                 .admin(admin)

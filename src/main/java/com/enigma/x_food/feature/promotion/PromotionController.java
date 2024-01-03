@@ -8,6 +8,7 @@ import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.shared.PagingResponse;
 import com.enigma.x_food.util.PagingUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class PromotionController {
     private final PromotionService promotionService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNew(@RequestBody NewPromotionRequest request) {
+    public ResponseEntity<?> createNew(@RequestBody NewPromotionRequest request) throws AuthenticationException {
         PromotionResponse promotionResponse = promotionService.createNew(request);
         CommonResponse<PromotionResponse> response = CommonResponse.<PromotionResponse>builder()
                 .message("successfully create new promotion")
@@ -107,7 +108,7 @@ public class PromotionController {
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) {
+    public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) throws AuthenticationException {
         PromotionResponse promotionResponse =promotionService.update(request);
         CommonResponse<PromotionResponse> response = CommonResponse.<PromotionResponse>builder()
                 .message("successfully update promotion")
@@ -132,7 +133,7 @@ public class PromotionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
+    public ResponseEntity<?> delete(@PathVariable String id) throws AuthenticationException {
         promotionService.deleteById(id);
         CommonResponse<?> response = CommonResponse.builder()
                 .message("successfully delete promotion")
