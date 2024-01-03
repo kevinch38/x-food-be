@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.voucher;
 
 import com.enigma.x_food.feature.voucher.dto.request.NewVoucherRequest;
+import com.enigma.x_food.feature.voucher.dto.request.SearchVoucherPromotionRequest;
 import com.enigma.x_food.feature.voucher.dto.request.SearchVoucherRequest;
 import com.enigma.x_food.feature.voucher.dto.response.VoucherResponse;
 import com.enigma.x_food.feature.voucher.dto.request.UpdateVoucherRequest;
@@ -79,6 +80,19 @@ public class VoucherController {
     public ResponseEntity<?> getById(@PathVariable String id) {
         VoucherResponse voucherResponse = voucherService.findById(id);
         CommonResponse<VoucherResponse> response = CommonResponse.<VoucherResponse>builder()
+                .message("successfully get voucher")
+                .statusCode(HttpStatus.OK.value())
+                .data(voucherResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping(value = "/promotions", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getByPromotionId(@RequestBody SearchVoucherPromotionRequest request) {
+        List<VoucherResponse> voucherResponse = voucherService.getVoucherByPromotionId(request);
+        CommonResponse<List<VoucherResponse>> response = CommonResponse.<List<VoucherResponse>>builder()
                 .message("successfully get voucher")
                 .statusCode(HttpStatus.OK.value())
                 .data(voucherResponse)
