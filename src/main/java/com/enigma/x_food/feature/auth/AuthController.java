@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.auth;
 
 import com.enigma.x_food.feature.auth.dto.request.AdminAuthRequest;
+import com.enigma.x_food.feature.auth.dto.request.AdminTokenRequest;
 import com.enigma.x_food.feature.auth.dto.request.AuthRequest;
 import com.enigma.x_food.feature.auth.dto.response.LoginResponse;
 import com.enigma.x_food.shared.CommonResponse;
@@ -35,6 +36,18 @@ public class AuthController {
     public ResponseEntity<?> loginAdmin(@RequestBody AdminAuthRequest request) {
         LoginResponse login = authService.loginAdmin(request);
         CommonResponse<LoginResponse> response = CommonResponse.<LoginResponse>builder()
+                .message("successfully login")
+                .statusCode(HttpStatus.OK.value())
+                .data(login)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+    @PostMapping(path = "/admins/verify",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> verifyToken(@RequestBody AdminTokenRequest request) {
+        Boolean login = authService.verifyAdmin(request);
+        CommonResponse<Boolean> response = CommonResponse.<Boolean>builder()
                 .message("successfully login")
                 .statusCode(HttpStatus.OK.value())
                 .data(login)

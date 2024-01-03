@@ -6,6 +6,7 @@ import com.enigma.x_food.feature.admin.AdminRepository;
 import com.enigma.x_food.feature.admin.AdminService;
 import com.enigma.x_food.feature.admin.dto.request.NewAdminRequest;
 import com.enigma.x_food.feature.auth.dto.request.AdminAuthRequest;
+import com.enigma.x_food.feature.auth.dto.request.AdminTokenRequest;
 import com.enigma.x_food.feature.auth.dto.request.AuthRequest;
 import com.enigma.x_food.feature.auth.dto.response.LoginResponse;
 import com.enigma.x_food.feature.user.User;
@@ -90,5 +91,10 @@ public class AuthServiceImpl implements AuthService {
                 .token(token)
                 .role(admin.getRole().getRole().name())
                 .build();
+    }
+
+    @Override
+    public Boolean verifyAdmin(AdminTokenRequest request) {
+        return jwtUtil.verifyJwtTokenAdmin(request.getToken());
     }
 }

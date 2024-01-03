@@ -6,17 +6,25 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
+import com.enigma.x_food.feature.admin.AdminService;
+import com.enigma.x_food.feature.admin.dto.response.AdminResponse;
+import com.enigma.x_food.feature.promotion.PromotionService;
 import com.enigma.x_food.feature.user.User;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtUtil {
     @Value("${app.x-food.jwt-secret}")
     private String jwtSecret;
@@ -24,6 +32,7 @@ public class JwtUtil {
     private String appName;
     @Value("${app.x-food.jwtExpirationInSecond}")
     private long jwtExpirationInSecond;
+    private final AdminService adminService;
 
     public String generateTokenUser(User user) {
         try {
@@ -65,6 +74,24 @@ public class JwtUtil {
         } catch (JWTVerificationException e) {
             log.error("invalid verification JWT: {}", e.getMessage());
             return false;
+        }
+    }
+
+    public Boolean verifyJwtTokenAdmin(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(jwtSecret.getBytes(StandardCharsets.UTF_8));
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            DecodedJWT decodedJWT = verifier.verify(token);
+            AdminResponse admin = adminService.findById(decodedJWT.getSubject());
+            for (ERole role : ERole.values()) {
+                if (role.name().equals(admin.getRole())) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (JWTVerificationException e) {
+            log.error("invalid verification JWT: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid Token");
         }
     }
 
