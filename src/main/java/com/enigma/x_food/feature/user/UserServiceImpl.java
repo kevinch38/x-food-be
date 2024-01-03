@@ -238,6 +238,9 @@ public class UserServiceImpl implements UserService {
                 .voucherStatus(voucher.getVoucherStatus().getStatus().name())
                 .createdAt(voucher.getCreatedAt())
                 .updatedAt(voucher.getUpdatedAt())
+                .promotionDescription(voucher.getPromotion().getPromotionDescription())
+                .promotionName(voucher.getPromotion().getPromotionName())
+                .logoImage(voucher.getPromotion().getMerchant().getLogoImage())
                 .build();
     }
 

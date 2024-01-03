@@ -30,7 +30,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -57,9 +56,16 @@ public class PromotionServiceImpl implements PromotionService {
         Merchant merchant = merchantService.getById(request.getMerchantID());
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
         Admin admin;
+        Object a;
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            log.info(String.valueOf(authentication));
+            a = authentication.getCredentials();
+            log.info("a"+(String) a);
+            a = authentication.getName();
+            log.info("c"+(String) a);
             admin = (Admin) authentication.getPrincipal();
+            log.info(String.valueOf(admin));
         }
         catch (Exception e){
             throw new AuthenticationException("Not Authorized");
