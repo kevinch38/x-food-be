@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.auth;
 
 import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
+import com.enigma.x_food.feature.admin.AdminRepository;
 import com.enigma.x_food.feature.admin.AdminService;
 import com.enigma.x_food.feature.admin.dto.request.NewAdminRequest;
 import com.enigma.x_food.feature.auth.dto.request.AdminAuthRequest;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -35,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptUtil bCryptUtil;
     private final AuthenticationManager authenticationManager;
     private final AdminService adminService;
+    private final AdminRepository adminRepository;
     @Value("${app.x-food.super-admin-email}")
     String superAdminEmail;
     @Value("${app.x-food.super-admin-password}")
@@ -43,9 +46,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
     private void init() {
-        UserDetails userDetails = adminService.loadUserByEmail(superAdminEmail);
+        Optional<Admin> optionalAdmin = adminRepository.findByAdminEmail(superAdminEmail);
 
-        if (userDetails == null){
+        if (optionalAdmin.isEmpty()){
             NewAdminRequest request = NewAdminRequest.builder()
                     .adminName("superadmin")
                     .adminEmail(superAdminEmail)
