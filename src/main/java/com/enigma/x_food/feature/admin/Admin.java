@@ -36,14 +36,17 @@ public class Admin extends BaseEntity implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
-    @Column(name = "username", unique = true)
-    private String username;
     @Column(name = "password")
     private String password;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.getRole().name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return "null";
     }
 
     @Override

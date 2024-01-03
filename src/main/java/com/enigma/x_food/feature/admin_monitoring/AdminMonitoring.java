@@ -1,6 +1,5 @@
 package com.enigma.x_food.feature.admin_monitoring;
 
-import com.enigma.x_food.feature.activity.Activity;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
@@ -23,9 +22,8 @@ public class AdminMonitoring extends BaseEntity {
     @GeneratedValue(generator = "uuid")
     @Column(name = "admin_monitoring_id")
     private String adminMonitoringID;
-    @ManyToOne
-    @JoinColumn(name = "activity", nullable = false)
-    private Activity activity;
+    @Column(name = "activity", nullable = false)
+    private String activity;
     @ManyToOne
     @JoinColumn(name = "admin_id")
     private Admin admin;

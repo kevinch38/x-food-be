@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.auth;
 
+import com.enigma.x_food.feature.auth.dto.request.AdminAuthRequest;
 import com.enigma.x_food.feature.auth.dto.request.AuthRequest;
 import com.enigma.x_food.feature.auth.dto.response.LoginResponse;
 import com.enigma.x_food.shared.CommonResponse;
@@ -18,9 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping(path = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        LoginResponse login = authService.login(request);
+    @PostMapping(path = "/users/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> loginUser(@RequestBody AuthRequest request) {
+        LoginResponse login = authService.loginUser(request);
+        CommonResponse<LoginResponse> response = CommonResponse.<LoginResponse>builder()
+                .message("successfully login")
+                .statusCode(HttpStatus.OK.value())
+                .data(login)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+    @PostMapping(path = "/admins/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> loginAdmin(@RequestBody AdminAuthRequest request) {
+        LoginResponse login = authService.loginAdmin(request);
         CommonResponse<LoginResponse> response = CommonResponse.<LoginResponse>builder()
                 .message("successfully login")
                 .statusCode(HttpStatus.OK.value())

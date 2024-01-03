@@ -59,7 +59,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         OrderItem orderItem = OrderItem.builder()
                 .item(item)
                 .quantity(request.getQuantity())
-                .variety(variety)
+//                .variety(variety)
                 .build();
         orderItemRepository.saveAndFlush(orderItem);
 
@@ -85,7 +85,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                 .orderItemID(orderItem.getOrderItemID())
                 .orderID(orderItem.getOrder().getOrderID())
                 .itemID(orderItem.getItem().getItemID())
-                .varietyID(orderItem.getVariety().getVarietyID())
+//                .varietyID(orderItem.getVariety().getVarietyID())
                 .build();
     }
 

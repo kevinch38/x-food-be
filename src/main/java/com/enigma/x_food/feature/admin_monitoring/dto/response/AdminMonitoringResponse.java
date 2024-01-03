@@ -15,9 +15,6 @@ import java.sql.Timestamp;
 public class AdminMonitoringResponse {
     private String adminMonitoringID;
     private String activity;
-    private String activityID;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
-    private Timestamp activityTime;
     private String adminName;
     private String adminRole;
     private String adminID;

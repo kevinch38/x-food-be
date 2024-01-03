@@ -22,6 +22,7 @@ public class AdminServiceImpl implements AdminService {
     private final ValidationUtil validationUtil;
     private final RoleService roleService;
 
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public AdminResponse createNew(NewAdminRequest request) {
@@ -80,7 +81,6 @@ public class AdminServiceImpl implements AdminService {
                 .updatedAt(admin.getUpdatedAt())
                 .build();
     }
-
 
     private Admin findByIdOrThrowNotFound(String id) {
         return adminRepository.findById(id)

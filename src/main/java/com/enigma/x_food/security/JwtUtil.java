@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +25,7 @@ public class JwtUtil {
     @Value("${app.x-food.jwtExpirationInSecond}")
     private long jwtExpirationInSecond;
 
-    public String generateToken(User user) {
+    public String generateTokenUser(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(jwtSecret.getBytes(StandardCharsets.UTF_8));
             return JWT.create()
@@ -32,6 +33,22 @@ public class JwtUtil {
                     .withSubject(user.getAccountID())
                     .withExpiresAt(Instant.now().plusSeconds(jwtExpirationInSecond))
                     .withIssuedAt(Instant.now())
+                    .sign(algorithm);
+        } catch (JWTCreationException e) {
+            log.error("error while creating jwt token: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String generateTokenAdmin(Admin admin) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(jwtSecret.getBytes(StandardCharsets.UTF_8));
+            return JWT.create()
+                    .withIssuer(appName)
+                    .withSubject(admin.getAdminID())
+                    .withExpiresAt(Instant.now().plusSeconds(jwtExpirationInSecond))
+                    .withIssuedAt(Instant.now())
+                    .withClaim("role", admin.getRole().getRole().name())
                     .sign(algorithm);
         } catch (JWTCreationException e) {
             log.error("error while creating jwt token: {}", e.getMessage());

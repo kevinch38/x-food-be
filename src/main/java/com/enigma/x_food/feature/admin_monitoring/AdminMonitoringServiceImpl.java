@@ -1,8 +1,6 @@
 package com.enigma.x_food.feature.admin_monitoring;
 
 import com.enigma.x_food.constant.EActivity;
-import com.enigma.x_food.feature.activity.Activity;
-import com.enigma.x_food.feature.activity.ActivityService;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin.AdminService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
@@ -32,7 +30,6 @@ import java.util.List;
 public class AdminMonitoringServiceImpl implements AdminMonitoringService {
     private final AdminMonitoringRepository adminMonitoringRepository;
     private final ValidationUtil validationUtil;
-    private final ActivityService activityService;
     private final AdminService adminService;
 
     @Transactional(rollbackFor = Exception.class)
@@ -40,11 +37,9 @@ public class AdminMonitoringServiceImpl implements AdminMonitoringService {
     public AdminMonitoringResponse createNew(AdminMonitoringRequest request) {
         validationUtil.validate(request);
 
-        Activity activity = activityService.findByActivity(EActivity.valueOf(request.getActivity()));
-
         Admin admin = adminService.getById(request.getAdminID());
         AdminMonitoring adminMonitoring = AdminMonitoring.builder()
-                .activity(activity)
+                .activity(EActivity.valueOf(request.getActivity()).name())
                 .admin(admin)
                 .build();
 
@@ -86,9 +81,7 @@ public class AdminMonitoringServiceImpl implements AdminMonitoringService {
     private AdminMonitoringResponse mapToResponse(AdminMonitoring adminMonitoring) {
         return AdminMonitoringResponse.builder()
                 .adminMonitoringID(adminMonitoring.getAdminMonitoringID())
-                .activity(adminMonitoring.getActivity().getActivity().name())
-                .activityID(adminMonitoring.getActivity().getActivityID())
-                .activityTime(adminMonitoring.getActivity().getUpdatedAt())
+                .activity(adminMonitoring.getActivity())
                 .adminName(adminMonitoring.getAdmin().getAdminName())
                 .adminRole(adminMonitoring.getAdmin().getRole().getRole().name())
                 .adminID(adminMonitoring.getAdmin().getAdminID())
