@@ -7,6 +7,7 @@ import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.shared.PagingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,10 +63,10 @@ public class UserController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "accountID") String sortBy,
-            @RequestParam(required = false) LocalDate startCreatedAt,
-            @RequestParam(required = false) LocalDate endCreatedAt,
-            @RequestParam(required = false) LocalDate starUpdatedAt,
-            @RequestParam(required = false) LocalDate endUpdatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startCreatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endCreatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startUpdatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endUpdatedAt,
             @RequestParam(required = false) String phoneNumber
     ) {
         page = PagingUtil.validatePage(page);
@@ -80,7 +81,7 @@ public class UserController {
                 .phoneNumber(phoneNumber)
                 .startCreatedAt(startCreatedAt)
                 .endCreatedAt(endCreatedAt)
-                .startUpdatedAt(starUpdatedAt)
+                .startUpdatedAt(startUpdatedAt)
                 .endUpdatedAt(endUpdatedAt)
                 .build();
         Page<UserResponse> users = userService.getAll(request);
@@ -104,18 +105,18 @@ public class UserController {
                 .body(response);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getById(@PathVariable String id) {
-        UserResponse userResponse = userService.getById(id);
-        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-                .message("successfully get user")
-                .statusCode(HttpStatus.OK.value())
-                .data(userResponse)
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
+//    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> getById(@PathVariable String id) {
+//        UserResponse userResponse = userService.getById(id);
+//        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+//                .message("successfully get user")
+//                .statusCode(HttpStatus.OK.value())
+//                .data(userResponse)
+//                .build();
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(response);
+//    }
 
     @GetMapping(value = "/{phoneNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {

@@ -28,6 +28,18 @@ public class PinController {
                 .status(HttpStatus.OK)
                 .body(response);
     }
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> update(@RequestBody UpdatePinRequest request) {
+        PinResponse pinResponse = pinService.update(request);
+        CommonResponse<PinResponse> response = CommonResponse.<PinResponse>builder()
+                .message("successfully update pin")
+                .statusCode(HttpStatus.OK.value())
+                .data(pinResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> checkPin(@RequestBody CheckPinRequest request) {
         boolean pinResponse = pinService.checkPin(request);
