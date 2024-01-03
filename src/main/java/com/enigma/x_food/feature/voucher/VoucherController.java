@@ -90,7 +90,13 @@ public class VoucherController {
     }
 
     @GetMapping(value = "/promotions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getByPromotionId(@RequestBody SearchVoucherPromotionRequest request) {
+    public ResponseEntity<?> getByPromotionId(
+            @RequestParam(required = true) String promotionID,
+            @RequestParam(required = true) String accountID) {
+        SearchVoucherPromotionRequest request = SearchVoucherPromotionRequest.builder()
+                .promotionID(promotionID)
+                .accountID(accountID)
+                .build();
         List<VoucherResponse> voucherResponse = voucherService.getVoucherByPromotionId(request);
         CommonResponse<List<VoucherResponse>> response = CommonResponse.<List<VoucherResponse>>builder()
                 .message("successfully get voucher")
