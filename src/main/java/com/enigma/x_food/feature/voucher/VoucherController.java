@@ -42,12 +42,30 @@ public class VoucherController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "voucherID") String sortBy,
-            @RequestParam(required = false) String voucherID
+            @RequestParam(required = false) String voucherID,
+            @RequestParam(required = false) String promotionID,
+            @RequestParam(required = false) String accountID
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
         direction = PagingUtil.validateDirection(direction);
 
+        if (promotionID != null && accountID != null) {
+            SearchVoucherPromotionRequest request = SearchVoucherPromotionRequest.builder()
+                    .promotionID(promotionID)
+                    .accountID(accountID)
+                    .build();
+
+            List<VoucherResponse> voucherResponse = voucherService.getVoucherByPromotionId(request);
+            CommonResponse<List<VoucherResponse>> response = CommonResponse.<List<VoucherResponse>>builder()
+                    .message("successfully get voucher")
+                    .statusCode(HttpStatus.OK.value())
+                    .data(voucherResponse)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+        }
         SearchVoucherRequest request = SearchVoucherRequest.builder()
                 .page(page)
                 .size(size)
@@ -55,9 +73,10 @@ public class VoucherController {
                 .sortBy(sortBy)
                 .voucherID(voucherID)
                 .build();
+
         Page<VoucherResponse> vouchers = voucherService.getAll(request);
 
-       PagingResponse pagingResponse = PagingResponse.builder()
+        PagingResponse pagingResponse = PagingResponse.builder()
                 .page(page)
                 .size(size)
                 .count(vouchers.getTotalElements())
@@ -88,26 +107,6 @@ public class VoucherController {
                 .status(HttpStatus.OK)
                 .body(response);
     }
-
-    @GetMapping(value = "/promotions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getByPromotionId(
-            @RequestParam(required = true) String promotionID,
-            @RequestParam(required = true) String accountID) {
-        SearchVoucherPromotionRequest request = SearchVoucherPromotionRequest.builder()
-                .promotionID(promotionID)
-                .accountID(accountID)
-                .build();
-        List<VoucherResponse> voucherResponse = voucherService.getVoucherByPromotionId(request);
-        CommonResponse<List<VoucherResponse>> response = CommonResponse.<List<VoucherResponse>>builder()
-                .message("successfully get voucher")
-                .statusCode(HttpStatus.OK.value())
-                .data(voucherResponse)
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
-
 
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdateVoucherRequest request) {
