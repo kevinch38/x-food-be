@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EMerchantBranchStatus;
+import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
 import com.enigma.x_food.feature.city.City;
@@ -28,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -78,9 +81,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .joinDate(request.getJoinDate())
                 .build();
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Admin admin = (Admin) authentication.getPrincipal();
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.CREATE_BRANCH.name())
-                .adminID("1")
+                .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
         merchantBranchRepository.saveAndFlush(branch);
@@ -108,9 +113,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .cityName(cityResponse.getCityName())
                 .build());
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Admin admin = (Admin) authentication.getPrincipal();
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_BRANCH.name())
-                .adminID("1")
+                .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
         return mapToResponse(merchantBranchRepository.saveAndFlush(merchantBranch));
@@ -158,9 +165,11 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
         merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Admin admin = (Admin) authentication.getPrincipal();
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.DELETE_BRANCH.name())
-                .adminID("1")
+                .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
         merchantBranchRepository.saveAndFlush(merchantBranch);

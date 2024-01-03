@@ -1,8 +1,6 @@
 package com.enigma.x_food.feature.admin_monitoring;
 
 import com.enigma.x_food.constant.EActivity;
-import com.enigma.x_food.feature.admin.Admin;
-import com.enigma.x_food.feature.admin.AdminService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
 import com.enigma.x_food.feature.admin_monitoring.dto.response.AdminMonitoringResponse;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.SearchAdminMonitoringRequest;
@@ -30,17 +28,15 @@ import java.util.List;
 public class AdminMonitoringServiceImpl implements AdminMonitoringService {
     private final AdminMonitoringRepository adminMonitoringRepository;
     private final ValidationUtil validationUtil;
-    private final AdminService adminService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public AdminMonitoringResponse createNew(AdminMonitoringRequest request) {
         validationUtil.validate(request);
 
-        Admin admin = adminService.getById(request.getAdminID());
         AdminMonitoring adminMonitoring = AdminMonitoring.builder()
                 .activity(EActivity.valueOf(request.getActivity()).name())
-                .admin(admin)
+                .admin(request.getAdmin())
                 .build();
 
         return mapToResponse(adminMonitoringRepository.saveAndFlush(adminMonitoring));

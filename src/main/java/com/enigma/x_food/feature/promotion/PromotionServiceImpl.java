@@ -3,7 +3,6 @@ package com.enigma.x_food.feature.promotion;
 import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EPromotionStatus;
 import com.enigma.x_food.feature.admin.Admin;
-import com.enigma.x_food.feature.admin.AdminService;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
 import com.enigma.x_food.feature.merchant.Merchant;
@@ -25,6 +24,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -43,7 +44,6 @@ import java.util.stream.Collectors;
 public class PromotionServiceImpl implements PromotionService {
     private final PromotionRepository promotionRepository;
     private final MerchantService merchantService;
-    private final AdminService adminService;
     private final PromotionStatusService promotionStatusService;
     private final ValidationUtil validationUtil;
     private final AdminMonitoringService adminMonitoringService;
@@ -55,8 +55,9 @@ public class PromotionServiceImpl implements PromotionService {
         validationUtil.validate(request);
         Merchant merchant = merchantService.getById(request.getMerchantID());
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Admin admin = (Admin) authentication.getPrincipal();
 
-        Admin admin = adminService.getById("1");
         Promotion promotion = Promotion.builder()
                 .merchant(merchant)
                 .cost(request.getCost())
@@ -75,7 +76,7 @@ public class PromotionServiceImpl implements PromotionService {
 
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.CREATE_PROMOTION.name())
-                .adminID("1")
+                .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
 
@@ -100,9 +101,11 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setExpiredDate(request.getExpiredDate());
         promotion.setNotes(request.getNotes());
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Admin admin = (Admin) authentication.getPrincipal();
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_PROMOTION.name())
-                .adminID("1")
+                .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
 
@@ -117,9 +120,11 @@ public class PromotionServiceImpl implements PromotionService {
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.INACTIVE);
         promotion.setPromotionStatus(promotionStatus);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Admin admin = (Admin) authentication.getPrincipal();
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.DELETE_PROMOTION.name())
-                .adminID("1")
+                .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
         promotionRepository.saveAndFlush(promotion);
