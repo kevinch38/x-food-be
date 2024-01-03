@@ -21,6 +21,8 @@ public class OrderResponse {
     private Integer tableNumber;
     private String orderStatus;
     private String branchID;
+    private byte[] image;
+    private long items;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
