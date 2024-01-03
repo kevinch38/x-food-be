@@ -30,7 +30,6 @@ public class VarietyServiceImpl implements VarietyService {
         Variety variety = Variety.builder()
                 .varietyName(request.getVarietyName())
                 .isRequired(request.getIsRequired())
-                .isMultiSelect(request.getIsMultiSelect())
                 .build();
         varietyRepository.saveAndFlush(variety);
 

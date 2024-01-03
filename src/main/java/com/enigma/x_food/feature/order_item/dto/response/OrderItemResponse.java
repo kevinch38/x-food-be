@@ -14,7 +14,7 @@ public class OrderItemResponse {
     private String orderItemID;
     private String orderID;
     private String itemID;
-//    private String varietyID;
+    private String subVarietyID;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private String createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")

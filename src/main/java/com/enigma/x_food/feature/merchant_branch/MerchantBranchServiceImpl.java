@@ -245,7 +245,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                     .varietyID(iv.getVariety().getVarietyID())
                     .varietyName(iv.getVariety().getVarietyName())
                     .isRequired(iv.getVariety().getIsRequired())
-                    .isMultiSelect(iv.getVariety().getIsMultiSelect())
                     .varietySubVarieties(varietySubVarietyResponses)
                     .build();
         }

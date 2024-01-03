@@ -5,8 +5,8 @@ import com.enigma.x_food.feature.item.ItemService;
 import com.enigma.x_food.feature.order_item.dto.request.OrderItemRequest;
 import com.enigma.x_food.feature.order_item.dto.request.SearchOrderItemRequest;
 import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
-import com.enigma.x_food.feature.variety.Variety;
-import com.enigma.x_food.feature.variety.VarietyService;
+import com.enigma.x_food.feature.sub_variety.SubVariety;
+import com.enigma.x_food.feature.sub_variety.SubVarietyService;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepository orderItemRepository;
     private final ItemService itemService;
-    private final VarietyService varietyService;
+    private final SubVarietyService subVarietyService;
     private final ValidationUtil validationUtil;
 
     @Override
@@ -53,13 +53,13 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     public OrderItem createNew(OrderItemRequest request) {
         validationUtil.validate(request);
+        SubVariety subVariety = subVarietyService.getById(request.getSubVarietyID());
         Item item = itemService.findById(request.getItemID());
 
-        Variety variety = varietyService.getById(request.getVarietyID());
         OrderItem orderItem = OrderItem.builder()
                 .item(item)
                 .quantity(request.getQuantity())
-//                .variety(variety)
+                .subVariety(subVariety)
                 .build();
         orderItemRepository.saveAndFlush(orderItem);
 
@@ -85,7 +85,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                 .orderItemID(orderItem.getOrderItemID())
                 .orderID(orderItem.getOrder().getOrderID())
                 .itemID(orderItem.getItem().getItemID())
-//                .varietyID(orderItem.getVariety().getVarietyID())
+                .subVarietyID(orderItem.getSubVariety().getSubVarietyID())
                 .build();
     }
 

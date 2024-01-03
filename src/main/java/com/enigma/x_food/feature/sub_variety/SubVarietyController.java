@@ -47,7 +47,7 @@ public class SubVarietyController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getById(@PathVariable String id) {
-        SubVarietyResponse SubVarietyResponse = SubVarietyService.getById(id);
+        SubVarietyResponse SubVarietyResponse = SubVarietyService.findById(id);
         CommonResponse<SubVarietyResponse> response = CommonResponse.<SubVarietyResponse>builder()
                 .message("successfully get sub variety")
                 .statusCode(HttpStatus.OK.value())

@@ -26,8 +26,6 @@ public class Variety {
     private String varietyName;
     @Column(name = "is_required", nullable = false, length = 100)
     private Boolean isRequired;
-    @Column(name = "is_multi_select", nullable = false, length = 15)
-    private Boolean isMultiSelect;
     @OneToMany(mappedBy = "variety")
     private List<VarietySubVariety> varietySubVarieties;
 }

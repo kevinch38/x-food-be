@@ -17,8 +17,6 @@ public class VarietyRequest {
     private String varietyName;
     @NotNull(message = "Is required cannot be empty")
     private Boolean isRequired;
-    @NotNull(message = "Is multi select cannot be empty")
-    private Boolean isMultiSelect;
     @NotBlank(message = "Item ID cannot be empty")
     private String itemID;
 }

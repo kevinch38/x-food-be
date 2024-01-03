@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface SubVarietyService {
     SubVarietyResponse createNew(SubVarietyRequest request);
-    SubVarietyResponse getById(String id);
+    SubVarietyResponse findById(String id);
+    SubVariety getById(String id);
     List<SubVarietyResponse> getAll();
 }

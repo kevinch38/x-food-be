@@ -16,6 +16,5 @@ public class VarietyResponse {
     private String varietyID;
     private String varietyName;
     private Boolean isRequired;
-    private Boolean isMultiSelect;
     private List<VarietySubVarietyResponse> varietySubVarieties;
 }

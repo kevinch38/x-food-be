@@ -60,8 +60,13 @@ public class SubVarietyServiceImpl implements SubVarietyService {
     }
 
     @Override
-    public SubVarietyResponse getById(String id) {
+    public SubVarietyResponse findById(String id) {
         return mapToResponse(findByIdOrThrowNotFound(id));
+    }
+
+    @Override
+    public SubVariety getById(String id) {
+        return findByIdOrThrowNotFound(id);
     }
 
     private SubVariety findByIdOrThrowNotFound(String id) {

@@ -271,7 +271,6 @@ public class MerchantServiceImpl implements MerchantService {
                     .varietyID(iv.getVariety().getVarietyID())
                     .varietyName(iv.getVariety().getVarietyName())
                     .isRequired(iv.getVariety().getIsRequired())
-                    .isMultiSelect(iv.getVariety().getIsMultiSelect())
                     .varietySubVarieties(varietySubVarietyResponses)
                     .build();
         }

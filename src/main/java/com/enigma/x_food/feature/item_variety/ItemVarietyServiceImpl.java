@@ -74,7 +74,6 @@ public class ItemVarietyServiceImpl implements ItemVarietyService {
                     .varietyID(itemVariety.getVariety().getVarietyID())
                     .varietyName(itemVariety.getVariety().getVarietyName())
                     .isRequired(itemVariety.getVariety().getIsRequired())
-                    .isMultiSelect(itemVariety.getVariety().getIsMultiSelect())
                     .varietySubVarieties(varietySubVarietyResponses)
                     .build();
         }
