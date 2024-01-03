@@ -3,8 +3,11 @@ package com.enigma.x_food.feature.voucher;
 import com.enigma.x_food.constant.EVoucherStatus;
 import com.enigma.x_food.feature.promotion.Promotion;
 import com.enigma.x_food.feature.promotion.PromotionService;
+import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.UserService;
+import com.enigma.x_food.feature.user.dto.response.UserResponse;
+import com.enigma.x_food.feature.voucher.dto.request.SearchVoucherPromotionRequest;
 import com.enigma.x_food.feature.voucher.dto.response.VoucherResponse;
 import com.enigma.x_food.feature.voucher.dto.request.NewVoucherRequest;
 import com.enigma.x_food.feature.voucher.dto.request.SearchVoucherRequest;
@@ -37,6 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
+
+import static java.util.List.of;
 
 @Service
 @RequiredArgsConstructor
@@ -152,6 +158,11 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public List<VoucherResponse> getVoucherByPromotionId(SearchVoucherPromotionRequest request) {
+        return getByPromotionId(request.getPromotionID(), request.getAccountID());
+    }
+
+    @Override
     public VoucherResponse update(UpdateVoucherRequest request) {
         try {
             log.info("Start update");
@@ -191,7 +202,6 @@ public class VoucherServiceImpl implements VoucherService {
         }
     }
 
-
     private VoucherResponse mapToResponse(Voucher voucher) {
 
         return VoucherResponse.builder()
@@ -216,9 +226,22 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     private List<Voucher> findByPromotionId(Promotion promotion) {
-        return voucherRepository.findByPromotion(promotion).orElse(List.of());
+        return voucherRepository.findByPromotion(promotion).orElse(of());
     }
+    private List<VoucherResponse> getByPromotionId(String promotionID, String accountID) {
+        try {
+            log.info(promotionID);
+            log.info(accountID);
+            PromotionResponse promotion = promotionService.findById(promotionID);
+            UserResponse user = userService.getById(accountID);
 
+            return user.getVouchers().stream().filter(voucherResponse -> voucherResponse.getPromotionID().equals(promotion.getPromotionID())).collect(Collectors.toList());
+
+        }
+        catch (Exception e){
+            return List.of();
+        }
+    }
     private Specification<Voucher> getVoucherSpecification(SearchVoucherRequest request) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
