@@ -40,7 +40,7 @@ public class AdminServiceImpl implements AdminService, UserDetailsService {
                 .role(role)
                 .build();
 
-        return mapToResponse(admin);
+        return mapToResponse(adminRepository.saveAndFlush(admin));
     }
 
     @Transactional(readOnly = true)
