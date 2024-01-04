@@ -95,6 +95,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Boolean verifyAdmin(AdminTokenRequest request) {
-        return jwtUtil.verifyJwtTokenAdmin(request.getToken());
+        log.info("Start verify");
+        Boolean aBoolean = jwtUtil.verifyJwtTokenAdmin(request.getToken());
+        log.info("end verify");
+        return aBoolean;
     }
 }

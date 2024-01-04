@@ -14,8 +14,12 @@ import com.enigma.x_food.feature.promotion.PromotionService;
 import com.enigma.x_food.feature.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -78,20 +82,36 @@ public class JwtUtil {
     }
 
     public Boolean verifyJwtTokenAdmin(String token) {
+        SecurityContext authentication = SecurityContextHolder.getContext();;
         try {
             Algorithm algorithm = Algorithm.HMAC256(jwtSecret.getBytes(StandardCharsets.UTF_8));
             JWTVerifier verifier = JWT.require(algorithm).build();
             DecodedJWT decodedJWT = verifier.verify(token);
             AdminResponse admin = adminService.findById(decodedJWT.getSubject());
+            Admin adminTemp;
+            try{
+                adminTemp = (Admin) authentication.getAuthentication().getPrincipal();
+                log.info(String.valueOf(adminTemp));
+            }
+            catch (Exception e){
+                authentication.setAuthentication(null);
+                SecurityContextHolder.clearContext();
+                return false;
+            }
             for (ERole role : ERole.values()) {
                 if (role.name().equals(admin.getRole())) {
                     return true;
                 }
             }
+            authentication.setAuthentication(null);
+            SecurityContextHolder.clearContext();
             return false;
         } catch (JWTVerificationException e) {
             log.error("invalid verification JWT: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid Token");
+            authentication.setAuthentication(null);
+            SecurityContextHolder.clearContext();
+            return false;
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid Token");
         }
     }
 
