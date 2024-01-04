@@ -16,6 +16,6 @@ import javax.validation.constraints.NotNull;
 public class VarietySubVarietyRequest {
     @NotBlank(message = "Variety id cannot be empty")
     private String varietyID;
-    @NotNull
+    @NotNull(message = "Sub variety cannot be empty")
     private SubVariety subVariety;
 }

@@ -80,6 +80,7 @@ public class SubVarietyServiceImpl implements SubVarietyService {
                 .branchID(subVariety.getMerchantBranch().getBranchID())
                 .subVarName(subVariety.getSubVarName())
                 .subVarStock(subVariety.getSubVarStock())
+                .subVarPrice(subVariety.getSubVarPrice())
                 .build();
     }
 
