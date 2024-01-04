@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.user.dto.response;
 
+import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.voucher.dto.response.VoucherResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private String dateOfBirth;
+    private String role;
     private byte[] profilePhoto;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;
