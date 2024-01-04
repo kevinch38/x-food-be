@@ -48,7 +48,7 @@ public class AuthController {
     public ResponseEntity<?> verifyToken(@RequestBody AdminTokenRequest request) {
         Boolean login = authService.verifyAdmin(request);
         CommonResponse<Boolean> response = CommonResponse.<Boolean>builder()
-                .message("successfully login")
+                .message("successfully verified")
                 .statusCode(HttpStatus.OK.value())
                 .data(login)
                 .build();

@@ -32,7 +32,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.httpBasic().and().csrf().disable()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().exceptionHandling().authenticationEntryPoint(authEntryPoint)
                 .and().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
