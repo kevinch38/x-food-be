@@ -5,8 +5,12 @@ import com.enigma.x_food.feature.item.ItemService;
 import com.enigma.x_food.feature.order_item.dto.request.OrderItemRequest;
 import com.enigma.x_food.feature.order_item.dto.request.SearchOrderItemRequest;
 import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
+import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVarietyService;
+import com.enigma.x_food.feature.order_item_sub_variety.dto.request.OrderItemSubVarietyRequest;
+import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
 import com.enigma.x_food.feature.sub_variety.SubVariety;
 import com.enigma.x_food.feature.sub_variety.SubVarietyService;
+import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +33,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepository orderItemRepository;
     private final ItemService itemService;
     private final SubVarietyService subVarietyService;
+    private final OrderItemSubVarietyService orderItemSubVarietyService;
     private final ValidationUtil validationUtil;
 
     @Override
@@ -53,15 +58,20 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     public OrderItem createNew(OrderItemRequest request) {
         validationUtil.validate(request);
-        SubVariety subVariety = subVarietyService.getById(request.getSubVarietyID());
         Item item = itemService.findById(request.getItemID());
+        SubVariety subVariety = subVarietyService.getById(request.getSubVarietyID());
 
         OrderItem orderItem = OrderItem.builder()
                 .item(item)
                 .quantity(request.getQuantity())
-                .subVariety(subVariety)
                 .build();
         orderItemRepository.saveAndFlush(orderItem);
+
+        OrderItemSubVarietyRequest orderItemSubVarietyRequest = OrderItemSubVarietyRequest.builder()
+                .orderItem(orderItem)
+                .subVariety(subVariety)
+                .build();
+        orderItemSubVarietyService.createNew(orderItemSubVarietyRequest);
 
         log.info("End createNew");
         return orderItem;
@@ -81,11 +91,29 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     private OrderItemResponse mapToResponse(OrderItem orderItem) {
+        List<OrderItemSubVarietyResponse> orderItemSubVarietyResponses = orderItem.getOrderItemSubVarieties().stream().map(
+                        o -> {
+                            SubVariety subVariety = o.getSubVariety();
+                            SubVarietyResponse subVarietyResponse = SubVarietyResponse.builder()
+                                    .subVarietyID(subVariety.getSubVarietyID())
+                                    .branchID(subVariety.getMerchantBranch().getBranchID())
+                                    .subVarName(subVariety.getSubVarName())
+                                    .subVarStock(subVariety.getSubVarStock())
+                                    .subVarPrice(subVariety.getSubVarPrice())
+                                    .build();
+
+                            return OrderItemSubVarietyResponse.builder()
+                                    .orderItemSubVarietyID(o.getOrderItemSubVarietyID())
+                                    .subVariety(subVarietyResponse)
+                                    .build();
+                        }
+                )
+                .collect(Collectors.toList());
         return OrderItemResponse.builder()
                 .orderItemID(orderItem.getOrderItemID())
                 .orderID(orderItem.getOrder().getOrderID())
                 .itemID(orderItem.getItem().getItemID())
-                .subVarietyID(orderItem.getSubVariety().getSubVarietyID())
+                .orderItemSubVarieties(orderItemSubVarietyResponses)
                 .build();
     }
 
