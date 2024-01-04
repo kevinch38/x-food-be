@@ -33,7 +33,7 @@ import java.util.List;
 public class MerchantController {
     private final MerchantService merchantService;
 
-    @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
+    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF','SUPER_ADMIN')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(

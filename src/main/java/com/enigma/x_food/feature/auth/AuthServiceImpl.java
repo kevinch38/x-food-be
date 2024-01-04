@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
                     .adminEmail(superAdminEmail)
                     .password(bCryptUtil.hash(superAdminPassword))
                     .isSuperAdmin(true)
-                    .role(ERole.SUPER_ADMIN.name())
+                    .role(ERole.ROLE_SUPER_ADMIN.name())
                     .build();
             adminService.createNew(request);
         }
