@@ -2,9 +2,11 @@ package com.enigma.x_food.feature.order_item;
 
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.item.ItemService;
+import com.enigma.x_food.feature.order.dto.request.OrderSubVarietyRequest;
 import com.enigma.x_food.feature.order_item.dto.request.OrderItemRequest;
 import com.enigma.x_food.feature.order_item.dto.request.SearchOrderItemRequest;
 import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
+import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVarietyService;
 import com.enigma.x_food.feature.order_item_sub_variety.dto.request.OrderItemSubVarietyRequest;
 import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
@@ -59,20 +61,30 @@ public class OrderItemServiceImpl implements OrderItemService {
     public OrderItem createNew(OrderItemRequest request) {
         validationUtil.validate(request);
         Item item = itemService.findById(request.getItemID());
-        SubVariety subVariety = subVarietyService.getById(request.getSubVarietyID());
 
         OrderItem orderItem = OrderItem.builder()
                 .item(item)
                 .quantity(request.getQuantity())
-                .build();
-        orderItemRepository.saveAndFlush(orderItem);
 
-        OrderItemSubVarietyRequest orderItemSubVarietyRequest = OrderItemSubVarietyRequest.builder()
-                .orderItem(orderItem)
-                .subVariety(subVariety)
                 .build();
-        orderItemSubVarietyService.createNew(orderItemSubVarietyRequest);
+        OrderItem orderItem1 = orderItemRepository.save(orderItem);
 
+        List<OrderItemSubVariety> orderItemSubVarieties = new ArrayList<>();
+        if (request.getSubVarieties() != null) {
+            for (OrderSubVarietyRequest subVariety : request.getSubVarieties()) {
+                SubVariety subVarietyServiceById = subVarietyService.getById(subVariety.getSubVarietyID());
+
+                OrderItemSubVarietyRequest orderItemSubVarietyRequest = OrderItemSubVarietyRequest.builder()
+                        .subVariety(subVarietyServiceById)
+                        .orderItem(orderItem)
+                        .build();
+                OrderItemSubVariety orderItemSubVariety = orderItemSubVarietyService.createNew(orderItemSubVarietyRequest);
+
+                orderItemSubVarieties.add(orderItemSubVariety);
+            }
+        }
+
+        orderItem1.setOrderItemSubVarieties(orderItemSubVarieties);
         log.info("End createNew");
         return orderItem;
     }

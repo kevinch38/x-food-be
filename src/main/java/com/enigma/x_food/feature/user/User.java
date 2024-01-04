@@ -7,6 +7,7 @@ import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.voucher.Voucher;
 import com.enigma.x_food.shared.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
@@ -18,10 +19,11 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @SuperBuilder
+@Getter
+@Setter
 @Entity
-@Table(name = "Account")
+@Table(name = "account")
 public class User extends BaseEntity {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
@@ -40,6 +42,7 @@ public class User extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pin_id")
+    @JsonBackReference
     private Pin pin;
 
     @Column(name = "first_name", nullable = false, length = 30)
@@ -58,19 +61,24 @@ public class User extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "balance_id", nullable = false)
+    @JsonBackReference
     private Balance balance;
 
     @OneToOne
     @JoinColumn(name = "loyalty_point_id", nullable = false)
+    @JsonBackReference
     private LoyaltyPoint loyaltyPoint;
 
     @JoinColumn(name = "otp_id")
     @OneToOne
+    @JsonBackReference
     private OTP otp;
 
     @OneToMany(mappedBy = "user")
+    @JsonBackReference
     private List<History> histories;
 
     @OneToMany(mappedBy = "user")
+    @JsonBackReference
     private List<Voucher> vouchers;
 }

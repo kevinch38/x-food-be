@@ -6,7 +6,7 @@ import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSu
 import java.util.List;
 
 public interface OrderItemSubVarietyService {
-    OrderItemSubVarietyResponse createNew(OrderItemSubVarietyRequest request);
+    OrderItemSubVariety createNew(OrderItemSubVarietyRequest request);
     OrderItemSubVarietyResponse getById(String id);
     OrderItemSubVariety findById(String id);
     List<OrderItemSubVariety> getAll();

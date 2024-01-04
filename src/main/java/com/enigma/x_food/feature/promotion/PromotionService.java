@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.promotion;
 
 import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.SearchActivePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
@@ -16,5 +17,5 @@ public interface PromotionService {
     PromotionResponse findById(String id);
     Promotion getPromotionById(String id);
     Page<PromotionResponse> getAll(SearchPromotionRequest request);
-    List<PromotionResponse> getAllActive(SearchPromotionRequest request);
+    List<PromotionResponse> getAllActive(SearchActivePromotionRequest request);
 }

@@ -1,6 +1,5 @@
 package com.enigma.x_food.feature.loyalty_point;
 
-import com.enigma.x_food.feature.loyalty_point.dto.request.UpdateLoyaltyPointRequest;
 import com.enigma.x_food.feature.loyalty_point.dto.response.LoyaltyPointResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import lombok.RequiredArgsConstructor;

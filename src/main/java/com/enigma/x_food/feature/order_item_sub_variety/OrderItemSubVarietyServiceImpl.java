@@ -23,16 +23,15 @@ public class OrderItemSubVarietyServiceImpl implements OrderItemSubVarietyServic
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public OrderItemSubVarietyResponse createNew(OrderItemSubVarietyRequest request) {
-            validationUtil.validate(request);
+    public OrderItemSubVariety createNew(OrderItemSubVarietyRequest request) {
+        validationUtil.validate(request);
 
-            OrderItemSubVariety varietySubVariety = OrderItemSubVariety.builder()
-                    .subVariety(request.getSubVariety())
-                    .orderItem(request.getOrderItem())
-                    .build();
+        OrderItemSubVariety varietySubVariety = OrderItemSubVariety.builder()
+                .subVariety(request.getSubVariety())
+                .orderItem(request.getOrderItem())
+                .build();
 
-            orderItemSubVarietyRepository.saveAndFlush(varietySubVariety);
-            return mapToResponse(varietySubVariety);
+        return orderItemSubVarietyRepository.saveAndFlush(varietySubVariety);
     }
 
     @Override

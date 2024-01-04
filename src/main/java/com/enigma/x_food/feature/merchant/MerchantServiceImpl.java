@@ -13,6 +13,7 @@ import com.enigma.x_food.feature.item.dto.response.ItemResponse;
 import com.enigma.x_food.feature.item_variety.ItemVariety;
 import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
+import com.enigma.x_food.feature.merchant.dto.request.SearchActiveMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
@@ -67,14 +68,13 @@ public class MerchantServiceImpl implements MerchantService {
 
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL);
         Admin admin;
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             admin = (Admin) authentication.getPrincipal();
-        }
-            catch (Exception e){
+        } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
-    Merchant merchant = Merchant.builder()
+        Merchant merchant = Merchant.builder()
                 .joinDate(request.getJoinDate())
                 .merchantName(request.getMerchantName())
                 .picName(request.getPicName())
@@ -114,14 +114,13 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setLogoImage(request.getLogoImage().getBytes());
 
         Admin admin;
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             admin = (Admin) authentication.getPrincipal();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
-    AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_MERCHANT.name())
                 .admin(admin)
                 .build();
@@ -155,11 +154,10 @@ public class MerchantServiceImpl implements MerchantService {
         }
 
         Admin admin;
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             admin = (Admin) authentication.getPrincipal();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
@@ -172,11 +170,11 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MerchantResponse> getAllActive(SearchMerchantRequest request) {
+    public List<MerchantResponse> getAllActive(SearchActiveMerchantRequest request) {
         validationUtil.validate(request);
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
-        Specification<Merchant> specification = getMerchantSpecification(request, "active");
+        Specification<Merchant> specification = getActiveMerchantSpecification(request);
 
         return merchantRepository.findAll(specification, sort).stream().map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -190,7 +188,7 @@ public class MerchantServiceImpl implements MerchantService {
 
         Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
 
-        Specification<Merchant> specification = getMerchantSpecification(request, "all");
+        Specification<Merchant> specification = getMerchantSpecification(request);
 
         Pageable pageable = PageRequest.of(
                 request.getPage() - 1,
@@ -264,7 +262,7 @@ public class MerchantServiceImpl implements MerchantService {
     private static ItemResponse getItemResponse(Item i) {
         List<ItemVarietyResponse> itemVarietyResponses = i.getItemVarieties().stream().map(
                 MerchantServiceImpl::getItemVarietyResponse
-                ).collect(Collectors.toList());
+        ).collect(Collectors.toList());
 
         return ItemResponse.builder()
                 .itemID(i.getItemID())
@@ -306,7 +304,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     private static VarietySubVarietyResponse getVarietySubVarietyResponse(VarietySubVariety vsv) {
         SubVarietyResponse subVarietyResponse = null;
-        if (vsv.getSubVariety()!= null){
+        if (vsv.getSubVariety() != null) {
             subVarietyResponse = SubVarietyResponse.builder()
                     .subVarietyID(vsv.getSubVariety().getSubVarietyID())
                     .branchID(vsv.getSubVariety().getMerchantBranch().getBranchID())
@@ -328,7 +326,7 @@ public class MerchantServiceImpl implements MerchantService {
         );
     }
 
-    private Specification<Merchant> getMerchantSpecification(SearchMerchantRequest request, String option) {
+    private Specification<Merchant> getMerchantSpecification(SearchMerchantRequest request) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -392,10 +390,26 @@ public class MerchantServiceImpl implements MerchantService {
                 predicates.add(predicate);
             }
 
-            if (option.equalsIgnoreCase("active")) {
-                Predicate predicate = criteriaBuilder.equal(
-                        root.get("merchantStatus").get("status"),
-                        EMerchantStatus.ACTIVE
+            Predicate predicate = criteriaBuilder.equal(
+                    root.get("merchantStatus").get("status"),
+                    EMerchantStatus.ACTIVE
+            );
+            predicates.add(predicate);
+
+            return query
+                    .where(predicates.toArray(new Predicate[]{}))
+                    .getRestriction();
+        };
+    }
+
+    private Specification<Merchant> getActiveMerchantSpecification(SearchActiveMerchantRequest request) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getMerchantName() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("merchantName")),
+                        "%" + request.getMerchantName().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }

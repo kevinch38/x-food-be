@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.loyalty_point;
 
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class LoyaltyPoint extends BaseEntity {
     private String loyaltyPointID;
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonManagedReference
     private User user;
     @Column(name = "loyalty_point_amount", nullable = false, length = 11)
     private Integer loyaltyPointAmount;

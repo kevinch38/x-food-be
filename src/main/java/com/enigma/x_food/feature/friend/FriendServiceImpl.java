@@ -9,8 +9,10 @@ import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -30,6 +32,15 @@ public class FriendServiceImpl implements FriendService {
     public FriendResponse createNew(FriendRequest request) {
         log.info("Start createNew");
         validationUtil.validate(request);
+        SearchFriendRequest searchFriendRequest = SearchFriendRequest.builder()
+                .accountID(request.getAccountID1())
+                .friendID(request.getAccountID2())
+                .build();
+        List<Friend> friends = findByFriendId(searchFriendRequest);
+
+        if (friends.size() > 0 || request.getAccountID1().equalsIgnoreCase(request.getAccountID2())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Friend already exist");
+        }
 
         User user1 = userService.getUserById(request.getAccountID1());
         User user2 = userService.getUserById(request.getAccountID2());

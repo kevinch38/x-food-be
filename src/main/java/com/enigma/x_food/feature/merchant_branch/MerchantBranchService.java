@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
+import com.enigma.x_food.feature.merchant_branch.dto.request.SearchActiveMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
@@ -16,5 +17,5 @@ public interface MerchantBranchService {
     MerchantBranchResponse findById(String id);
     MerchantBranch getById(String id);
     List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request);
-    List<MerchantBranchResponse> findAllActiveByMerchantId(SearchMerchantBranchRequest request);
+    List<MerchantBranchResponse> findAllActiveByMerchantId(SearchActiveMerchantBranchRequest request);
 }

@@ -5,9 +5,8 @@ import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.top_up.TopUp;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -17,7 +16,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "history")
 public class History extends BaseEntity {
@@ -47,5 +47,6 @@ public class History extends BaseEntity {
     private TopUp topUp;
     @ManyToOne
     @JoinColumn(name = "account_id")
+    @JsonBackReference
     private User user;
 }

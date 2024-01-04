@@ -8,6 +8,7 @@ import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringReq
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
 import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.SearchActivePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
@@ -30,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -61,13 +63,12 @@ public class PromotionServiceImpl implements PromotionService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             log.info(String.valueOf(authentication));
             a = authentication.getCredentials();
-            log.info("a"+(String) a);
+            log.info("a" + a);
             a = authentication.getName();
-            log.info("c"+(String) a);
+            log.info("c" + a);
             admin = (Admin) authentication.getPrincipal();
             log.info(String.valueOf(admin));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
 
@@ -98,6 +99,39 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<PromotionResponse> getAll(SearchPromotionRequest request) {
+        String fieldName = SortingUtil.sortByValidation(Promotion.class, request.getSortBy(), "promotionID");
+        request.setSortBy(fieldName);
+
+        Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
+        Pageable pageable = PageRequest.of(
+                request.getPage() - 1,
+                request.getSize(),
+                direction,
+                request.getSortBy()
+        );
+
+        Specification<Promotion> specification = getPromotionSpecification(request);
+        Page<Promotion> promotions = promotionRepository.findAll(specification, pageable);
+        return promotions.map(this::mapToResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromotionResponse> getAllActive(SearchActivePromotionRequest request) {
+        String fieldName = SortingUtil.sortByValidation(Promotion.class, request.getSortBy(), "promotionID");
+        request.setSortBy(fieldName);
+
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+
+        Specification<Promotion> specification = getActivePromotionSpecification(request);
+        List<Promotion> promotions = promotionRepository.findAll(specification, sort);
+        return promotions.stream().map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public PromotionResponse update(UpdatePromotionRequest request) throws AuthenticationException {
         validationUtil.validate(request);
@@ -115,11 +149,10 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setNotes(request.getNotes());
 
         Admin admin;
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             admin = (Admin) authentication.getPrincipal();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
@@ -140,11 +173,10 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setPromotionStatus(promotionStatus);
 
         Admin admin;
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             admin = (Admin) authentication.getPrincipal();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
@@ -180,39 +212,6 @@ public class PromotionServiceImpl implements PromotionService {
         return findByIdOrThrowException(id);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<PromotionResponse> getAll(SearchPromotionRequest request) {
-        String fieldName = SortingUtil.sortByValidation(Promotion.class, request.getSortBy(), "promotionID");
-        request.setSortBy(fieldName);
-
-        Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
-        Pageable pageable = PageRequest.of(
-                request.getPage() - 1,
-                request.getSize(),
-                direction,
-                request.getSortBy()
-        );
-
-        Specification<Promotion> specification = getPromotionSpecification(request, "all");
-        Page<Promotion> promotions = promotionRepository.findAll(specification, pageable);
-        return promotions.map(this::mapToResponse);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<PromotionResponse> getAllActive(SearchPromotionRequest request) {
-        String fieldName = SortingUtil.sortByValidation(Promotion.class, request.getSortBy(), "promotionID");
-        request.setSortBy(fieldName);
-
-        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
-
-        Specification<Promotion> specification = getPromotionSpecification(request, "active");
-        List<Promotion> promotions = promotionRepository.findAll(specification, sort);
-        return promotions.stream().map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
     private Promotion findByIdOrThrowException(String id) {
         return promotionRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Promotion not found"));
@@ -237,7 +236,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .build();
     }
 
-    private Specification<Promotion> getPromotionSpecification(SearchPromotionRequest request, String option) {
+    private Specification<Promotion> getPromotionSpecification(SearchPromotionRequest request) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -291,13 +290,30 @@ public class PromotionServiceImpl implements PromotionService {
                 predicates.add(predicate);
             }
 
-            if (option.equalsIgnoreCase("active")) {
-                Predicate predicate = criteriaBuilder.equal(
-                        root.get("promotionStatus").get("status"),
-                        EPromotionStatus.ACTIVE
+            return query
+                    .where(predicates.toArray(new Predicate[]{}))
+                    .getRestriction();
+        };
+    }
+
+    private Specification<Promotion> getActivePromotionSpecification(SearchActivePromotionRequest request) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getMerchantID() != null) {
+                Join<Promotion, Merchant> promotionJoin = root.join("merchant", JoinType.INNER);
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(promotionJoin.get("merchantID")),
+                        "%" + request.getMerchantID().toLowerCase() + "%"
                 );
                 predicates.add(predicate);
             }
+
+            Predicate predicate = criteriaBuilder.equal(
+                    root.get("promotionStatus").get("status"),
+                    EPromotionStatus.ACTIVE
+            );
+            predicates.add(predicate);
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))

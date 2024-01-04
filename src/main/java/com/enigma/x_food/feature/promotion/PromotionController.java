@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.promotion;
 
 import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.SearchActivePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
@@ -51,8 +52,7 @@ public class PromotionController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startUpdatedAt,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endUpdatedAt,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startExpiredDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endExpiredDate,
-            @RequestParam(required = false, defaultValue = "false") Boolean active
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endExpiredDate
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
@@ -72,19 +72,6 @@ public class PromotionController {
                 .startExpiredDate(startExpiredDate)
                 .endExpiredDate(endExpiredDate)
                 .build();
-        if (active){
-            List<PromotionResponse> promotions = promotionService.getAllActive(request);
-
-            CommonResponse<List<PromotionResponse>> response = CommonResponse.<List<PromotionResponse>>builder()
-                    .message("successfully get all active promotion")
-                    .statusCode(HttpStatus.OK.value())
-                    .data(promotions)
-                    .build();
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(response);
-        }
 
         Page<PromotionResponse> promotions = promotionService.getAll(request);
 
@@ -96,7 +83,7 @@ public class PromotionController {
                 .build();
 
         CommonResponse<List<PromotionResponse>> response = CommonResponse.<List<PromotionResponse>>builder()
-                .message("successfully get all promotion")
+                .message("successfully get all promotions")
                 .statusCode(HttpStatus.OK.value())
                 .data(promotions.getContent())
                 .paging(pagingResponse)
@@ -107,9 +94,35 @@ public class PromotionController {
                 .body(response);
     }
 
+    @GetMapping("active")
+    public ResponseEntity<?> getAllActive(
+            @RequestParam(required = false, defaultValue = "asc") String direction,
+            @RequestParam(required = false, defaultValue = "promotionID") String sortBy,
+            @RequestParam(required = false) String merchantID
+    ) {
+        direction = PagingUtil.validateDirection(direction);
+
+        SearchActivePromotionRequest request = SearchActivePromotionRequest.builder()
+                .direction(direction)
+                .sortBy(sortBy)
+                .merchantID(merchantID)
+                .build();
+        List<PromotionResponse> promotions = promotionService.getAllActive(request);
+
+        CommonResponse<List<PromotionResponse>> response = CommonResponse.<List<PromotionResponse>>builder()
+                .message("successfully get all active promotions")
+                .statusCode(HttpStatus.OK.value())
+                .data(promotions)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) throws AuthenticationException {
-        PromotionResponse promotionResponse =promotionService.update(request);
+        PromotionResponse promotionResponse = promotionService.update(request);
         CommonResponse<PromotionResponse> response = CommonResponse.<PromotionResponse>builder()
                 .message("successfully update promotion")
                 .statusCode(HttpStatus.OK.value())
@@ -119,6 +132,7 @@ public class PromotionController {
                 .status(HttpStatus.OK)
                 .body(response);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable String id) {
         PromotionResponse promotionResponse = promotionService.findById(id);

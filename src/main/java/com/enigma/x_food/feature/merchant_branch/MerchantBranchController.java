@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
+import com.enigma.x_food.feature.merchant_branch.dto.request.SearchActiveMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
@@ -79,8 +80,7 @@ public class MerchantBranchController {
                                      @RequestParam(required = false) String city,
                                      @RequestParam(required = false) String status,
                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startJoinDate,
-                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endJoinDate,
-                                     @RequestParam(required = false, defaultValue = "false") Boolean active
+                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endJoinDate
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
@@ -99,19 +99,6 @@ public class MerchantBranchController {
                 .endJoinDate(endJoinDate)
                 .build();
 
-        if (active) {
-            List<MerchantBranchResponse> merchantBranches = merchantBranchService.findAllActiveByMerchantId(request);
-
-            CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
-                    .message("successfully get all active merchant branch")
-                    .statusCode(HttpStatus.OK.value())
-                    .data(merchantBranches)
-                    .build();
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(response);
-        }
         List<MerchantBranchResponse> merchantBranches = merchantBranchService.findAllByMerchantId(request);
 
         CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
@@ -124,6 +111,38 @@ public class MerchantBranchController {
                 .status(HttpStatus.OK)
                 .body(response);
 
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<?> findAllActive(@RequestParam String merchantID,
+                                           @RequestParam(required = false, defaultValue = "asc") String direction,
+                                           @RequestParam(required = false, defaultValue = "branchID") String sortBy,
+                                           @RequestParam(required = false) String branchName,
+                                           @RequestParam(required = false) String city,
+                                           @RequestParam(required = false) String status
+    ) {
+        direction = PagingUtil.validateDirection(direction);
+
+        SearchActiveMerchantBranchRequest request = SearchActiveMerchantBranchRequest.builder()
+                .direction(direction)
+                .sortBy(sortBy)
+                .merchantID(merchantID)
+                .branchName(branchName)
+                .city(city)
+                .status(status)
+                .build();
+
+        List<MerchantBranchResponse> merchantBranches = merchantBranchService.findAllActiveByMerchantId(request);
+
+        CommonResponse<List<MerchantBranchResponse>> response = CommonResponse.<List<MerchantBranchResponse>>builder()
+                .message("successfully get all active merchant branch")
+                .statusCode(HttpStatus.OK.value())
+                .data(merchantBranches)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 
     @GetMapping("/{branchID}")

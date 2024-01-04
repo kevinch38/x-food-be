@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
+import com.enigma.x_food.feature.merchant.dto.request.SearchActiveMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
@@ -16,7 +17,7 @@ public interface MerchantService {
     MerchantResponse findById(String id);
     Merchant getById(String id);
     void deleteById(String id) throws AuthenticationException;
-    List<MerchantResponse> getAllActive(SearchMerchantRequest request);
+    List<MerchantResponse> getAllActive(SearchActiveMerchantRequest request);
     Page<MerchantResponse> getAll(SearchMerchantRequest request);
 
 }

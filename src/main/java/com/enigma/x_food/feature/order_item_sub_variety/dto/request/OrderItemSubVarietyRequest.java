@@ -7,15 +7,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class OrderItemSubVarietyRequest {
-    @NotBlank(message = "Variety id cannot be empty")
+    @NotNull(message = "Variety ID cannot be empty")
     private OrderItem orderItem;
-    @NotBlank
+    @NotNull(message = "Sub variety ID cannot be empty")
     private SubVariety subVariety;
 }

@@ -79,6 +79,7 @@ public class OrderServiceImpl implements OrderService {
                 .isSplit(false)
                 .build();
 
+        List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemRequest orderItem : request.getOrderItems()) {
             Item item = itemService.findById(orderItem.getItemID());
             price += item.getDiscountedPrice() * orderItem.getQuantity();
@@ -86,9 +87,11 @@ public class OrderServiceImpl implements OrderService {
             OrderItemRequest orderItemRequest = OrderItemRequest.builder()
                     .itemID(orderItem.getItemID())
                     .quantity(orderItem.getQuantity())
-                    .subVarietyID(orderItem.getSubVarietyID())
+                    .subVarieties(orderItem.getSubVarieties())
                     .build();
             OrderItem newOrderItem = orderItemService.createNew(orderItemRequest);
+
+            orderItems.add(newOrderItem);
             newOrderItem.setOrder(order);
         }
 
@@ -105,6 +108,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setHistory(history);
         order.setOrderValue(price);
+        order.setOrderItems(orderItems);
         history.setOrder(order);
 
         orderRepository.saveAndFlush(order);

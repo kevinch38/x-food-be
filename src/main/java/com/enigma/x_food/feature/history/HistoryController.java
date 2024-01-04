@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.history;
 
+import com.enigma.x_food.feature.history.dto.request.SearchAccountHistoryRequest;
 import com.enigma.x_food.feature.history.dto.request.SearchHistoryRequest;
 import com.enigma.x_food.feature.history.dto.response.HistoryResponse;
 import com.enigma.x_food.shared.CommonResponse;
@@ -29,9 +30,8 @@ public class HistoryController {
             @RequestParam(required = false) String accountID,
             @RequestParam(required = false) String transactionType,
             @RequestParam(required = false) LocalDate startTransactionDate,
-            @RequestParam(required = false) LocalDate endTransactionDate,
-            @RequestParam(required = false, defaultValue = "false") Boolean paging
-                                    ) {
+            @RequestParam(required = false) LocalDate endTransactionDate
+    ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
         direction = PagingUtil.validateDirection(direction);
@@ -46,40 +46,54 @@ public class HistoryController {
                 .startTransactionDate(startTransactionDate)
                 .endTransactionDate(endTransactionDate)
                 .build();
-        if  (paging){
-            Page<HistoryResponse> histories = historyService.findAll(request);
+        Page<HistoryResponse> histories = historyService.findAll(request);
 
-            PagingResponse pagingResponse = PagingResponse.builder()
-                    .page(page)
-                    .size(size)
-                    .count(histories.getTotalElements())
-                    .totalPages(histories.getTotalPages())
-                    .build();
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .page(page)
+                .size(size)
+                .count(histories.getTotalElements())
+                .totalPages(histories.getTotalPages())
+                .build();
 
-            CommonResponse<List<HistoryResponse>> response = CommonResponse.<List<HistoryResponse>>builder()
-                    .message("successfully get all histories")
-                    .statusCode(HttpStatus.OK.value())
-                    .data(histories.getContent())
-                    .paging(pagingResponse)
-                    .build();
+        CommonResponse<List<HistoryResponse>> response = CommonResponse.<List<HistoryResponse>>builder()
+                .message("successfully get all histories")
+                .statusCode(HttpStatus.OK.value())
+                .data(histories.getContent())
+                .paging(pagingResponse)
+                .build();
 
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(response);
-        }
-        else {
-            List<HistoryResponse> histories = historyService.findByAccountId(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
 
-            CommonResponse<List<HistoryResponse>> response = CommonResponse.<List<HistoryResponse>>builder()
-                    .message("successfully get all history by account id")
-                    .statusCode(HttpStatus.OK.value())
-                    .data(histories)
-                    .build();
+    }
 
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(response);
+    @GetMapping("/{accountID}")
+    public ResponseEntity<?> getAllByAccountID(
+            @RequestParam(required = false, defaultValue = "asc") String direction,
+            @RequestParam(required = false, defaultValue = "historyID") String sortBy,
+            @PathVariable String accountID
+    ) {
+        direction = PagingUtil.validateDirection(direction);
 
-        }
+        SearchAccountHistoryRequest request = SearchAccountHistoryRequest.builder()
+                .direction(direction)
+                .sortBy(sortBy)
+                .accountID(accountID)
+                .build();
+
+        List<HistoryResponse> histories = historyService.findByAccountId(request);
+
+        CommonResponse<List<HistoryResponse>> response = CommonResponse.<List<HistoryResponse>>builder()
+                .message("successfully get all history by account id")
+                .statusCode(HttpStatus.OK.value())
+                .data(histories)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+
+
     }
 }

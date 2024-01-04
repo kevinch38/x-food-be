@@ -4,6 +4,7 @@ import com.enigma.x_food.feature.voucher_status.VoucherStatus;
 import com.enigma.x_food.feature.promotion.Promotion;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,7 @@ public class Voucher extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @Column(name = "voucher_value", nullable = false, length = 11)

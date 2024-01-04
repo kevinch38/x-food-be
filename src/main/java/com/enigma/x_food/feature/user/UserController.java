@@ -105,19 +105,6 @@ public class UserController {
                 .body(response);
     }
 
-//    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<?> getById(@PathVariable String id) {
-//        UserResponse userResponse = userService.getById(id);
-//        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-//                .message("successfully get user")
-//                .statusCode(HttpStatus.OK.value())
-//                .data(userResponse)
-//                .build();
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(response);
-//    }
-
     @GetMapping(value = "/{phoneNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {
         UserResponse userResponse = userService.getUserByPhoneNumber(phoneNumber);

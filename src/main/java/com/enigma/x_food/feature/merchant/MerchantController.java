@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.merchant;
 
 import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
+import com.enigma.x_food.feature.merchant.dto.request.SearchActiveMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
@@ -29,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MerchantController {
     private final MerchantService merchantService;
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String joinDate,
@@ -40,7 +42,7 @@ public class MerchantController {
             @RequestParam String notes,
             @RequestParam MultipartFile image,
             @RequestParam MultipartFile logoImage
-                                               ) throws IOException, AuthenticationException {
+    ) throws IOException, AuthenticationException {
         Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(joinDate, DateTimeFormatter.ISO_DATE_TIME));
 
         NewMerchantRequest request = NewMerchantRequest.builder()
@@ -65,6 +67,7 @@ public class MerchantController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,
@@ -80,9 +83,8 @@ public class MerchantController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startExpiredDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endExpiredDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startJoinDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endJoinDate,
-            @RequestParam(required = false, defaultValue = "false") Boolean paging
-    ) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endJoinDate
+            ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
         direction = PagingUtil.validateDirection(direction);
@@ -104,40 +106,52 @@ public class MerchantController {
                 .endJoinDate(endJoinDate)
                 .build();
 
-        if (paging) {
-            Page<MerchantResponse> merchants = merchantService.getAll(request);
+        Page<MerchantResponse> merchants = merchantService.getAll(request);
 
-            PagingResponse pagingResponse = PagingResponse.builder()
-                    .page(page)
-                    .size(size)
-                    .count(merchants.getTotalElements())
-                    .totalPages(merchants.getTotalPages())
-                    .build();
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .page(page)
+                .size(size)
+                .count(merchants.getTotalElements())
+                .totalPages(merchants.getTotalPages())
+                .build();
 
-            CommonResponse<List<MerchantResponse>> response = CommonResponse.<List<MerchantResponse>>builder()
-                    .message("successfully get all merchants")
-                    .statusCode(HttpStatus.OK.value())
-                    .data(merchants.getContent())
-                    .paging(pagingResponse)
-                    .build();
+        CommonResponse<List<MerchantResponse>> response = CommonResponse.<List<MerchantResponse>>builder()
+                .message("successfully get all merchants")
+                .statusCode(HttpStatus.OK.value())
+                .data(merchants.getContent())
+                .paging(pagingResponse)
+                .build();
 
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(response);
-        }
-        else {
-            List<MerchantResponse> merchants = merchantService.getAllActive(request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 
-            CommonResponse<List<MerchantResponse>> response = CommonResponse.<List<MerchantResponse>>builder()
-                    .message("successfully get all active merchants")
-                    .statusCode(HttpStatus.OK.value())
-                    .data(merchants)
-                    .build();
+    @GetMapping("/active")
+    public ResponseEntity<?> getAllActive(
+            @RequestParam(required = false, defaultValue = "asc") String direction,
+            @RequestParam(required = false, defaultValue = "merchantID") String sortBy,
+            @RequestParam(required = false) String merchantName
+    ) {
+        direction = PagingUtil.validateDirection(direction);
 
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(response);
-        }
+        SearchActiveMerchantRequest request = SearchActiveMerchantRequest.builder()
+                .direction(direction)
+                .sortBy(sortBy)
+                .merchantName(merchantName)
+                .build();
+
+        List<MerchantResponse> merchants = merchantService.getAllActive(request);
+
+        CommonResponse<List<MerchantResponse>> response = CommonResponse.<List<MerchantResponse>>builder()
+                .message("successfully get all active merchants")
+                .statusCode(HttpStatus.OK.value())
+                .data(merchants)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 
     @GetMapping("/{merchantID}")

@@ -15,6 +15,7 @@ import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
 import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
+import com.enigma.x_food.feature.merchant_branch.dto.request.SearchActiveMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranchRequest;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
@@ -82,11 +83,10 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .joinDate(request.getJoinDate())
                 .build();
         Admin admin;
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             admin = (Admin) authentication.getPrincipal();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
@@ -119,11 +119,10 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .cityName(cityResponse.getCityName())
                 .build());
         Admin admin;
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             admin = (Admin) authentication.getPrincipal();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
@@ -151,18 +150,18 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         validationUtil.validate(request);
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
-        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request, "");
+        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request);
         List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
         return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MerchantBranchResponse> findAllActiveByMerchantId(SearchMerchantBranchRequest request) {
+    public List<MerchantBranchResponse> findAllActiveByMerchantId(SearchActiveMerchantBranchRequest request) {
         validationUtil.validate(request);
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
-        Specification<MerchantBranch> specification = getMerchantBranchSpecification(request, "active");
+        Specification<MerchantBranch> specification = getActiveMerchantBranchSpecification(request);
         List<MerchantBranch> branches = merchantBranchRepository.findAll(specification, sort);
         return branches.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
@@ -177,11 +176,10 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
 
         Admin admin;
-        try{
+        try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             admin = (Admin) authentication.getPrincipal();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
@@ -239,7 +237,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         if (i.getItemVarieties() != null) {
             itemVarietyResponses = i.getItemVarieties().stream().map(
                     MerchantBranchServiceImpl::getItemVarietyResponse
-                    ).collect(Collectors.toList());
+            ).collect(Collectors.toList());
         }
 
         return ItemResponse.builder()
@@ -298,7 +296,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .build();
     }
 
-    private Specification<MerchantBranch> getMerchantBranchSpecification(SearchMerchantBranchRequest request, String option) {
+    private Specification<MerchantBranch> getMerchantBranchSpecification(SearchMerchantBranchRequest request) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -327,7 +325,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 predicates.add(predicate);
             }
 
-
             if (request.getCity() != null) {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("city").get("cityName")),
@@ -355,13 +352,63 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 predicates.add(predicate);
             }
 
-            if (option.equalsIgnoreCase("active")) {
+            return query
+                    .where(predicates.toArray(new Predicate[]{}))
+                    .getRestriction();
+        };
+    }
+
+    private Specification<MerchantBranch> getActiveMerchantBranchSpecification(SearchActiveMerchantBranchRequest request) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getMerchantID() != null) {
+                Join<MerchantBranch, Merchant> merchantJoin = root.join("merchant", JoinType.INNER);
                 Predicate predicate = criteriaBuilder.equal(
-                        root.get("merchantBranchStatus").get("status"),
-                        EMerchantBranchStatus.ACTIVE
+                        criteriaBuilder.lower(merchantJoin.get("merchantID")),
+                        request.getMerchantID().toLowerCase()
                 );
                 predicates.add(predicate);
             }
+
+            if (request.getBranchID() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("branchID")),
+                        "%" + request.getBranchID().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getBranchName() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("branchName")),
+                        "%" + request.getBranchName().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getCity() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("city").get("cityName")),
+                        "%" + request.getCity().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getStatus() != null) {
+                Predicate predicate = criteriaBuilder.equal(
+                        criteriaBuilder.lower(root.get("merchantBranchStatus").get("status").as(String.class)),
+                        request.getStatus().toLowerCase()
+                );
+                predicates.add(predicate);
+            }
+
+
+            Predicate predicate = criteriaBuilder.equal(
+                    root.get("merchantBranchStatus").get("status"),
+                    EMerchantBranchStatus.ACTIVE
+            );
+            predicates.add(predicate);
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))

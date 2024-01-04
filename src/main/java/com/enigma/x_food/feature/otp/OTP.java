@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.otp;
 
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
@@ -26,5 +27,6 @@ public class OTP extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonManagedReference
     private User user;
 }

@@ -7,9 +7,7 @@ import com.enigma.x_food.feature.order_status.OrderStatus;
 import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -19,7 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "\"order\"")
 public class Order extends BaseEntity {

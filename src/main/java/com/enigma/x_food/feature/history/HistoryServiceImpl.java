@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.history;
 
 import com.enigma.x_food.constant.ETransactionType;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
+import com.enigma.x_food.feature.history.dto.request.SearchAccountHistoryRequest;
 import com.enigma.x_food.feature.history.dto.request.SearchHistoryRequest;
 import com.enigma.x_food.feature.history.dto.response.HistoryResponse;
 import com.enigma.x_food.feature.order.Order;
@@ -73,7 +74,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<HistoryResponse> findByAccountId(SearchHistoryRequest request) {
+    public List<HistoryResponse> findByAccountId(SearchAccountHistoryRequest request) {
         validationUtil.validate(request);
 
         Specification<History> specification = getHistoryByAccountIDSpecification(request);
@@ -179,7 +180,7 @@ public class HistoryServiceImpl implements HistoryService {
                 .build();
     }
 
-    private Specification<History> getHistoryByAccountIDSpecification(SearchHistoryRequest request) {
+    private Specification<History> getHistoryByAccountIDSpecification(SearchAccountHistoryRequest request) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
