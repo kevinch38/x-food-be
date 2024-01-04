@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.user;
 
+import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.constant.EVoucherStatus;
 import com.enigma.x_food.feature.balance.Balance;
 import com.enigma.x_food.feature.balance.BalanceService;
@@ -198,6 +199,9 @@ public class UserServiceImpl implements UserService {
             ).collect(Collectors.toList());
             voucherResponses = vouchers.stream().map(this::mapToResponse).collect(Collectors.toList());
         }
+        else {
+            voucherResponses=List.of();
+        }
 
         return UserResponse.builder()
                 .accountID(user.getAccountID())
@@ -215,6 +219,7 @@ public class UserServiceImpl implements UserService {
                 .loyaltyPointID(user.getLoyaltyPoint().getLoyaltyPointID())
                 .otpID(user.getOtp().getOtpID())
                 .vouchers(voucherResponses)
+                .role(ERole.USER.name())
                 .build();
     }
 
