@@ -390,12 +390,6 @@ public class MerchantServiceImpl implements MerchantService {
                 predicates.add(predicate);
             }
 
-            Predicate predicate = criteriaBuilder.equal(
-                    root.get("merchantStatus").get("status"),
-                    EMerchantStatus.ACTIVE
-            );
-            predicates.add(predicate);
-
             return query
                     .where(predicates.toArray(new Predicate[]{}))
                     .getRestriction();
@@ -413,6 +407,12 @@ public class MerchantServiceImpl implements MerchantService {
                 );
                 predicates.add(predicate);
             }
+            
+            Predicate predicate = criteriaBuilder.equal(
+                    root.get("merchantStatus").get("status"),
+                    EMerchantStatus.ACTIVE
+            );
+            predicates.add(predicate);
 
             return query
                     .where(predicates.toArray(new Predicate[]{}))
