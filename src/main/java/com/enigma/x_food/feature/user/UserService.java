@@ -17,7 +17,6 @@ public interface UserService {
     User getUserByPhoneNumber2(String phoneNumber);
     UserResponse update(UpdateUserRequest request);
     UserResponse updateProfilePhoto(UpdateUserProfilePhotoRequest request);
-    void deleteById(String id);
 
 
 }

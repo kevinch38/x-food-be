@@ -5,12 +5,14 @@ import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.shared.PagingResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.enigma.x_food.util.PagingUtil;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,6 +59,8 @@ public class UserController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_STAFF')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,
@@ -151,7 +155,6 @@ public class UserController {
 
     }
 
-
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdateUserRequest request) {
         UserResponse userResponse = userService.update(request);
@@ -164,18 +167,4 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body(response);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
-        userService.deleteById(id);
-        CommonResponse<String> response = CommonResponse.<String>builder()
-                .message("successfully delete user")
-                .statusCode(HttpStatus.OK.value())
-                .data("OK")
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
-
 }
