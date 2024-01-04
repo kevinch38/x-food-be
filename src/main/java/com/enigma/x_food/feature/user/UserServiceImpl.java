@@ -190,15 +190,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public void deleteById(String id) {
-        log.info("Start deleteById");
-        User user = findByIdOrThrowNotFound(id);
-        userRepository.delete(user);
-        log.info("End deleteById");
-    }
-
-
     private UserResponse mapToResponse(User user) {
         List<VoucherResponse> voucherResponses = null;
         List<Voucher> vouchers;
