@@ -86,6 +86,7 @@ public class OrderServiceImpl implements OrderService {
             OrderItemRequest orderItemRequest = OrderItemRequest.builder()
                     .itemID(orderItem.getItemID())
                     .quantity(orderItem.getQuantity())
+                    .subVarietyID(orderItem.getSubVarietyID())
                     .build();
             OrderItem newOrderItem = orderItemService.createNew(orderItemRequest);
             newOrderItem.setOrder(order);
