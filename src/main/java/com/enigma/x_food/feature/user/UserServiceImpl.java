@@ -21,6 +21,7 @@ import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.voucher.Voucher;
 import com.enigma.x_food.feature.voucher.dto.response.VoucherResponse;
 import com.enigma.x_food.security.BCryptUtil;
+import com.enigma.x_food.security.JwtUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +58,7 @@ public class UserServiceImpl implements UserService {
     private final ValidationUtil validationUtil;
     private final Random random;
     private final BCryptUtil bCryptUtil;
+    private final JwtUtil jwtUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -94,9 +96,10 @@ public class UserServiceImpl implements UserService {
             otp.setUser(user);
 
             userRepository.saveAndFlush(user);
+            String token = jwtUtil.generateTokenUser(user);
 
             log.info("End createNew");
-            return mapToResponse(user);
+            return mapToResponse(user,token);
         } catch (DataIntegrityViolationException e) {
             log.error("Error createNew: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone number already exist");
@@ -121,7 +124,7 @@ public class UserServiceImpl implements UserService {
         Specification<User> specification = getUserSpecification(request);
         Page<User> users = userRepository.findAll(specification, pageable);
         log.info("End getAll");
-        return users.map(this::mapToResponse);
+        return users.map(user ->mapToResponse(user,null));
     }
 
     @Override
@@ -129,7 +132,7 @@ public class UserServiceImpl implements UserService {
         log.info("Start getOneById");
         User user = findByIdOrThrowNotFound(id);
         log.info("End getOneById");
-        return mapToResponse(user);
+        return mapToResponse(user,null);
     }
 
     @Override
@@ -137,12 +140,25 @@ public class UserServiceImpl implements UserService {
         return (findByIdOrThrowNotFound(id));
     }
 
+
+    @Override
+    public UserResponse getUserByPhoneNumberNoToken(String phoneNumber) {
+        log.info("Start getOneByPhoneNumber");
+        Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
+        log.info("End getOneById");
+        return byPhoneNumber.map(user -> mapToResponse(user, null)).orElse(null);
+    }
     @Override
     public UserResponse getUserByPhoneNumber(String phoneNumber) {
         log.info("Start getOneByPhoneNumber");
         Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
+        String token = null;
+        if (byPhoneNumber.isPresent()) {
+            token = jwtUtil.generateTokenUser(byPhoneNumber.get());
+        }
         log.info("End getOneById");
-        return byPhoneNumber.map(this::mapToResponse).orElse(null);
+        String finalToken = token;
+        return byPhoneNumber.map(user -> mapToResponse(user, finalToken)).orElse(null);
     }
 
     @Override
@@ -166,7 +182,7 @@ public class UserServiceImpl implements UserService {
             user.setDateOfBirth(request.getDateOfBirth());
             userRepository.saveAndFlush(user);
             log.info("End update");
-            return mapToResponse(user);
+            return mapToResponse(user,null);
         } catch (DataIntegrityViolationException e) {
             log.error("Error update: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
@@ -184,7 +200,7 @@ public class UserServiceImpl implements UserService {
 
             userRepository.saveAndFlush(user);
             log.info("End update");
-            return mapToResponse(user);
+            return mapToResponse(user,null);
         } catch (Exception e) {
             log.error("Error update: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -200,13 +216,13 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    private UserResponse mapToResponse(User user) {
+    private UserResponse mapToResponse(User user, String token) {
         List<VoucherResponse> voucherResponses = null;
         List<Voucher> vouchers;
         if (user.getVouchers() != null) {
             vouchers = user.getVouchers().stream().filter(voucher -> voucher.getVoucherStatus().getStatus() == EVoucherStatus.ACTIVE
             ).collect(Collectors.toList());
-            voucherResponses = vouchers.stream().map(this::mapToResponse).collect(Collectors.toList());
+            voucherResponses = vouchers.stream().map(this::mapVoucherToResponse).collect(Collectors.toList());
         }
         else {
             voucherResponses=List.of();
@@ -229,10 +245,11 @@ public class UserServiceImpl implements UserService {
                 .otpID(user.getOtp().getOtpID())
                 .vouchers(voucherResponses)
                 .role(ERole.USER.name())
+                .token(token)
                 .build();
     }
 
-    private VoucherResponse mapToResponse(Voucher voucher) {
+    private VoucherResponse mapVoucherToResponse(Voucher voucher) {
         return VoucherResponse.builder()
                 .voucherID(voucher.getVoucherID())
                 .promotionID(voucher.getPromotion().getPromotionID())

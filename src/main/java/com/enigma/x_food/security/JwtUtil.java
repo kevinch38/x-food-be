@@ -46,6 +46,7 @@ public class JwtUtil {
                     .withSubject(user.getAccountID())
                     .withExpiresAt(Instant.now().plusSeconds(jwtExpirationInSecond))
                     .withIssuedAt(Instant.now())
+                    .withClaim("role", ERole.USER.name())
                     .sign(algorithm);
         } catch (JWTCreationException e) {
             log.error("error while creating jwt token: {}", e.getMessage());

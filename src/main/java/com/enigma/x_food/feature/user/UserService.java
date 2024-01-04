@@ -12,6 +12,7 @@ public interface UserService {
     Page<UserResponse> getAll(SearchUserRequest request);
     UserResponse getById(String id);
     User getUserById(String id);
+    UserResponse getUserByPhoneNumberNoToken(String phoneNumber);
     UserResponse getUserByPhoneNumber(String phoneNumber);
     User getUserByPhoneNumber2(String phoneNumber);
     UserResponse update(UpdateUserRequest request);
