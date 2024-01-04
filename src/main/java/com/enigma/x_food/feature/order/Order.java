@@ -50,4 +50,6 @@ public class Order extends BaseEntity {
     private List<Payment> payments;
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
+    @Column(name = "is_split")
+    private Boolean isSplit;
 }

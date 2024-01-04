@@ -6,6 +6,7 @@ import com.enigma.x_food.feature.history.dto.request.SearchHistoryRequest;
 import com.enigma.x_food.feature.history.dto.response.HistoryResponse;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
+import com.enigma.x_food.feature.order_item.OrderItem;
 import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.payment.dto.response.PaymentResponse;
 import com.enigma.x_food.feature.top_up.TopUp;
@@ -140,6 +141,12 @@ public class HistoryServiceImpl implements HistoryService {
                     .tableNumber(order.getTableNumber())
                     .orderStatus(order.getOrderStatus().getStatus().name())
                     .branchID(order.getMerchantBranch().getBranchID())
+                    .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
+                    .image(order.getMerchantBranch().getImage())
+                    .items(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
+                    .isSplit(order.getIsSplit())
+                    .createdAt(order.getCreatedAt())
+                    .updatedAt(order.getUpdatedAt())
                     .build();
         } else if (payment != null){
             paymentResponse = PaymentResponse.builder()

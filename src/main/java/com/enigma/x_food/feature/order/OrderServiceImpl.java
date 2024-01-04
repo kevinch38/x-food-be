@@ -76,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
                 .tableNumber(request.getTableNumber())
                 .orderStatus(orderStatus)
                 .merchantBranch(merchantBranch)
+                .isSplit(false)
                 .build();
 
         for (OrderItemRequest orderItem : request.getOrderItems()) {
@@ -175,6 +176,7 @@ public class OrderServiceImpl implements OrderService {
                 .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
                 .image(order.getMerchantBranch().getImage())
                 .items(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
+                .isSplit(order.getIsSplit())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
                 .build();

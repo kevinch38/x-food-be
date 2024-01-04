@@ -149,6 +149,8 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = orderRepository.findById(request.getOrderID())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
+        order.setIsSplit(true);
+
         Instant currentTime = Instant.now();
         ZoneId gmtPlus7 = ZoneId.of("GMT+7");
         Instant expiredTime = currentTime.plus(Duration.ofDays(1));
