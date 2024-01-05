@@ -41,26 +41,26 @@ public class UserController {
                 .body(response);
     }
 
-    @PreAuthorize("permitAll")
-    @PutMapping(path = "/profile/photo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateProfilePhoto(
-            @RequestParam String accountID,
-            @RequestParam MultipartFile profilePhoto
-    ) {
-        UpdateUserProfilePhotoRequest request = UpdateUserProfilePhotoRequest.builder()
-                .accountID(accountID)
-                .profilePhoto(profilePhoto)
-                .build();
-        UserResponse userResponse = userService.updateProfilePhoto(request);
-        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-                .message("successfully update user profile photo")
-                .statusCode(HttpStatus.OK.value())
-                .data(userResponse)
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
+//    @PreAuthorize("permitAll")
+//    @PutMapping(path = "/profile/photo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> updateProfilePhoto(
+//            @RequestParam String accountID,
+//            @RequestParam MultipartFile profilePhoto
+//    ) {
+//        UpdateUserProfilePhotoRequest request = UpdateUserProfilePhotoRequest.builder()
+//                .accountID(accountID)
+//                .profilePhoto(profilePhoto)
+//                .build();
+//        UserResponse userResponse = userService.updateProfilePhoto(request);
+//        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+//                .message("successfully update user profile photo")
+//                .statusCode(HttpStatus.OK.value())
+//                .data(userResponse)
+//                .build();
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(response);
+//    }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_STAFF')")
     @SecurityRequirement(name = "Bearer Authentication")
