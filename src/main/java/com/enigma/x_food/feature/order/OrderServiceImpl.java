@@ -140,13 +140,18 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(orderStatus);
         for (OrderItem orderItem : order.getOrderItems()) {
             Item item = itemService.findById(order.getOrderID());
+            if (item.getItemStock()<=0)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
+            if (orderItem.getQuantity()>item.getItemStock())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is not enough");
             item.setItemStock(item.getItemStock() - orderItem.getQuantity());
         }
 
-        user.getLoyaltyPoint().setLoyaltyPointAmount((int) (order.getOrderValue() / 10000));
-        if (user.getBalance().getTotalBalance() < order.getOrderValue())
+        if (user.getBalance().getTotalBalance() < order.getOrderValue()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance to place the order");
+        }
 
+        user.getLoyaltyPoint().setLoyaltyPointAmount((int) (order.getOrderValue() / 10000));
         user.getBalance().setTotalBalance(user.getBalance().getTotalBalance() - order.getOrderValue());
 
         return mapToResponse(orderRepository.saveAndFlush(order));

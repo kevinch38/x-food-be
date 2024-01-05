@@ -32,7 +32,9 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -222,9 +224,9 @@ public class HistoryServiceImpl implements HistoryService {
                 predicates.add(predicate);
             }
 
-            if (request.getEndTransactionDate() != null && request.getEndTransactionDate() != null) {
+            if (request.getStartTransactionDate() != null && request.getEndTransactionDate() != null) {
                 Predicate predicate = criteriaBuilder.between(
-                        root.get("joinDate"),
+                        root.get("transactionDate"),
                         request.getStartTransactionDate(),
                         request.getEndTransactionDate()
                 );

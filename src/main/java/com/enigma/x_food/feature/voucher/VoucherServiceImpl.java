@@ -11,14 +11,12 @@ import com.enigma.x_food.feature.voucher.dto.request.SearchVoucherPromotionReque
 import com.enigma.x_food.feature.voucher.dto.response.VoucherResponse;
 import com.enigma.x_food.feature.voucher.dto.request.NewVoucherRequest;
 import com.enigma.x_food.feature.voucher.dto.request.SearchVoucherRequest;
-import com.enigma.x_food.feature.voucher.dto.request.UpdateVoucherRequest;
 import com.enigma.x_food.feature.voucher_status.VoucherStatus;
 import com.enigma.x_food.feature.voucher_status.VoucherStatusService;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
