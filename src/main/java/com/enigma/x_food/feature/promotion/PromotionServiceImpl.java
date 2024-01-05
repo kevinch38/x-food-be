@@ -240,6 +240,14 @@ public class PromotionServiceImpl implements PromotionService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            if (request.getPromotionName() != null) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("promotionName")),
+                        "%" + request.getPromotionName().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
             if (request.getMerchantID() != null) {
                 Join<Promotion, Merchant> promotionJoin = root.join("merchant", JoinType.INNER);
                 Predicate predicate = criteriaBuilder.like(
@@ -251,8 +259,8 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionStatus() != null) {
                 Predicate predicate = criteriaBuilder.equal(
-                        root.get("promotionStatus").get("status"),
-                        EPromotionStatus.ACTIVE
+                        criteriaBuilder.lower(root.get("merchantStatus").get("status").as(String.class)),
+                        request.getPromotionStatus().toLowerCase()
                 );
                 predicates.add(predicate);
             }

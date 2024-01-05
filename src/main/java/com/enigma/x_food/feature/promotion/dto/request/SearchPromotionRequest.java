@@ -18,6 +18,7 @@ public class SearchPromotionRequest {
     private String sortBy;
     private String merchantID;
     private String promotionStatus;
+    private String promotionName;
     private LocalDate startCreatedAt;
     private LocalDate endCreatedAt;
     private LocalDate startUpdatedAt;

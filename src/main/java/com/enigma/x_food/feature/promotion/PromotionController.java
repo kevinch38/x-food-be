@@ -47,6 +47,7 @@ public class PromotionController {
             @RequestParam(required = false, defaultValue = "promotionID") String sortBy,
             @RequestParam(required = false) String merchantID,
             @RequestParam(required = false) String promotionStatus,
+            @RequestParam(required = false) String promotionName,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startCreatedAt,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endCreatedAt,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startUpdatedAt,
@@ -65,6 +66,7 @@ public class PromotionController {
                 .sortBy(sortBy)
                 .merchantID(merchantID)
                 .promotionStatus(promotionStatus)
+                .promotionName(promotionName)
                 .startCreatedAt(startCreatedAt)
                 .endCreatedAt(endCreatedAt)
                 .startUpdatedAt(startUpdatedAt)
