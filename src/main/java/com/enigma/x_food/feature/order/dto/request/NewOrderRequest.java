@@ -1,6 +1,6 @@
 package com.enigma.x_food.feature.order.dto.request;
 
-import com.enigma.x_food.feature.otp.dto.order_item.dto.request.OrderItemRequest;
+import com.enigma.x_food.feature.order_item.dto.request.OrderItemRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

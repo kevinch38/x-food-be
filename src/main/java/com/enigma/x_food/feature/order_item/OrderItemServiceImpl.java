@@ -1,11 +1,11 @@
-package com.enigma.x_food.feature.otp.dto.order_item;
+package com.enigma.x_food.feature.order_item;
 
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.item.ItemService;
 import com.enigma.x_food.feature.order.dto.request.OrderSubVarietyRequest;
-import com.enigma.x_food.feature.otp.dto.order_item.dto.request.OrderItemRequest;
-import com.enigma.x_food.feature.otp.dto.order_item.dto.request.SearchOrderItemRequest;
-import com.enigma.x_food.feature.otp.dto.order_item.dto.response.OrderItemResponse;
+import com.enigma.x_food.feature.order_item.dto.request.OrderItemRequest;
+import com.enigma.x_food.feature.order_item.dto.request.SearchOrderItemRequest;
+import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVarietyService;
 import com.enigma.x_food.feature.order_item_sub_variety.dto.request.OrderItemSubVarietyRequest;
@@ -62,12 +62,10 @@ public class OrderItemServiceImpl implements OrderItemService {
         validationUtil.validate(request);
         Item item = itemService.findById(request.getItemID());
 
-        OrderItem orderItem = OrderItem.builder()
+        OrderItem orderItem = orderItemRepository.save(OrderItem.builder()
                 .item(item)
                 .quantity(request.getQuantity())
-
-                .build();
-        OrderItem orderItem1 = orderItemRepository.save(orderItem);
+                .build());
 
         List<OrderItemSubVariety> orderItemSubVarieties = new ArrayList<>();
         if (request.getSubVarieties() != null) {
@@ -78,13 +76,14 @@ public class OrderItemServiceImpl implements OrderItemService {
                         .subVariety(subVarietyServiceById)
                         .orderItem(orderItem)
                         .build();
+
                 OrderItemSubVariety orderItemSubVariety = orderItemSubVarietyService.createNew(orderItemSubVarietyRequest);
 
                 orderItemSubVarieties.add(orderItemSubVariety);
             }
         }
 
-        orderItem1.setOrderItemSubVarieties(orderItemSubVarieties);
+        orderItem.setOrderItemSubVarieties(orderItemSubVarieties);
         log.info("End createNew");
         return orderItem;
     }

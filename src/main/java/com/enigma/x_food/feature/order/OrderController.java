@@ -49,6 +49,19 @@ public class OrderController {
                 .body(response);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable  String id) {
+        OrderResponse order = orderService.findById(id);
+        CommonResponse<OrderResponse> response = CommonResponse.<OrderResponse>builder()
+                .message("successfully get order")
+                .statusCode(HttpStatus.OK.value())
+                .data(order)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
     @GetMapping
     public ResponseEntity<?> getAll(@RequestParam String accountID) {
         SearchOrderRequest request = SearchOrderRequest.builder()

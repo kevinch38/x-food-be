@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.otp.dto.order_item.dto.request;
+package com.enigma.x_food.feature.order_item.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
