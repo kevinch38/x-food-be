@@ -111,7 +111,7 @@ public class UserController {
 
     @GetMapping(value = "/{phoneNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByPhoneNumberNoToken(@PathVariable String phoneNumber) {
-        UserResponse userResponse = userService.getUserByPhoneNumberNoToken(phoneNumber);
+        UserResponse userResponse = userService.getUserByPhoneNumber(phoneNumber);
         if (userResponse != null){
             CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                     .message("successfully get user")
