@@ -148,7 +148,7 @@ public class UserController {
             @RequestParam String phoneNumber,
             @RequestParam String firstName,
             @RequestParam String lastName,
-            @RequestParam LocalDate dateOfBirth,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate dateOfBirth,
             @RequestParam MultipartFile profilePhoto) {
         UpdateUserRequest request = UpdateUserRequest.builder()
                 .accountID(accountID)
