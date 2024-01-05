@@ -226,6 +226,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .promotionValue(promotion.getPromotionValue())
                 .promotionDescription(promotion.getPromotionDescription())
                 .promotionName(promotion.getPromotionName())
+                .merchantImage(promotion.getMerchant().getImage())
                 .quantity(promotion.getQuantity())
                 .adminName(promotion.getAdmin().getAdminName())
                 .expiredDate(promotion.getExpiredDate())
