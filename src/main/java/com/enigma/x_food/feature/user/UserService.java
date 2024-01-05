@@ -16,7 +16,7 @@ public interface UserService {
     UserResponse getUserByPhoneNumber(String phoneNumber);
     User getUserByPhoneNumber2(String phoneNumber);
     UserResponse update(UpdateUserRequest request);
-    UserResponse updateProfilePhoto(UpdateUserProfilePhotoRequest request);
+//    UserResponse updateProfilePhoto(UpdateUserProfilePhotoRequest request);
 
 
 }

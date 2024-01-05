@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import com.enigma.x_food.util.PagingUtil;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -41,26 +43,26 @@ public class UserController {
                 .body(response);
     }
 
-    @PreAuthorize("permitAll")
-    @PutMapping(path = "/profile/photo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateProfilePhoto(
-            @RequestParam String accountID,
-            @RequestParam MultipartFile profilePhoto
-    ) {
-        UpdateUserProfilePhotoRequest request = UpdateUserProfilePhotoRequest.builder()
-                .accountID(accountID)
-                .profilePhoto(profilePhoto)
-                .build();
-        UserResponse userResponse = userService.updateProfilePhoto(request);
-        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-                .message("successfully update user profile photo")
-                .statusCode(HttpStatus.OK.value())
-                .data(userResponse)
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
+//    @PreAuthorize("permitAll")
+//    @PutMapping(path = "/profile/photo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> updateProfilePhoto(
+//            @RequestParam String accountID,
+//            @RequestParam MultipartFile profilePhoto
+//    ) {
+//        UpdateUserProfilePhotoRequest request = UpdateUserProfilePhotoRequest.builder()
+//                .accountID(accountID)
+//                .profilePhoto(profilePhoto)
+//                .build();
+//        UserResponse userResponse = userService.updateProfilePhoto(request);
+//        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+//                .message("successfully update user profile photo")
+//                .statusCode(HttpStatus.OK.value())
+//                .data(userResponse)
+//                .build();
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(response);
+//    }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_STAFF')")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -138,8 +140,26 @@ public class UserController {
     }
 
     @PreAuthorize("permitAll")
-    @PutMapping
-    public ResponseEntity<?> update(@RequestBody UpdateUserRequest request) {
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> update(
+            @RequestParam String accountID,
+            @RequestParam String ktpID,
+            @RequestParam String accountEmail,
+            @RequestParam String phoneNumber,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate dateOfBirth,
+            @RequestParam MultipartFile profilePhoto) {
+        UpdateUserRequest request = UpdateUserRequest.builder()
+                .accountID(accountID)
+                .ktpID(ktpID)
+                .accountEmail(accountEmail)
+                .phoneNumber(phoneNumber)
+                .firstName(firstName)
+                .lastName(lastName)
+                .dateOfBirth(dateOfBirth)
+                .profilePhoto(profilePhoto)
+                .build();
         UserResponse userResponse = userService.update(request);
         CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                 .message("successfully update user")

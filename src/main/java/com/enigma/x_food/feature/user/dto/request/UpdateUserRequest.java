@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -27,4 +28,6 @@ public class UpdateUserRequest {
     private String lastName;
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
+    @NotNull(message = "Profile Photo is required")
+    private MultipartFile profilePhoto;
 }

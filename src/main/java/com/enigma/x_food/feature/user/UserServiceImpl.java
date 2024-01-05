@@ -167,32 +167,33 @@ public class UserServiceImpl implements UserService {
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
             user.setDateOfBirth(request.getDateOfBirth());
-            userRepository.saveAndFlush(user);
-            log.info("End update");
-            return mapToResponse(user);
-        } catch (DataIntegrityViolationException e) {
-            log.error("Error update: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        }
-    }
-
-    @Override
-    public UserResponse updateProfilePhoto(UpdateUserProfilePhotoRequest request) {
-        try {
-            log.info("Start update");
-            validationUtil.validate(request);
-            User user = findByIdOrThrowNotFound(request.getAccountID());
-
             user.setProfilePhoto(request.getProfilePhoto().getBytes());
-
             userRepository.saveAndFlush(user);
             log.info("End update");
             return mapToResponse(user);
         } catch (Exception e) {
             log.error("Error update: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
+
+//    @Override
+//    public UserResponse updateProfilePhoto(UpdateUserProfilePhotoRequest request) {
+//        try {
+//            log.info("Start update");
+//            validationUtil.validate(request);
+//            User user = findByIdOrThrowNotFound(request.getAccountID());
+//
+//            user.setProfilePhoto(request.getProfilePhoto().getBytes());
+//
+//            userRepository.saveAndFlush(user);
+//            log.info("End update");
+//            return mapToResponse(user);
+//        } catch (Exception e) {
+//            log.error("Error update: {}", e.getMessage());
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+//        }
+//    }
 
 
     private UserResponse mapToResponse(User user) {
