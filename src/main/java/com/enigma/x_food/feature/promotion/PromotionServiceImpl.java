@@ -260,7 +260,7 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getPromotionStatus() != null) {
                 Predicate predicate = criteriaBuilder.equal(
-                        criteriaBuilder.lower(root.get("merchantStatus").get("status").as(String.class)),
+                        criteriaBuilder.lower(root.get("promotionStatus").get("status").as(String.class)),
                         request.getPromotionStatus().toLowerCase()
                 );
                 predicates.add(predicate);
