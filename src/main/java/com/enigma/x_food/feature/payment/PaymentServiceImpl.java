@@ -96,7 +96,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         List<Payment> payments = splitBillRequests.stream().map(
                 this::getPayment
-                ).collect(Collectors.toList());
+        ).collect(Collectors.toList());
 
         paymentRepository.saveAllAndFlush(payments);
         for (Payment payment : payments) {
@@ -128,7 +128,7 @@ public class PaymentServiceImpl implements PaymentService {
         for (Payment payment : payments) {
             if (payment.getExpiredAt().before(currentTimestamp)) {
                 payment.setPaymentStatus(paymentStatus);
-                if (payment.getPaymentType().equalsIgnoreCase(EPaymentType.ORDER.name())){
+                if (payment.getPaymentType().equalsIgnoreCase(EPaymentType.ORDER.name())) {
                     OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.REJECTED);
                     payment.getOrder().setOrderStatus(orderStatus);
                 }
@@ -172,6 +172,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .order(order)
                 .build();
     }
+
     @Override
     @Transactional(readOnly = true)
     public List<PaymentResponse> findByAccountId(SearchPaymentRequest request) {
@@ -185,6 +186,12 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment.getFriend() != null)
             friendID = payment.getFriend().getFriendID();
 
+        byte[] friendImage;
+        if (!payment.getFriend().getUser1().equals(payment.getUser()))
+            friendImage = payment.getFriend().getUser1().getProfilePhoto();
+        else
+            friendImage = payment.getFriend().getUser2().getProfilePhoto();
+
         return PaymentResponse.builder()
                 .paymentID(payment.getPaymentID())
                 .paymentAmount(payment.getPaymentAmount())
@@ -195,6 +202,8 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentStatus(payment.getPaymentStatus().getStatus().name())
                 .historyID(payment.getHistory().getHistoryID())
                 .friendID(friendID)
+                .friendImage(friendImage)
+                .accountImage(payment.getUser().getProfilePhoto())
                 .orderID(payment.getOrder().getOrderID())
                 .createdAt(payment.getCreatedAt())
                 .updatedAt(payment.getUpdatedAt())
