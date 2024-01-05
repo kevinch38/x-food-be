@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -148,7 +150,7 @@ public class UserController {
             @RequestParam String phoneNumber,
             @RequestParam String firstName,
             @RequestParam String lastName,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate dateOfBirth,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String dateOfBirth,
             @RequestParam MultipartFile profilePhoto) {
         UpdateUserRequest request = UpdateUserRequest.builder()
                 .accountID(accountID)
@@ -157,7 +159,7 @@ public class UserController {
                 .phoneNumber(phoneNumber)
                 .firstName(firstName)
                 .lastName(lastName)
-                .dateOfBirth(dateOfBirth)
+                .dateOfBirth(LocalDate.parse(dateOfBirth, DateTimeFormatter.ISO_DATE_TIME))
                 .profilePhoto(profilePhoto)
                 .build();
         UserResponse userResponse = userService.update(request);
