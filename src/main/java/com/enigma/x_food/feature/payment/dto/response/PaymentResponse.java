@@ -23,7 +23,6 @@ public class PaymentResponse {
     private String historyID;
     private String friendID;
     private byte[] friendImage;
-    private byte[] accountImage;
     private String orderID;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;

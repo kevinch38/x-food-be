@@ -203,7 +203,6 @@ public class PaymentServiceImpl implements PaymentService {
                 .historyID(payment.getHistory().getHistoryID())
                 .friendID(friendID)
                 .friendImage(friendImage)
-                .accountImage(payment.getUser().getProfilePhoto())
                 .orderID(payment.getOrder().getOrderID())
                 .createdAt(payment.getCreatedAt())
                 .updatedAt(payment.getUpdatedAt())
