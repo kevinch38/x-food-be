@@ -8,20 +8,19 @@ import com.enigma.x_food.feature.balance.dto.request.NewBalanceRequest;
 import com.enigma.x_food.feature.loyalty_point.LoyaltyPoint;
 import com.enigma.x_food.feature.loyalty_point.LoyaltyPointService;
 import com.enigma.x_food.feature.loyalty_point.dto.request.NewLoyaltyPointRequest;
+import com.enigma.x_food.feature.loyalty_point.dto.response.LoyaltyPointResponse;
 import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.otp.OTPService;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.pin.PinService;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
-import com.enigma.x_food.feature.user.dto.request.UpdateUserProfilePhotoRequest;
 import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
 import com.enigma.x_food.feature.voucher.Voucher;
 import com.enigma.x_food.feature.voucher.dto.response.VoucherResponse;
 import com.enigma.x_food.security.BCryptUtil;
-import com.enigma.x_food.security.JwtUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +57,6 @@ public class UserServiceImpl implements UserService {
     private final ValidationUtil validationUtil;
     private final Random random;
     private final BCryptUtil bCryptUtil;
-    private final JwtUtil jwtUtil;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -197,7 +195,7 @@ public class UserServiceImpl implements UserService {
 
 
     private UserResponse mapToResponse(User user) {
-        List<VoucherResponse> voucherResponses = null;
+        List<VoucherResponse> voucherResponses;
         List<Voucher> vouchers;
         if (user.getVouchers() != null) {
             vouchers = user.getVouchers().stream().filter(voucher -> voucher.getVoucherStatus().getStatus() == EVoucherStatus.ACTIVE
@@ -207,6 +205,7 @@ public class UserServiceImpl implements UserService {
         else {
             voucherResponses=List.of();
         }
+        LoyaltyPointResponse loyaltyPointResponse = loyaltyPointService.findById(user.getLoyaltyPoint().getLoyaltyPointID());
 
         return UserResponse.builder()
                 .accountID(user.getAccountID())
@@ -221,7 +220,7 @@ public class UserServiceImpl implements UserService {
                 .profilePhoto(user.getProfilePhoto())
                 .updatedAt(user.getUpdatedAt())
                 .balanceID(user.getBalance().getBalanceID())
-                .loyaltyPointID(user.getLoyaltyPoint().getLoyaltyPointID())
+                .loyaltyPoint(loyaltyPointResponse)
                 .otpID(user.getOtp().getOtpID())
                 .vouchers(voucherResponses)
                 .role(ERole.USER.name())
