@@ -9,6 +9,7 @@ import com.enigma.x_food.util.PagingUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,8 +33,8 @@ public class HistoryController {
             @RequestParam(required = false, defaultValue = "historyID") String sortBy,
             @RequestParam(required = false) String accountID,
             @RequestParam(required = false) String transactionType,
-            @RequestParam(required = false) LocalDate startTransactionDate,
-            @RequestParam(required = false) LocalDate endTransactionDate
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startTransactionDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endTransactionDate
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
