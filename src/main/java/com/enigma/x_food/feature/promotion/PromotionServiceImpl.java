@@ -250,9 +250,9 @@ public class PromotionServiceImpl implements PromotionService {
             }
 
             if (request.getPromotionStatus() != null) {
-                Predicate predicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("promotionStatus").get("status")),
-                        "%" + request.getPromotionStatus().toLowerCase() + "%"
+                Predicate predicate = criteriaBuilder.equal(
+                        root.get("promotionStatus").get("status"),
+                        EPromotionStatus.ACTIVE
                 );
                 predicates.add(predicate);
             }

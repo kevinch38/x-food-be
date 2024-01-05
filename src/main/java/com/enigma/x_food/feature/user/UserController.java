@@ -115,6 +115,7 @@ public class UserController {
     @PreAuthorize("permitAll")
     @GetMapping(value = "/{phoneNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {
+
         UserResponse userResponse = userService.getUserByPhoneNumber(phoneNumber);
         if (userResponse != null){
             CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
