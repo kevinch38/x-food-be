@@ -138,7 +138,7 @@ public class UserController {
     }
 
     @PreAuthorize("permitAll")
-    @PutMapping
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(@RequestBody UpdateUserRequest request) {
         UserResponse userResponse = userService.update(request);
         CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
