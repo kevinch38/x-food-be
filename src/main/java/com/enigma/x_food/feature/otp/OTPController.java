@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.otp;
 
 import com.enigma.x_food.feature.otp.dto.request.CheckOTPRequest;
+import com.enigma.x_food.feature.otp.dto.response.OTPTokenResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,8 @@ public class OTPController {
     private final OTPService otpService;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> checkOtp(@RequestBody CheckOTPRequest request) {
-        Boolean isTrue = otpService.checkOtp(request);
-        CommonResponse<Boolean> response = CommonResponse.<Boolean>builder()
+        OTPTokenResponse isTrue = otpService.checkOtp(request);
+        CommonResponse<OTPTokenResponse> response = CommonResponse.<OTPTokenResponse>builder()
                 .message("successfully check otp")
                 .statusCode(HttpStatus.OK.value())
                 .data(isTrue)

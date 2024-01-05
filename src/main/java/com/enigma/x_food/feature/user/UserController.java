@@ -132,28 +132,28 @@ public class UserController {
 
     }
 
-    @GetMapping(value = "/{phoneNumber}/token", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {
-        UserResponse userResponse = userService.getUserByPhoneNumber(phoneNumber);
-        if (userResponse != null){
-            CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-                    .message("successfully get user")
-                    .statusCode(HttpStatus.OK.value())
-                    .data(userResponse)
-                    .build();
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(response);
-        }
-        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-                .message("user not found")
-                .statusCode(HttpStatus.OK.value())
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-
-    }
+//    @GetMapping(value = "/{phoneNumber}/token", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {
+//        UserResponse userResponse = userService.getUserByPhoneNumber(phoneNumber);
+//        if (userResponse != null){
+//            CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+//                    .message("successfully get user")
+//                    .statusCode(HttpStatus.OK.value())
+//                    .data(userResponse)
+//                    .build();
+//            return ResponseEntity
+//                    .status(HttpStatus.OK)
+//                    .body(response);
+//        }
+//        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+//                .message("user not found")
+//                .statusCode(HttpStatus.OK.value())
+//                .build();
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(response);
+//
+//    }
 
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdateUserRequest request) {

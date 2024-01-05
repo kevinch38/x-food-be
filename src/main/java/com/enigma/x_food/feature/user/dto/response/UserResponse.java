@@ -27,7 +27,6 @@ public class UserResponse {
     private String lastName;
     private String dateOfBirth;
     private String role;
-    private String token;
     private byte[] profilePhoto;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;

@@ -2,7 +2,9 @@ package com.enigma.x_food.feature.otp;
 
 import com.enigma.x_food.feature.otp.dto.request.CheckOTPRequest;
 import com.enigma.x_food.feature.otp.dto.response.OTPResponse;
+import com.enigma.x_food.feature.otp.dto.response.OTPTokenResponse;
 import com.enigma.x_food.security.BCryptUtil;
+import com.enigma.x_food.security.JwtUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ public class OTPServiceImpl implements OTPService {
     private final OTPRepository otpRepository;
     private final BCryptUtil bCryptUtil;
     private final ValidationUtil validationUtil;
+    private final JwtUtil jwtUtil;
     @Transactional(rollbackFor = Exception.class)
     @Override
     public OTP createNew(String newOtp) {
@@ -39,17 +42,26 @@ public class OTPServiceImpl implements OTPService {
 
     @Transactional(readOnly = true)
     @Override
-    public Boolean checkOtp(CheckOTPRequest request) {
+    public OTPTokenResponse checkOtp(CheckOTPRequest request) {
         validationUtil.validate(request);
 
         OTP otp = findByIdOrThrowException(request.getOtpID());
 
-        return bCryptUtil.check(request.getEnteredOtp(), otp.getOtp());
+        if(bCryptUtil.check(request.getEnteredOtp(), otp.getOtp())){
+            String token = jwtUtil.generateTokenUser(otp.getUser());
+            return OTPTokenResponse.builder()
+                    .check(true)
+                    .token(token)
+                    .build();
+        }
+        return OTPTokenResponse.builder()
+                .check(false)
+                .build();
     }
     @Override
     @Transactional(readOnly = true)
     public OTPResponse findById(String id) {
-        return mapToResponse(findByIdOrThrowException(id));
+        return mapToResponse(findByIdOrThrowException(id),null);
     }
 
     private OTP findByIdOrThrowException(String id) {
@@ -57,12 +69,13 @@ public class OTPServiceImpl implements OTPService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "OTP not found"));
     }
 
-    private OTPResponse mapToResponse(OTP otp) {
+    private OTPResponse mapToResponse(OTP otp,String token) {
         return OTPResponse.builder()
                 .otpID(otp.getOtpID())
                 .otp(otp.getOtp())
                 .createdAt(otp.getCreatedAt())
                 .updatedAt(otp.getUpdatedAt())
+                .token(token)
                 .build();
     }
 }
