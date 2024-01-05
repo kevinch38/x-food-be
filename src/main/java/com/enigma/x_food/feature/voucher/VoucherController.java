@@ -8,11 +8,13 @@ import com.enigma.x_food.feature.voucher.dto.request.UpdateVoucherRequest;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.shared.PagingResponse;
 import com.enigma.x_food.util.PagingUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vouchers")
 @RequiredArgsConstructor
+@PreAuthorize("permitAll")
+@SecurityRequirement(name = "Bearer Authentication")
 public class VoucherController {
     private final VoucherService voucherService;
 
@@ -100,19 +104,6 @@ public class VoucherController {
         VoucherResponse voucherResponse = voucherService.findById(id);
         CommonResponse<VoucherResponse> response = CommonResponse.<VoucherResponse>builder()
                 .message("successfully get voucher")
-                .statusCode(HttpStatus.OK.value())
-                .data(voucherResponse)
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
-
-    @PutMapping
-    public ResponseEntity<?> update(@RequestBody UpdateVoucherRequest request) {
-        VoucherResponse voucherResponse = voucherService.update(request);
-        CommonResponse<VoucherResponse> response = CommonResponse.<VoucherResponse>builder()
-                .message("successfully update voucher")
                 .statusCode(HttpStatus.OK.value())
                 .data(voucherResponse)
                 .build();

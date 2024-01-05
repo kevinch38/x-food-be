@@ -17,7 +17,7 @@ public interface VoucherService {
     Voucher getVoucherById(String id);
     List<Voucher> getVoucherByPromotion(Promotion promotion);
     List<VoucherResponse> getVoucherByPromotionId(SearchVoucherPromotionRequest request);
-    VoucherResponse update(UpdateVoucherRequest request);
+//    VoucherResponse update(UpdateVoucherRequest request);
     void deleteById(String id);
 
 

@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +30,7 @@ import java.util.List;
 public class MerchantBranchController {
     private final MerchantBranchService merchantBranchService;
 
+    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF','SUPER_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(
             @RequestParam String merchantID,
@@ -70,6 +72,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF','SUPER_ADMIN', 'PARTNERSHIP_HEAD', 'MARKETING_STAFF')")
     @GetMapping
     public ResponseEntity<?> findAll(@RequestParam String merchantID,
                                      @RequestParam(required = false, defaultValue = "asc") String direction,
@@ -113,6 +116,7 @@ public class MerchantBranchController {
 
     }
 
+    @PreAuthorize("permitAll")
     @GetMapping("/active")
     public ResponseEntity<?> findAllActive(@RequestParam String merchantID,
                                            @RequestParam(required = false, defaultValue = "asc") String direction,
@@ -158,6 +162,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'PARTNERSHIP_HEAD')")
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(
             @RequestParam String branchID,
@@ -195,6 +200,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF')")
     @DeleteMapping("/{branchID}")
     public ResponseEntity<?> delete(@PathVariable String branchID) throws AuthenticationException {
         merchantBranchService.deleteById(branchID);

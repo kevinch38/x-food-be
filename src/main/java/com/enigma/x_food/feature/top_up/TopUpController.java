@@ -4,10 +4,12 @@ import com.enigma.x_food.feature.top_up.dto.request.SearchTopUpRequest;
 import com.enigma.x_food.feature.top_up.dto.request.TopUpRequest;
 import com.enigma.x_food.feature.top_up.dto.response.TopUpResponse;
 import com.enigma.x_food.shared.CommonResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,9 +17,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/top-up")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
 public class TopUpController {
     private final TopUpService topUpService;
 
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(@RequestBody TopUpRequest request) {
         TopUpResponse topUpResponse = topUpService.createNew(request);
@@ -31,6 +35,7 @@ public class TopUpController {
                 .body(response);
     }
 
+    @PreAuthorize("permitAll")
     @GetMapping
     public ResponseEntity<?> getAll(@RequestParam String accountID) {
         SearchTopUpRequest request = SearchTopUpRequest.builder()

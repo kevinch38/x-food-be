@@ -1,11 +1,11 @@
-package com.enigma.x_food.feature.order_item;
+package com.enigma.x_food.feature.otp.dto.order_item;
 
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.item.ItemService;
 import com.enigma.x_food.feature.order.dto.request.OrderSubVarietyRequest;
-import com.enigma.x_food.feature.order_item.dto.request.OrderItemRequest;
-import com.enigma.x_food.feature.order_item.dto.request.SearchOrderItemRequest;
-import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
+import com.enigma.x_food.feature.otp.dto.order_item.dto.request.OrderItemRequest;
+import com.enigma.x_food.feature.otp.dto.order_item.dto.request.SearchOrderItemRequest;
+import com.enigma.x_food.feature.otp.dto.order_item.dto.response.OrderItemResponse;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVarietyService;
 import com.enigma.x_food.feature.order_item_sub_variety.dto.request.OrderItemSubVarietyRequest;

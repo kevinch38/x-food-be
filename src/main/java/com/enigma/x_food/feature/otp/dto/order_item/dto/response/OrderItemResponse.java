@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.order_item.dto.response;
+package com.enigma.x_food.feature.otp.dto.order_item.dto.response;
 
 import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;

@@ -147,18 +147,6 @@ public class UserServiceImpl implements UserService {
         log.info("End getOneById");
         return byPhoneNumber.map(this::mapToResponse).orElse(null);
     }
-//    @Override
-//    public UserResponse getUserByPhoneNumber(String phoneNumber) {
-//        log.info("Start getOneByPhoneNumber");
-//        Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
-//        String token = null;
-//        if (byPhoneNumber.isPresent()) {
-//            token = jwtUtil.generateTokenUser(byPhoneNumber.get());
-//        }
-//        log.info("End getOneById");
-//        String finalToken = token;
-//        return byPhoneNumber.map(user -> mapToResponse(user, finalToken)).orElse(null);
-//    }
 
     @Override
     public User getUserByPhoneNumber2(String phoneNumber) {

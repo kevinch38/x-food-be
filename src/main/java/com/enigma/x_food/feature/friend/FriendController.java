@@ -4,10 +4,12 @@ import com.enigma.x_food.feature.friend.dto.request.FriendRequest;
 import com.enigma.x_food.feature.friend.dto.request.SearchFriendRequest;
 import com.enigma.x_food.feature.friend.dto.response.FriendResponse;
 import com.enigma.x_food.shared.CommonResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/friends")
 @RequiredArgsConstructor
+@PreAuthorize("permitAll")
+@SecurityRequirement(name = "Bearer Authentication")
 public class FriendController {
     private final FriendService friendService;
 

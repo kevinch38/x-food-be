@@ -7,7 +7,7 @@ import com.enigma.x_food.feature.history.dto.request.SearchHistoryRequest;
 import com.enigma.x_food.feature.history.dto.response.HistoryResponse;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
-import com.enigma.x_food.feature.order_item.OrderItem;
+import com.enigma.x_food.feature.otp.dto.order_item.OrderItem;
 import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.payment.dto.response.PaymentResponse;
 import com.enigma.x_food.feature.top_up.TopUp;

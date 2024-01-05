@@ -4,15 +4,19 @@ import com.enigma.x_food.feature.pin.dto.request.CheckPinRequest;
 import com.enigma.x_food.feature.pin.dto.request.UpdatePinRequest;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.feature.pin.dto.response.PinResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/pins")
 @RequiredArgsConstructor
+@PreAuthorize("permitAll")
+@SecurityRequirement(name = "Bearer Authentication")
 public class PinController {
     private final PinService pinService;
 

@@ -6,10 +6,12 @@ import com.enigma.x_food.feature.history.dto.response.HistoryResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.shared.PagingResponse;
 import com.enigma.x_food.util.PagingUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,9 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/histories")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
 public class HistoryController {
     private final HistoryService historyService;
-
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,
@@ -67,7 +70,7 @@ public class HistoryController {
                 .body(response);
 
     }
-
+    @PreAuthorize("permitAll")
     @GetMapping("/{accountID}")
     public ResponseEntity<?> getAllByAccountID(
             @RequestParam(required = false, defaultValue = "asc") String direction,
