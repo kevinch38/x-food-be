@@ -8,6 +8,7 @@ import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.shared.PagingResponse;
 import com.enigma.x_food.util.PagingUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,9 +25,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/promotions")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
 public class PromotionController {
     private final PromotionService promotionService;
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_STAFF')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(@RequestBody NewPromotionRequest request) throws AuthenticationException {
         PromotionResponse promotionResponse = promotionService.createNew(request);
@@ -39,6 +43,7 @@ public class PromotionController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_STAFF', 'PARTNERSHIP_STAFF', 'MARKETING_HEAD')")
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,
@@ -96,6 +101,7 @@ public class PromotionController {
                 .body(response);
     }
 
+    @PreAuthorize("permitAll")
     @GetMapping("active")
     public ResponseEntity<?> getAllActive(
             @RequestParam(required = false, defaultValue = "asc") String direction,
@@ -122,6 +128,7 @@ public class PromotionController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_HEAD')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) throws AuthenticationException {
         PromotionResponse promotionResponse = promotionService.update(request);
@@ -135,6 +142,7 @@ public class PromotionController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_STAFF', 'MARKETING_HEAD')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable String id) {
         PromotionResponse promotionResponse = promotionService.findById(id);
@@ -148,6 +156,7 @@ public class PromotionController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) throws AuthenticationException {
         promotionService.deleteById(id);

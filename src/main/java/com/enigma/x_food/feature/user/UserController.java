@@ -23,9 +23,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
 public class UserController {
     private final UserService userService;
 
+    @PreAuthorize("permitAll")
     @PostMapping(path = "/register",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(@RequestBody NewUserRequest request) {
         UserResponse userResponse = userService.createNew(request);
@@ -39,6 +41,7 @@ public class UserController {
                 .body(response);
     }
 
+    @PreAuthorize("permitAll")
     @PutMapping(path = "/profile/photo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateProfilePhoto(
             @RequestParam String accountID,
@@ -109,8 +112,10 @@ public class UserController {
                 .body(response);
     }
 
+    @PreAuthorize("permitAll")
     @GetMapping(value = "/{phoneNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getByPhoneNumberNoToken(@PathVariable String phoneNumber) {
+    public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {
+
         UserResponse userResponse = userService.getUserByPhoneNumber(phoneNumber);
         if (userResponse != null){
             CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
@@ -132,29 +137,7 @@ public class UserController {
 
     }
 
-//    @GetMapping(value = "/{phoneNumber}/token", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {
-//        UserResponse userResponse = userService.getUserByPhoneNumber(phoneNumber);
-//        if (userResponse != null){
-//            CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-//                    .message("successfully get user")
-//                    .statusCode(HttpStatus.OK.value())
-//                    .data(userResponse)
-//                    .build();
-//            return ResponseEntity
-//                    .status(HttpStatus.OK)
-//                    .body(response);
-//        }
-//        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-//                .message("user not found")
-//                .statusCode(HttpStatus.OK.value())
-//                .build();
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(response);
-//
-//    }
-
+    @PreAuthorize("permitAll")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdateUserRequest request) {
         UserResponse userResponse = userService.update(request);

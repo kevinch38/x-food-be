@@ -5,10 +5,12 @@ import com.enigma.x_food.feature.item.dto.request.SearchItemRequest;
 import com.enigma.x_food.feature.item.dto.response.ItemResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.util.PagingUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +20,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/items")
 @RequiredArgsConstructor
-    public class ItemController {
+@SecurityRequirement(name = "Bearer Authentication")
+public class ItemController {
     private final ItemService itemService;
 
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(
             @RequestParam String itemName,
@@ -58,10 +62,11 @@ import java.util.List;
                 .body(response);
     }
 
+    @PreAuthorize("permitAll")
     @GetMapping
     public ResponseEntity<?> getAll(@RequestParam String branchID,
-            @RequestParam(required = false, defaultValue = "asc") String direction,
-            @RequestParam(required = false, defaultValue = "itemName") String sortBy) {
+                                    @RequestParam(required = false, defaultValue = "asc") String direction,
+                                    @RequestParam(required = false, defaultValue = "itemName") String sortBy) {
         direction = PagingUtil.validateDirection(direction);
 
         SearchItemRequest request = SearchItemRequest.builder()

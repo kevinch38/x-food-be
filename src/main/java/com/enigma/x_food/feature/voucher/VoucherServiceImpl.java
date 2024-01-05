@@ -162,22 +162,22 @@ public class VoucherServiceImpl implements VoucherService {
         return getByPromotionId(request.getPromotionID(), request.getAccountID());
     }
 
-    @Override
-    public VoucherResponse update(UpdateVoucherRequest request) {
-        try {
-            log.info("Start update");
-            validationUtil.validate(request);
-            Voucher voucher = findByIdOrThrowNotFound(request.getVoucherID());
-            voucher.setVoucherCode(request.getVoucherCode());
-            voucher.setVoucherValue(request.getVoucherValue());
-            voucherRepository.saveAndFlush(voucher);
-            log.info("End update");
-            return mapToResponse(voucher);
-        } catch (DataIntegrityViolationException e) {
-            log.error("Error update: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        }
-    }
+//    @Override
+//    public VoucherResponse update(UpdateVoucherRequest request) {
+//        try {
+//            log.info("Start update");
+//            validationUtil.validate(request);
+//            Voucher voucher = findByIdOrThrowNotFound(request.getVoucherID());
+//            voucher.setVoucherCode(request.getVoucherCode());
+//            voucher.setVoucherValue(request.getVoucherValue());
+//            voucherRepository.saveAndFlush(voucher);
+//            log.info("End update");
+//            return mapToResponse(voucher);
+//        } catch (DataIntegrityViolationException e) {
+//            log.error("Error update: {}", e.getMessage());
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+//        }
+//    }
 
     @Override
     public void deleteById(String id) {

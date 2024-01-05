@@ -1,4 +1,4 @@
-package com.enigma.x_food.feature.order_item;
+package com.enigma.x_food.feature.otp.dto.order_item;
 
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.order.Order;
