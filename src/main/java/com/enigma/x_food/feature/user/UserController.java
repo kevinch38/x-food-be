@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import com.enigma.x_food.util.PagingUtil;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -139,7 +141,25 @@ public class UserController {
 
     @PreAuthorize("permitAll")
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> update(@RequestBody UpdateUserRequest request) {
+    public ResponseEntity<?> update(
+            @RequestParam String accountID,
+            @RequestParam String ktpID,
+            @RequestParam String accountEmail,
+            @RequestParam String phoneNumber,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam LocalDate dateOfBirth,
+            @RequestParam MultipartFile profilePhoto) {
+        UpdateUserRequest request = UpdateUserRequest.builder()
+                .accountID(accountID)
+                .ktpID(ktpID)
+                .accountEmail(accountEmail)
+                .phoneNumber(phoneNumber)
+                .firstName(firstName)
+                .lastName(lastName)
+                .dateOfBirth(dateOfBirth)
+                .profilePhoto(profilePhoto)
+                .build();
         UserResponse userResponse = userService.update(request);
         CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                 .message("successfully update user")
