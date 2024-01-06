@@ -85,28 +85,8 @@ public class OrderServiceImpl implements OrderService {
                 .orderStatus(orderStatus)
                 .merchantBranch(merchantBranch)
                 .isSplit(false)
+                .orderValue(0d)
                 .build();
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (OrderItemRequest orderItem : request.getOrderItems()) {
-            Item item = itemService.findById(orderItem.getItemID());
-            price += item.getDiscountedPrice() * orderItem.getQuantity();
-            if (orderItem.getSubVarieties() != null){
-            for (OrderSubVarietyRequest subVariety : orderItem.getSubVarieties()) {
-                SubVariety subVarietyServiceById = subVarietyService.getById(subVariety.getSubVarietyID());
-                price += subVarietyServiceById.getSubVarPrice();
-            }}
-
-            OrderItemRequest orderItemRequest = OrderItemRequest.builder()
-                    .itemID(orderItem.getItemID())
-                    .quantity(orderItem.getQuantity())
-                    .subVarieties(orderItem.getSubVarieties())
-                    .build();
-            OrderItem newOrderItem = orderItemService.createNew(orderItemRequest);
-
-            orderItems.add(newOrderItem);
-            newOrderItem.setOrder(order);
-        }
 
         HistoryRequest historyRequest = HistoryRequest.builder()
                 .transactionType(ETransactionType.ORDER.name())
@@ -120,11 +100,39 @@ public class OrderServiceImpl implements OrderService {
         History history = historyService.createNew(historyRequest);
 
         order.setHistory(history);
+        orderRepository.save(order);
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (OrderItemRequest orderItem : request.getOrderItems()) {
+            Item item = itemService.findById(orderItem.getItemID());
+
+            if (item.getItemStock() <= 0)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
+            if (orderItem.getQuantity() > item.getItemStock())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is not enough");
+
+            price += item.getDiscountedPrice() * orderItem.getQuantity();
+            if (orderItem.getSubVarieties() != null) {
+                for (OrderSubVarietyRequest subVariety : orderItem.getSubVarieties()) {
+                    SubVariety subVarietyServiceById = subVarietyService.getById(subVariety.getSubVarietyID());
+                    price += subVarietyServiceById.getSubVarPrice();
+                }
+            }
+
+            OrderItemRequest orderItemRequest = OrderItemRequest.builder()
+                    .itemID(orderItem.getItemID())
+                    .quantity(orderItem.getQuantity())
+                    .subVarieties(orderItem.getSubVarieties())
+                    .build();
+            OrderItem newOrderItem = orderItemService.createNew(orderItemRequest);
+
+            orderItems.add(newOrderItem);
+            newOrderItem.setOrder(order);
+        }
+
         order.setOrderValue(price);
         order.setOrderItems(orderItems);
         history.setOrder(order);
-
-        orderRepository.saveAndFlush(order);
 
         PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
 
@@ -171,10 +179,10 @@ public class OrderServiceImpl implements OrderService {
             for (OrderItemSubVariety orderItemSubVariety : orderItem.getOrderItemSubVarieties()) {
                 SubVariety subVariety = subVarietyService.getById(orderItemSubVariety.getSubVariety().getSubVarietyID());
 
-                if (subVariety.getSubVarStock()<=0)
+                if (subVariety.getSubVarStock() <= 0)
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
 
-                subVariety.setSubVarStock(subVariety.getSubVarStock()-1);
+                subVariety.setSubVarStock(subVariety.getSubVarStock() - 1);
             }
         }
 
@@ -224,7 +232,7 @@ public class OrderServiceImpl implements OrderService {
                 .image(order.getMerchantBranch().getImage())
                 .quantity(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
                 .isSplit(order.getIsSplit())
-                .pointAmount((int) (order.getOrderValue()/10000))
+                .pointAmount((int) (order.getOrderValue() / 10000))
                 .orderItems(orderItemResponses)
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
