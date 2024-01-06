@@ -45,26 +45,26 @@ public class UserController {
                 .body(response);
     }
 
-//    @PreAuthorize("permitAll")
-//    @PutMapping(path = "/profile/photo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<?> updateProfilePhoto(
-//            @RequestParam String accountID,
-//            @RequestParam MultipartFile profilePhoto
-//    ) {
-//        UpdateUserProfilePhotoRequest request = UpdateUserProfilePhotoRequest.builder()
-//                .accountID(accountID)
-//                .profilePhoto(profilePhoto)
-//                .build();
-//        UserResponse userResponse = userService.updateProfilePhoto(request);
-//        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
-//                .message("successfully update user profile photo")
-//                .statusCode(HttpStatus.OK.value())
-//                .data(userResponse)
-//                .build();
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(response);
-//    }
+    @PreAuthorize("permitAll")
+    @PutMapping(path = "/profile/photo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateProfilePhoto(
+            @RequestParam String accountID,
+            @RequestParam MultipartFile profilePhoto
+    ) {
+        UpdateUserProfilePhotoRequest request = UpdateUserProfilePhotoRequest.builder()
+                .accountID(accountID)
+                .profilePhoto(profilePhoto)
+                .build();
+        UserResponse userResponse = userService.updateProfilePhoto(request);
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+                .message("successfully update user profile photo")
+                .statusCode(HttpStatus.OK.value())
+                .data(userResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_STAFF')")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -142,26 +142,29 @@ public class UserController {
     }
 
     @PreAuthorize("permitAll")
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(
-            @RequestParam String accountID,
-            @RequestParam String ktpID,
-            @RequestParam String accountEmail,
-            @RequestParam String phoneNumber,
-            @RequestParam String firstName,
-            @RequestParam String lastName,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String dateOfBirth,
-            @RequestParam MultipartFile profilePhoto) {
-        UpdateUserRequest request = UpdateUserRequest.builder()
-                .accountID(accountID)
-                .ktpID(ktpID)
-                .accountEmail(accountEmail)
-                .phoneNumber(phoneNumber)
-                .firstName(firstName)
-                .lastName(lastName)
-                .dateOfBirth(LocalDate.parse(dateOfBirth, DateTimeFormatter.ISO_DATE_TIME))
-                .profilePhoto(profilePhoto)
-                .build();
+            @RequestBody UpdateUserRequest request
+//            @RequestParam String accountID,
+//            @RequestParam String ktpID,
+//            @RequestParam String accountEmail,
+//            @RequestParam String phoneNumber,
+//            @RequestParam String firstName,
+//            @RequestParam String lastName,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String dateOfBirth,
+//            @RequestParam MultipartFile profilePhoto
+            )
+    {
+//        UpdateUserRequest request = UpdateUserRequest.builder()
+//                .accountID(accountID)
+//                .ktpID(ktpID)
+//                .accountEmail(accountEmail)
+//                .phoneNumber(phoneNumber)
+//                .firstName(firstName)
+//                .lastName(lastName)
+//                .dateOfBirth(LocalDate.parse(dateOfBirth, DateTimeFormatter.ISO_DATE_TIME))
+//                .profilePhoto(profilePhoto)
+//                .build();
         UserResponse userResponse = userService.update(request);
         CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                 .message("successfully update user")
