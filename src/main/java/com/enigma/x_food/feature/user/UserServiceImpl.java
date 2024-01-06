@@ -156,6 +156,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponse getUserByKtpID(String ktpID) {
+        log.info("Start getOneByKtpID");
+        Optional<User> user = userRepository.findByKtpID(ktpID);
+        log.info("End getOneById");
+        return user.map(this::mapToResponse).orElse(null);
+    }
+
+    @Override
     public UserResponse update(UpdateUserRequest request) {
         try {
             log.info("Start update");

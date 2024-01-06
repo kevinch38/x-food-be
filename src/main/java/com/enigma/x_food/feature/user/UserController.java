@@ -138,6 +138,32 @@ public class UserController {
     }
 
     @PreAuthorize("permitAll")
+    @GetMapping(value = "/ktp/{ktpID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getByKtpID(@PathVariable String ktpID) {
+
+        UserResponse userResponse = userService.getUserByKtpID(ktpID);
+        if (userResponse != null){
+            CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+                    .message("successfully get user")
+                    .statusCode(HttpStatus.OK.value())
+                    .data(userResponse)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+        }
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+                .message("user not found")
+                .statusCode(HttpStatus.OK.value())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+
+    }
+
+
+    @PreAuthorize("permitAll")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(
             @RequestBody UpdateUserRequest request

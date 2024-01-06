@@ -15,6 +15,7 @@ public interface UserService {
 //    UserResponse getUserByPhoneNumberNoToken(String phoneNumber);
     UserResponse getUserByPhoneNumber(String phoneNumber);
     User getUserByPhoneNumber2(String phoneNumber);
+    UserResponse getUserByKtpID(String ktpID);
     UserResponse update(UpdateUserRequest request);
     UserResponse updateProfilePhoto(UpdateUserProfilePhotoRequest request);
 
