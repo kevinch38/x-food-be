@@ -10,6 +10,7 @@ import java.util.List;
 public interface OrderService {
     OrderResponse createNew(NewOrderRequest request);
     List<OrderResponse> findByAccountId(SearchOrderRequest request);
-    Order findById(String id);
+    Order getById(String id);
+    OrderResponse findById(String id);
     OrderResponse complete(UpdateOrderRequest request);
 }

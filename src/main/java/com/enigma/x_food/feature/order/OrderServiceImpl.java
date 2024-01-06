@@ -12,19 +12,26 @@ import com.enigma.x_food.feature.item.ItemService;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranchService;
 import com.enigma.x_food.feature.order.dto.request.NewOrderRequest;
+import com.enigma.x_food.feature.order.dto.request.OrderSubVarietyRequest;
 import com.enigma.x_food.feature.order.dto.request.SearchOrderRequest;
 import com.enigma.x_food.feature.order.dto.request.UpdateOrderRequest;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
-import com.enigma.x_food.feature.otp.dto.order_item.OrderItem;
-import com.enigma.x_food.feature.otp.dto.order_item.OrderItemService;
-import com.enigma.x_food.feature.otp.dto.order_item.dto.request.OrderItemRequest;
+import com.enigma.x_food.feature.order_item.OrderItem;
+import com.enigma.x_food.feature.order_item.OrderItemService;
+import com.enigma.x_food.feature.order_item.dto.request.OrderItemRequest;
+import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
+import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
 import com.enigma.x_food.feature.order_status.OrderStatus;
 import com.enigma.x_food.feature.order_status.OrderStatusService;
+import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
 import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.payment.PaymentService;
 import com.enigma.x_food.feature.payment.dto.request.PaymentRequest;
 import com.enigma.x_food.feature.payment_status.PaymentStatus;
 import com.enigma.x_food.feature.payment_status.PaymentStatusService;
+import com.enigma.x_food.feature.sub_variety.SubVariety;
+import com.enigma.x_food.feature.sub_variety.SubVarietyService;
+import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.UserService;
 import com.enigma.x_food.util.ValidationUtil;
@@ -54,6 +61,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderStatusService orderStatusService;
     private final OrderItemService orderItemService;
     private final PaymentService paymentService;
+    private final SubVarietyService subVarietyService;
     private final PaymentStatusService paymentStatusService;
     private final ItemService itemService;
     private final UserService userService;
@@ -83,6 +91,11 @@ public class OrderServiceImpl implements OrderService {
         for (OrderItemRequest orderItem : request.getOrderItems()) {
             Item item = itemService.findById(orderItem.getItemID());
             price += item.getDiscountedPrice() * orderItem.getQuantity();
+            if (orderItem.getSubVarieties() != null){
+            for (OrderSubVarietyRequest subVariety : orderItem.getSubVarieties()) {
+                SubVariety subVarietyServiceById = subVarietyService.getById(subVariety.getSubVarietyID());
+                price += subVarietyServiceById.getSubVarPrice();
+            }}
 
             OrderItemRequest orderItemRequest = OrderItemRequest.builder()
                     .itemID(orderItem.getItemID())
@@ -133,16 +146,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse complete(UpdateOrderRequest request) {
         validationUtil.validate(request);
-        Order order = findById(request.getOrderID());
+        Order order = getById(request.getOrderID());
         User user = userService.getUserById(request.getAccountID());
 
         OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.DONE);
         order.setOrderStatus(orderStatus);
         for (OrderItem orderItem : order.getOrderItems()) {
             Item item = itemService.findById(order.getOrderID());
-            if (item.getItemStock()<=0)
+            if (item.getItemStock() <= 0)
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
-            if (orderItem.getQuantity()>item.getItemStock())
+            if (orderItem.getQuantity() > item.getItemStock())
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is not enough");
             item.setItemStock(item.getItemStock() - orderItem.getQuantity());
         }
@@ -153,6 +166,17 @@ public class OrderServiceImpl implements OrderService {
 
         user.getLoyaltyPoint().setLoyaltyPointAmount((int) (order.getOrderValue() / 10000));
         user.getBalance().setTotalBalance(user.getBalance().getTotalBalance() - order.getOrderValue());
+
+        for (OrderItem orderItem : order.getOrderItems()) {
+            for (OrderItemSubVariety orderItemSubVariety : orderItem.getOrderItemSubVarieties()) {
+                SubVariety subVariety = subVarietyService.getById(orderItemSubVariety.getSubVariety().getSubVarietyID());
+
+                if (subVariety.getSubVarStock()<=0)
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
+
+                subVariety.setSubVarStock(subVariety.getSubVarStock()-1);
+            }
+        }
 
         return mapToResponse(orderRepository.saveAndFlush(order));
     }
@@ -166,7 +190,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order findById(String id) {
+    public Order getById(String id) {
+        return findByIdOrThrowException(id);
+    }
+
+    @Override
+    public OrderResponse findById(String id) {
+        return mapToResponse(findByIdOrThrowException(id));
+    }
+
+    private Order findByIdOrThrowException(String id) {
         return orderRepository.findById(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found")
@@ -174,6 +207,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private OrderResponse mapToResponse(Order order) {
+        List<OrderItemResponse> orderItemResponses = order.getOrderItems().stream().map(
+                        o -> getOrderItemResponse(order, o))
+                .collect(Collectors.toList());
+
         return OrderResponse.builder()
                 .orderID(order.getOrderID())
                 .accountID(order.getUser().getAccountID())
@@ -185,10 +222,40 @@ public class OrderServiceImpl implements OrderService {
                 .branchID(order.getMerchantBranch().getBranchID())
                 .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
                 .image(order.getMerchantBranch().getImage())
-                .items(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
+                .quantity(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
                 .isSplit(order.getIsSplit())
+                .pointAmount((int) (order.getOrderValue()/10000))
+                .orderItems(orderItemResponses)
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
+                .build();
+    }
+
+    private static OrderItemResponse getOrderItemResponse(Order order, OrderItem o) {
+        List<OrderItemSubVarietyResponse> orderItemSubVarietyResponses = new ArrayList<>();
+        if (o.getOrderItemSubVarieties() != null) {
+            List<OrderItemSubVariety> orderItemSubVarieties = o.getOrderItemSubVarieties();
+            orderItemSubVarietyResponses = orderItemSubVarieties.stream().map(
+                            oisv -> OrderItemSubVarietyResponse.builder()
+                                    .orderItemSubVarietyID(oisv.getOrderItemSubVarietyID())
+                                    .subVariety(SubVarietyResponse.builder()
+                                            .subVarietyID(oisv.getSubVariety().getSubVarietyID())
+                                            .branchID(oisv.getSubVariety().getMerchantBranch().getBranchID())
+                                            .subVarName(oisv.getSubVariety().getSubVarName())
+                                            .subVarStock(oisv.getSubVariety().getSubVarStock())
+                                            .subVarPrice(oisv.getSubVariety().getSubVarPrice())
+                                            .build())
+                                    .build()
+                    )
+                    .collect(Collectors.toList());
+        }
+        return OrderItemResponse.builder()
+                .orderItemID(o.getOrderItemID())
+                .orderID(order.getOrderID())
+                .itemID(o.getItem().getItemID())
+                .orderItemSubVarieties(orderItemSubVarietyResponses)
+                .createdAt(o.getCreatedAt())
+                .updatedAt(o.getUpdatedAt())
                 .build();
     }
 

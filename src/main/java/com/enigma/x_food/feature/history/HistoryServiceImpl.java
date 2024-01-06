@@ -7,9 +7,13 @@ import com.enigma.x_food.feature.history.dto.request.SearchHistoryRequest;
 import com.enigma.x_food.feature.history.dto.response.HistoryResponse;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
-import com.enigma.x_food.feature.otp.dto.order_item.OrderItem;
+import com.enigma.x_food.feature.order_item.OrderItem;
+import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
+import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
+import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
 import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.payment.dto.response.PaymentResponse;
+import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import com.enigma.x_food.feature.top_up.TopUp;
 import com.enigma.x_food.feature.top_up.dto.response.TopUpResponse;
 import com.enigma.x_food.feature.user.User;
@@ -32,9 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -146,12 +148,15 @@ public class HistoryServiceImpl implements HistoryService {
                     .branchID(order.getMerchantBranch().getBranchID())
                     .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
                     .image(order.getMerchantBranch().getImage())
-                    .items(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
+                    .quantity(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
+                    .orderItems(order.getOrderItems().stream().map(
+                                    o -> getOrderItemResponse(order, o)
+                            ).collect(Collectors.toList()))
                     .isSplit(order.getIsSplit())
                     .createdAt(order.getCreatedAt())
                     .updatedAt(order.getUpdatedAt())
                     .build();
-        } else if (payment != null){
+        } else if (payment != null) {
             paymentResponse = PaymentResponse.builder()
                     .paymentID(payment.getPaymentID())
                     .accountID(payment.getUser().getAccountID())
@@ -179,6 +184,34 @@ public class HistoryServiceImpl implements HistoryService {
                 .accountID(history.getUser().getAccountID())
                 .createdAt(history.getCreatedAt())
                 .updatedAt(history.getUpdatedAt())
+                .build();
+    }
+
+    private static OrderItemResponse getOrderItemResponse(Order order, OrderItem o) {
+        List<OrderItemSubVarietyResponse> orderItemSubVarietyResponses = new ArrayList<>();
+        if (o.getOrderItemSubVarieties() == null) {
+            List<OrderItemSubVariety> orderItemSubVarieties = o.getOrderItemSubVarieties();
+            orderItemSubVarietyResponses = orderItemSubVarieties.stream().map(
+                            oisv -> OrderItemSubVarietyResponse.builder()
+                                    .orderItemSubVarietyID(oisv.getOrderItemSubVarietyID())
+                                    .subVariety(SubVarietyResponse.builder()
+                                            .subVarietyID(oisv.getSubVariety().getSubVarietyID())
+                                            .branchID(oisv.getSubVariety().getMerchantBranch().getBranchID())
+                                            .subVarName(oisv.getSubVariety().getSubVarName())
+                                            .subVarStock(oisv.getSubVariety().getSubVarStock())
+                                            .subVarPrice(oisv.getSubVariety().getSubVarPrice())
+                                            .build())
+                                    .build()
+                    )
+                    .collect(Collectors.toList());
+        }
+        return OrderItemResponse.builder()
+                .orderItemID(o.getOrderItemID())
+                .orderID(order.getOrderID())
+                .itemID(o.getItem().getItemID())
+                .orderItemSubVarieties(orderItemSubVarietyResponses)
+                .createdAt(o.getCreatedAt())
+                .updatedAt(o.getUpdatedAt())
                 .build();
     }
 
