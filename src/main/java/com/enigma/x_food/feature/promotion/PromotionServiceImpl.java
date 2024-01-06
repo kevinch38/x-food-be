@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.promotion;
 
 import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EPromotionStatus;
+import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
@@ -54,23 +55,20 @@ public class PromotionServiceImpl implements PromotionService {
     @Transactional(rollbackFor = Exception.class)
     public PromotionResponse createNew(NewPromotionRequest request) throws AuthenticationException {
         log.info("Start createNew");
-        validationUtil.validate(request);
-        Merchant merchant = merchantService.getById(request.getMerchantID());
-        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
         Admin admin;
-        Object a;
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            log.info(String.valueOf(authentication));
-            a = authentication.getCredentials();
-            log.info("a" + a);
-            a = authentication.getName();
-            log.info("c" + a);
             admin = (Admin) authentication.getPrincipal();
-            log.info(String.valueOf(admin));
         } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
+
+        validationUtil.validate(request);
+        Merchant merchant = merchantService.getById(request.getMerchantID());
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.WAITING_FOR_CREATION_APPROVAL);
+
+        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
+            promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
 
         Promotion promotion = Promotion.builder()
                 .merchant(merchant)
@@ -136,8 +134,21 @@ public class PromotionServiceImpl implements PromotionService {
     public PromotionResponse update(UpdatePromotionRequest request) throws AuthenticationException {
         validationUtil.validate(request);
         Promotion promotion = findByIdOrThrowException(request.getPromotionID());
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.WAITING_FOR_CREATION_APPROVAL);
+
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
+
+        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
+            promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
 
         Merchant merchant = merchantService.getById(request.getMerchantID());
+        promotion.setPromotionStatus(promotionStatus);
         promotion.setQuantity(request.getQuantity());
         promotion.setMerchant(merchant);
         promotion.setCost(request.getCost());
@@ -148,13 +159,6 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setExpiredDate(request.getExpiredDate());
         promotion.setNotes(request.getNotes());
 
-        Admin admin;
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            admin = (Admin) authentication.getPrincipal();
-        } catch (Exception e) {
-            throw new AuthenticationException("Not Authorized");
-        }
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_PROMOTION.name())
                 .admin(admin)
@@ -164,13 +168,31 @@ public class PromotionServiceImpl implements PromotionService {
         return mapToResponse(promotionRepository.saveAndFlush(promotion));
     }
 
+    @Override
+    public void deleteApprove(String id) {
+        updateStatus(id, EPromotionStatus.INACTIVE);
+    }
+
+    @Override
+    public void approveToActive(String id) {
+        updateStatus(id, EPromotionStatus.ACTIVE);
+    }
+
+    private void updateStatus(String id, EPromotionStatus inactive) {
+        Promotion promotion = findByIdOrThrowException(id);
+
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(inactive);
+        promotion.setPromotionStatus(promotionStatus);
+
+        promotionRepository.saveAndFlush(promotion);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteById(String id) throws AuthenticationException {
         validationUtil.validate(id);
         Promotion promotion = findByIdOrThrowException(id);
-        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.INACTIVE);
-        promotion.setPromotionStatus(promotionStatus);
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.WAITING_FOR_DELETION_APPROVAL);
 
         Admin admin;
         try {
@@ -179,6 +201,12 @@ public class PromotionServiceImpl implements PromotionService {
         } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
+
+        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
+            promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.INACTIVE);
+
+        promotion.setPromotionStatus(promotionStatus);
+
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.DELETE_PROMOTION.name())
                 .admin(admin)

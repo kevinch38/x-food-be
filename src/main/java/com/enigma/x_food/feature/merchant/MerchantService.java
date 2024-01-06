@@ -13,10 +13,12 @@ import java.util.List;
 
 public interface MerchantService {
     MerchantResponse createNew(NewMerchantRequest request) throws IOException, AuthenticationException;
+    void approveToActive(String id);
     MerchantResponse update(UpdateMerchantRequest request) throws IOException, AuthenticationException;
     MerchantResponse findById(String id);
     Merchant getById(String id);
     void deleteById(String id) throws AuthenticationException;
+    void deleteApprove(String id);
     List<MerchantResponse> getAllActive(SearchActiveMerchantRequest request);
     Page<MerchantResponse> getAll(SearchMerchantRequest request);
 

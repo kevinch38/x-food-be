@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.merchant_branch;
 
+import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.merchant.Merchant;
@@ -44,6 +45,9 @@ public class MerchantBranch extends BaseEntity {
     private String picNumber;
     @Column(name = "pic_email", nullable = false, length = 100)
     private String picEmail;
+    @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    private Admin admin;
     @Column(name = "join_date", nullable = false)
     private Timestamp joinDate;
     @Lob

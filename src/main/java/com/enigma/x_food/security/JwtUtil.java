@@ -10,18 +10,13 @@ import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin.AdminService;
 import com.enigma.x_food.feature.admin.dto.response.AdminResponse;
-import com.enigma.x_food.feature.promotion.PromotionService;
 import com.enigma.x_food.feature.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -46,7 +41,7 @@ public class JwtUtil {
                     .withSubject(user.getAccountID())
                     .withExpiresAt(Instant.now().plusSeconds(jwtExpirationInSecond))
                     .withIssuedAt(Instant.now())
-                    .withClaim("role", ERole.USER.name())
+                    .withClaim("role", ERole.ROLE_USER.name())
                     .sign(algorithm);
         } catch (JWTCreationException e) {
             log.error("error while creating jwt token: {}", e.getMessage());

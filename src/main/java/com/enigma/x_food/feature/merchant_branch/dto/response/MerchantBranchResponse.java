@@ -29,6 +29,7 @@ public class MerchantBranchResponse {
     private String status;
     private CityResponse city;
     private List<ItemResponse> items;
+    private String adminID;
     private String picName;
     private String picNumber;
     private String picEmail;

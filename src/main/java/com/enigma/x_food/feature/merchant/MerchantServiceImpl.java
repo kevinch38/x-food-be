@@ -3,6 +3,7 @@ package com.enigma.x_food.feature.merchant;
 import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EMerchantBranchStatus;
 import com.enigma.x_food.constant.EMerchantStatus;
+import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
@@ -43,7 +44,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 public class MerchantServiceImpl implements MerchantService {
     private final MerchantRepository merchantRepository;
     private final ValidationUtil validationUtil;
-    private final EntityManager entityManager;
     private final MerchantStatusService merchantStatusService;
     private final AdminMonitoringService adminMonitoringService;
     private final MerchantBranchStatusService merchantBranchStatusService;
@@ -64,9 +63,6 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MerchantResponse createNew(NewMerchantRequest request) throws IOException, AuthenticationException {
-        validationUtil.validate(request);
-
-        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL);
         Admin admin;
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -74,6 +70,14 @@ public class MerchantServiceImpl implements MerchantService {
         } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
+
+        validationUtil.validate(request);
+
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL);
+
+        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
+            merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.ACTIVE);
+
         Merchant merchant = Merchant.builder()
                 .joinDate(request.getJoinDate())
                 .merchantName(request.getMerchantName())
@@ -82,7 +86,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .picEmail(request.getPicEmail())
                 .merchantDescription(request.getMerchantDescription())
                 .admin(admin)
-                .merchantStatus(entityManager.merge(merchantStatus))
+                .merchantStatus(merchantStatus)
                 .notes(request.getNotes())
                 .image(request.getImage().getBytes())
                 .logoImage(request.getLogoImage().getBytes())
@@ -96,76 +100,6 @@ public class MerchantServiceImpl implements MerchantService {
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
         return mapToResponse(merchant);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public MerchantResponse update(UpdateMerchantRequest request) throws IOException, AuthenticationException {
-        validationUtil.validate(request);
-        Merchant merchant = findByIdOrThrowException(request.getMerchantID());
-
-        merchant.setMerchantName(request.getMerchantName());
-        merchant.setPicName(request.getPicName());
-        merchant.setPicNumber(request.getPicNumber());
-        merchant.setPicEmail(request.getPicEmail());
-        merchant.setMerchantDescription(request.getMerchantDescription());
-        merchant.setNotes(request.getNotes());
-        merchant.setImage(request.getImage().getBytes());
-        merchant.setLogoImage(request.getLogoImage().getBytes());
-
-        Admin admin;
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            admin = (Admin) authentication.getPrincipal();
-        } catch (Exception e) {
-            throw new AuthenticationException("Not Authorized");
-        }
-        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
-                .activity(EActivity.UPDATE_MERCHANT.name())
-                .admin(admin)
-                .build();
-        adminMonitoringService.createNew(adminMonitoringRequest);
-        return mapToResponse(merchantRepository.saveAndFlush(merchant));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public MerchantResponse findById(String id) {
-        validationUtil.validate(id);
-        return mapToResponse(findByIdOrThrowException(id));
-    }
-
-    @Override
-    public Merchant getById(String id) {
-        return findByIdOrThrowException(id);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void deleteById(String id) throws AuthenticationException {
-        validationUtil.validate(id);
-        Merchant merchant = findByIdOrThrowException(id);
-        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.INACTIVE);
-        merchant.setMerchantStatus(merchantStatus);
-
-        for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
-            MerchantBranchStatus status = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.INACTIVE);
-            merchantBranch.setMerchantBranchStatus(status);
-        }
-
-        Admin admin;
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            admin = (Admin) authentication.getPrincipal();
-        } catch (Exception e) {
-            throw new AuthenticationException("Not Authorized");
-        }
-        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
-                .activity(EActivity.DELETE_MERCHANT.name())
-                .admin(admin)
-                .build();
-        adminMonitoringService.createNew(adminMonitoringRequest);
-        merchantRepository.saveAndFlush(merchant);
     }
 
     @Override
@@ -199,6 +133,109 @@ public class MerchantServiceImpl implements MerchantService {
 
         Page<Merchant> merchantBranches = merchantRepository.findAll(specification, pageable);
         return merchantBranches.map(this::mapToResponse);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public MerchantResponse update(UpdateMerchantRequest request) throws IOException, AuthenticationException {
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
+
+        validationUtil.validate(request);
+        Merchant merchant = findByIdOrThrowException(request.getMerchantID());
+
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_UPDATE_APPROVAL);
+
+        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
+            merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.ACTIVE);
+
+        merchant.setMerchantStatus(merchantStatus);
+        merchant.setMerchantStatus(merchantStatus);
+        merchant.setMerchantName(request.getMerchantName());
+        merchant.setPicName(request.getPicName());
+        merchant.setPicNumber(request.getPicNumber());
+        merchant.setPicEmail(request.getPicEmail());
+        merchant.setMerchantDescription(request.getMerchantDescription());
+        merchant.setNotes(request.getNotes());
+        merchant.setImage(request.getImage().getBytes());
+        merchant.setLogoImage(request.getLogoImage().getBytes());
+
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(EActivity.UPDATE_MERCHANT.name())
+                .admin(admin)
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
+        return mapToResponse(merchantRepository.saveAndFlush(merchant));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MerchantResponse findById(String id) {
+        validationUtil.validate(id);
+        return mapToResponse(findByIdOrThrowException(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Merchant getById(String id) {
+        return findByIdOrThrowException(id);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteById(String id) throws AuthenticationException {
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
+
+        validationUtil.validate(id);
+
+        Merchant merchant = findByIdOrThrowException(id);
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_DELETION_APPROVAL);
+
+        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
+            merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.INACTIVE);
+        merchant.setMerchantStatus(merchantStatus);
+
+        for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
+            MerchantBranchStatus status = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.INACTIVE);
+            merchantBranch.setMerchantBranchStatus(status);
+        }
+
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(EActivity.DELETE_MERCHANT.name())
+                .admin(admin)
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
+        merchantRepository.saveAndFlush(merchant);
+    }
+
+    @Override
+    public void approveToActive(String id) {
+        updateStatus(id, EMerchantStatus.ACTIVE);
+    }
+
+    @Override
+    public void deleteApprove(String id) {
+        updateStatus(id, EMerchantStatus.INACTIVE);
+    }
+
+    private void updateStatus(String id, EMerchantStatus active) {
+        Merchant merchant = findByIdOrThrowException(id);
+
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(active);
+        merchant.setMerchantStatus(merchantStatus);
+
+        merchantRepository.saveAndFlush(merchant);
     }
 
     private MerchantResponse mapToResponse(Merchant merchant) {
@@ -407,7 +444,7 @@ public class MerchantServiceImpl implements MerchantService {
                 );
                 predicates.add(predicate);
             }
-            
+
             Predicate predicate = criteriaBuilder.equal(
                     root.get("merchantStatus").get("status"),
                     EMerchantStatus.ACTIVE

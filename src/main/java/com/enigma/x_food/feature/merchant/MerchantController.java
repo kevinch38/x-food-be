@@ -89,7 +89,7 @@ public class MerchantController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endExpiredDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startJoinDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endJoinDate
-            ) {
+    ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
         direction = PagingUtil.validateDirection(direction);
@@ -204,6 +204,36 @@ public class MerchantController {
                 .message("successfully update merchant")
                 .statusCode(HttpStatus.OK.value())
                 .data(merchantResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping(value = "/approve/active/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> approveToActive(@PathVariable String id)  {
+        merchantService.approveToActive(id);
+
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .message("successfully update merchant to active")
+                .statusCode(HttpStatus.OK.value())
+                .data("OK")
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping(value = "/approve/inactive/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
+        merchantService.deleteApprove(id);
+
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .message("successfully update merchant to inactive")
+                .statusCode(HttpStatus.OK.value())
+                .data("OK")
                 .build();
         return ResponseEntity
                 .status(HttpStatus.OK)

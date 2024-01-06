@@ -18,4 +18,8 @@ public interface PromotionService {
     Promotion getPromotionById(String id);
     Page<PromotionResponse> getAll(SearchPromotionRequest request);
     List<PromotionResponse> getAllActive(SearchActivePromotionRequest request);
+
+    void approveToActive(String id);
+
+    void deleteApprove(String id);
 }

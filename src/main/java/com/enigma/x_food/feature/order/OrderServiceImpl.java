@@ -160,7 +160,7 @@ public class OrderServiceImpl implements OrderService {
         OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.DONE);
         order.setOrderStatus(orderStatus);
         for (OrderItem orderItem : order.getOrderItems()) {
-            Item item = itemService.findById(order.getOrderID());
+            Item item = itemService.findById(orderItem.getItem().getItemID());
             if (item.getItemStock() <= 0)
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
             if (orderItem.getQuantity() > item.getItemStock())

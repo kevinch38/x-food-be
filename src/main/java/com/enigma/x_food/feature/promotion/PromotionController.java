@@ -142,6 +142,36 @@ public class PromotionController {
                 .body(response);
     }
 
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping(value = "/approve/active/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> approveToActive(@PathVariable String id)  {
+        promotionService.approveToActive(id);
+
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .message("successfully update merchant to active")
+                .statusCode(HttpStatus.OK.value())
+                .data("OK")
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping(value = "/approve/inactive/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
+        promotionService.deleteApprove(id);
+
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .message("successfully update merchant to inactive")
+                .statusCode(HttpStatus.OK.value())
+                .data("OK")
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_STAFF', 'MARKETING_HEAD')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable String id) {

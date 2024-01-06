@@ -223,7 +223,7 @@ public class UserServiceImpl implements UserService {
                 .loyaltyPoint(loyaltyPointResponse)
                 .otpID(user.getOtp().getOtpID())
                 .vouchers(voucherResponses)
-                .role(ERole.USER.name())
+                .role(ERole.ROLE_USER.name())
                 .build();
     }
 

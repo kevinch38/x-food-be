@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EMerchantBranchStatus;
+import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
@@ -59,12 +60,24 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public MerchantBranchResponse createNew(NewMerchantBranchRequest request) throws IOException, AuthenticationException {
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
+
         validationUtil.validate(request);
         Merchant merchant = merchantService.getById(request.getMerchantID());
 
         CityResponse cityResponse = cityService.getById(request.getCityID());
 
-        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.ACTIVE);
+        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.WAITING_FOR_CREATION_APPROVAL);
+
+        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
+            merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.ACTIVE);
+
         MerchantBranch branch = MerchantBranch.builder()
                 .merchant(merchant)
                 .branchName(request.getBranchName())
@@ -80,15 +93,10 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                         .cityName(cityResponse.getCityName())
                         .build())
                 .merchantBranchStatus(merchantBranchStatus)
+                .admin(admin)
                 .joinDate(request.getJoinDate())
                 .build();
-        Admin admin;
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            admin = (Admin) authentication.getPrincipal();
-        } catch (Exception e) {
-            throw new AuthenticationException("Not Authorized");
-        }
+
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.CREATE_BRANCH.name())
                 .admin(admin)
@@ -102,10 +110,23 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     @Transactional(rollbackFor = Exception.class)
     public MerchantBranchResponse update(UpdateMerchantBranchRequest request) throws IOException, AuthenticationException {
         validationUtil.validate(request);
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
+
         MerchantBranch merchantBranch = findByIdOrThrowException(request.getBranchID());
 
         CityResponse cityResponse = cityService.getById(request.getCityID());
+        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.WAITING_FOR_UPDATE_APPROVAL);
 
+        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
+            merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.ACTIVE);
+
+        merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
         merchantBranch.setBranchName(request.getBranchName());
         merchantBranch.setAddress(request.getAddress());
         merchantBranch.setTimezone(request.getTimezone());
@@ -118,13 +139,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .cityID(cityResponse.getCityID())
                 .cityName(cityResponse.getCityName())
                 .build());
-        Admin admin;
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            admin = (Admin) authentication.getPrincipal();
-        } catch (Exception e) {
-            throw new AuthenticationException("Not Authorized");
-        }
+
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_BRANCH.name())
                 .admin(admin)
@@ -169,12 +184,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteById(String id) throws AuthenticationException {
-        validationUtil.validate(id);
-        MerchantBranch merchantBranch = findByIdOrThrowException(id);
-        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.INACTIVE);
-
-        merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
-
         Admin admin;
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -182,11 +191,42 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
+
+        validationUtil.validate(id);
+
+        MerchantBranch merchantBranch = findByIdOrThrowException(id);
+        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.WAITING_FOR_DELETION_APPROVAL);
+
+        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
+            merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.INACTIVE);
+
+        merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
+
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.DELETE_BRANCH.name())
                 .admin(admin)
                 .build();
+
         adminMonitoringService.createNew(adminMonitoringRequest);
+        merchantBranchRepository.saveAndFlush(merchantBranch);
+    }
+
+    @Override
+    public void deleteApprove(String id) {
+        updateStatus(id, EMerchantBranchStatus.INACTIVE);
+    }
+
+    @Override
+    public void approveToActive(String id) {
+        updateStatus(id, EMerchantBranchStatus.ACTIVE);
+    }
+
+    private void updateStatus(String id, EMerchantBranchStatus inactive) {
+        MerchantBranch merchantBranch = findByIdOrThrowException(id);
+
+        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(inactive);
+        merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
+
         merchantBranchRepository.saveAndFlush(merchantBranch);
     }
 
@@ -229,6 +269,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .picEmail(branch.getPicEmail())
                 .image(branch.getImage())
                 .joinDate(branch.getJoinDate())
+                .adminID(branch.getAdmin().getAdminID())
                 .build();
     }
 
