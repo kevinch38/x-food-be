@@ -28,6 +28,6 @@ public class UpdateUserRequest {
     private String lastName;
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
-    @NotNull(message = "Profile Photo is required")
-    private MultipartFile profilePhoto;
+//    @NotNull(message = "Profile Photo is required")
+//    private MultipartFile profilePhoto;
 }
