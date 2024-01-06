@@ -15,6 +15,7 @@ import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.pin.PinService;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
+import com.enigma.x_food.feature.user.dto.request.UpdateUserProfilePhotoRequest;
 import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
 import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.feature.user.dto.request.SearchUserRequest;
@@ -152,6 +153,14 @@ public class UserServiceImpl implements UserService {
         User user = findByPhoneNumberOrThrowNotFound(phoneNumber);
         log.info("End getOneById");
         return user;
+    }
+
+    @Override
+    public UserResponse getUserByKtpID(String ktpID) {
+        log.info("Start getOneByKtpID");
+        Optional<User> user = userRepository.findByKtpID(ktpID);
+        log.info("End getOneById");
+        return user.map(this::mapToResponse).orElse(null);
     }
 
     @Override
