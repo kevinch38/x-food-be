@@ -23,6 +23,8 @@ public class NewOrderRequest {
     private Integer tableNumber;
     @NotBlank(message = "Branch ID cannot be empty")
     private String branchID;
+    @NotNull(message = "Order value cannot be empty")
+    private Double orderValue;
     @NotNull(message = "Order item cannot be empty")
     private List<OrderItemRequest> orderItems;
 }

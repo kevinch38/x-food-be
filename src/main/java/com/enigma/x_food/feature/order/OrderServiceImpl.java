@@ -12,7 +12,6 @@ import com.enigma.x_food.feature.item.ItemService;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranchService;
 import com.enigma.x_food.feature.order.dto.request.NewOrderRequest;
-import com.enigma.x_food.feature.order.dto.request.OrderSubVarietyRequest;
 import com.enigma.x_food.feature.order.dto.request.SearchOrderRequest;
 import com.enigma.x_food.feature.order.dto.request.UpdateOrderRequest;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
@@ -73,8 +72,6 @@ public class OrderServiceImpl implements OrderService {
         log.info("Start createNew");
         validationUtil.validate(request);
 
-        double price = 0d;
-
         User user = userService.getUserById(request.getAccountID());
         MerchantBranch merchantBranch = merchantBranchService.getById(request.getBranchID());
         OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.WAITING_FOR_PAYMENT);
@@ -85,12 +82,12 @@ public class OrderServiceImpl implements OrderService {
                 .orderStatus(orderStatus)
                 .merchantBranch(merchantBranch)
                 .isSplit(false)
-                .orderValue(0d)
+                .orderValue(request.getOrderValue())
                 .build();
 
         HistoryRequest historyRequest = HistoryRequest.builder()
                 .transactionType(ETransactionType.ORDER.name())
-                .historyValue(price)
+                .historyValue(request.getOrderValue())
                 .transactionDate(LocalDate.now())
                 .credit(true)
                 .debit(false)
@@ -111,14 +108,6 @@ public class OrderServiceImpl implements OrderService {
             if (orderItem.getQuantity() > item.getItemStock())
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is not enough");
 
-            price += item.getDiscountedPrice() * orderItem.getQuantity();
-            if (orderItem.getSubVarieties() != null) {
-                for (OrderSubVarietyRequest subVariety : orderItem.getSubVarieties()) {
-                    SubVariety subVarietyServiceById = subVarietyService.getById(subVariety.getSubVarietyID());
-                    price += subVarietyServiceById.getSubVarPrice();
-                }
-            }
-
             OrderItemRequest orderItemRequest = OrderItemRequest.builder()
                     .itemID(orderItem.getItemID())
                     .quantity(orderItem.getQuantity())
@@ -130,7 +119,6 @@ public class OrderServiceImpl implements OrderService {
             newOrderItem.setOrder(order);
         }
 
-        order.setOrderValue(price);
         order.setOrderItems(orderItems);
         history.setOrder(order);
 
@@ -138,7 +126,7 @@ public class OrderServiceImpl implements OrderService {
 
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .user(user)
-                .paymentAmount(price)
+                .paymentAmount(request.getOrderValue())
                 .order(order)
                 .history(history)
                 .build();
