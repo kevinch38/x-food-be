@@ -8,11 +8,13 @@ import com.enigma.x_food.util.PagingUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -29,7 +31,11 @@ public class AdminMonitoringController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "adminMonitoringID") String sortBy,
-            @RequestParam(required = false) String adminName
+            @RequestParam(required = false) String adminName,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startUpdatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endUpdatedAt,
+            @RequestParam(required = false) String adminRole,
+            @RequestParam(required = false) String activity
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
@@ -41,6 +47,10 @@ public class AdminMonitoringController {
                 .direction(direction)
                 .sortBy(sortBy)
                 .adminName(adminName)
+                .startUpdatedAt(startUpdatedAt)
+                .endUpdatedAt(endUpdatedAt)
+                .adminRole(adminRole)
+                .activity(activity)
                 .build();
         Page<AdminMonitoringResponse> histories = adminMonitoringService.findAll(request);
 

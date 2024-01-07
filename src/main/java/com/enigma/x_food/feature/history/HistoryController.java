@@ -33,8 +33,8 @@ public class HistoryController {
             @RequestParam(required = false, defaultValue = "historyID") String sortBy,
             @RequestParam(required = false) String accountID,
             @RequestParam(required = false) String transactionType,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startTransactionDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endTransactionDate
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startTransactionDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endTransactionDate
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);

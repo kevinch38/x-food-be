@@ -47,27 +47,22 @@ class PromotionControllerTest {
     void createNewPromotion() throws Exception {
         NewPromotionRequest promotion = NewPromotionRequest.builder()
                 .merchantID("1")
-                .cost(100d)
                 .maxRedeem(3)
                 .promotionValue(200)
                 .promotionDescription("tes")
                 .promotionName("promotion tes")
                 .quantity(2)
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .promotionStatusID("1")
                 .build();
         PromotionResponse promotionResponse = PromotionResponse.builder()
                 .promotionID("1")
-                .merchantID(promotion.getMerchantID())
                 .cost(promotion.getCost())
                 .maxRedeem(promotion.getMaxRedeem())
                 .promotionValue(promotion.getPromotionValue())
                 .promotionDescription(promotion.getPromotionDescription())
                 .promotionName(promotion.getPromotionName())
                 .quantity(promotion.getQuantity())
-                .adminID("adminID")
                 .expiredDate(promotion.getExpiredDate())
-                .promotionStatusID(promotion.getPromotionStatusID())
                 .build();
         Mockito.when(promotionService.createNew(promotion)).thenReturn(promotionResponse);
 
@@ -82,7 +77,6 @@ class PromotionControllerTest {
                             }
                     );
                     Assertions.assertEquals(201, response.getStatusCode());
-                    Assertions.assertEquals("adminID", response.getData().getAdminID());
                 });
     }
 
@@ -102,16 +96,12 @@ class PromotionControllerTest {
                 searchPromotionRequest.getSortBy());
         PromotionResponse promotionResponse = PromotionResponse.builder()
                 .promotionID("1")
-                .merchantID("1")
-                .cost(1d)
                 .maxRedeem(1)
                 .promotionValue(2)
                 .promotionDescription("tes")
                 .promotionName("promotion tes")
                 .quantity(3)
-                .adminID("1")
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .promotionStatusID("1")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
                 .build();
@@ -138,29 +128,24 @@ class PromotionControllerTest {
         UpdatePromotionRequest request = UpdatePromotionRequest.builder()
                 .promotionID("1")
                 .merchantID("1")
-                .cost(1d)
                 .maxRedeem(1)
                 .promotionValue(2)
                 .promotionDescription("tes")
                 .promotionName("promotion tes")
                 .quantity(3)
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .promotionStatusID("1")
                 .notes("note")
                 .build();
 
         PromotionResponse promotionResponse = PromotionResponse.builder()
                 .promotionID("1")
-                .merchantID("1")
-                .cost(1d)
+                .cost(1)
                 .maxRedeem(1)
                 .promotionValue(2)
                 .promotionDescription("tes")
                 .promotionName("promotion tes")
                 .quantity(3)
-                .adminID("1")
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .promotionStatusID("1")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
                 .build();

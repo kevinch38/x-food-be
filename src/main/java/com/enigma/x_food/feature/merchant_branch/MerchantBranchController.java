@@ -82,8 +82,8 @@ public class MerchantBranchController {
                                      @RequestParam(required = false) String branchName,
                                      @RequestParam(required = false) String city,
                                      @RequestParam(required = false) String status,
-                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startJoinDate,
-                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endJoinDate
+                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startJoinDate,
+                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endJoinDate
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);

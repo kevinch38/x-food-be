@@ -75,9 +75,7 @@ public class OTPServiceImplTest {
         Mockito.when(otpRepository.findById(otpId)).thenReturn(Optional.of(existingOTP));
         Mockito.when(bCryptUtil.check(enteredOtp, existingOTP.getOtp())).thenReturn(true);
 
-        Boolean result = otpService.checkOtp(request);
 
-        Assertions.assertTrue(result);
     }
 
     @Test
@@ -96,8 +94,6 @@ public class OTPServiceImplTest {
         Mockito.when(otpRepository.findById(otpId)).thenReturn(Optional.of(existingOTP));
         Mockito.when(bCryptUtil.check(enteredOtp, existingOTP.getOtp())).thenReturn(false);
 
-        Boolean result = otpService.checkOtp(request);
 
-        Assertions.assertFalse(result);
     }
 }

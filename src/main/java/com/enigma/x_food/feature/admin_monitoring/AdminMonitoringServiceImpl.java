@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.admin_monitoring;
 
 import com.enigma.x_food.constant.EActivity;
+import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
 import com.enigma.x_food.feature.admin_monitoring.dto.response.AdminMonitoringResponse;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.SearchAdminMonitoringRequest;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.Predicate;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,6 +102,33 @@ public class AdminMonitoringServiceImpl implements AdminMonitoringService {
                 Predicate predicate = criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("admin").get("adminName")),
                         "%" + request.getAdminName().toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+
+            if (request.getAdminRole() != null) {
+                Predicate predicate = criteriaBuilder.equal(
+                        root.get("admin").get("role").get("role"),
+                        ERole.valueOf(request.getAdminRole())
+                );
+                predicates.add(predicate);
+            }
+
+            else if (request.getActivity() != null) {
+                Predicate predicate = criteriaBuilder.equal(
+                        criteriaBuilder.lower(root.get("activity")),
+                        request.getActivity().toLowerCase()
+                );
+                predicates.add(predicate);
+            }
+
+            else if (request.getStartUpdatedAt() != null && request.getEndUpdatedAt() != null) {
+                Timestamp startTimestamp = Timestamp.valueOf(request.getStartUpdatedAt().atStartOfDay());
+                Timestamp endTimestamp = Timestamp.valueOf(request.getEndUpdatedAt().atStartOfDay());
+                Predicate predicate = criteriaBuilder.between(
+                        root.get("updatedAt"),
+                        startTimestamp,
+                        endTimestamp
                 );
                 predicates.add(predicate);
             }

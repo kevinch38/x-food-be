@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,4 +17,8 @@ public class SearchAdminMonitoringRequest {
     private String direction;
     private String sortBy;
     private String adminName;
+    private LocalDate startUpdatedAt;
+    private LocalDate endUpdatedAt;
+    private String adminRole;
+    private String activity;
 }

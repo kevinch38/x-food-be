@@ -72,7 +72,7 @@ public class MerchantController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF','SUPER_ADMIN', 'PARTNERSHIP_HEAD', 'MARKETING_STAFF')")
+    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF','SUPER_ADMIN', 'PARTNERSHIP_HEAD', 'MARKETING_STAFF', 'MARKETING_HEAD')")
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,
@@ -81,14 +81,14 @@ public class MerchantController {
             @RequestParam(required = false, defaultValue = "merchantID") String sortBy,
             @RequestParam(required = false) String merchantName,
             @RequestParam(required = false) String merchantStatus,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startCreatedAt,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endCreatedAt,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startUpdatedAt,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endUpdatedAt,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startExpiredDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endExpiredDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startJoinDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endJoinDate
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startCreatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endCreatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startUpdatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endUpdatedAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startExpiredDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endExpiredDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startJoinDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endJoinDate
     ) {
         page = PagingUtil.validatePage(page);
         size = PagingUtil.validateSize(size);
