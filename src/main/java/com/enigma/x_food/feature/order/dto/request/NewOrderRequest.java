@@ -17,7 +17,6 @@ import java.util.List;
 public class NewOrderRequest {
     @NotBlank(message = "Account ID cannot be empty")
     private String accountID;
-    @NotBlank(message = "Notes cannot be empty")
     private String notes;
     @NotNull(message = "Table number cannot be empty")
     private Integer tableNumber;
