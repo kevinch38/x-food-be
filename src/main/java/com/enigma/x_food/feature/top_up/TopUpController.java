@@ -21,7 +21,7 @@ import java.util.List;
 public class TopUpController {
     private final TopUpService topUpService;
 
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(@RequestBody TopUpRequest request) {
         TopUpResponse topUpResponse = topUpService.createNew(request);

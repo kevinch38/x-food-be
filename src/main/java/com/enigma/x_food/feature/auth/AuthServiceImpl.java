@@ -42,6 +42,10 @@ public class AuthServiceImpl implements AuthService {
     String superAdminEmail;
     @Value("${app.x-food.super-admin-password}")
     String superAdminPassword;
+    @Value("${app.x-food.temporary-admin-email}")
+    String temporaryAdminEmail;
+    @Value("${app.x-food.temporary-admin-password}")
+    String temporaryAdminPassword;
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
@@ -55,6 +59,19 @@ public class AuthServiceImpl implements AuthService {
                     .password(bCryptUtil.hash(superAdminPassword))
                     .isSuperAdmin(true)
                     .role(ERole.ROLE_SUPER_ADMIN.name())
+                    .build();
+            adminService.createNew(request);
+        }
+
+        Optional<Admin> optionalAdmin2 = adminRepository.findByAdminEmail(temporaryAdminEmail);
+
+        if (optionalAdmin2.isEmpty()){
+            NewAdminRequest request = NewAdminRequest.builder()
+                    .adminName("temporaryAdmin")
+                    .adminEmail(temporaryAdminEmail)
+                    .password(bCryptUtil.hash(temporaryAdminPassword))
+                    .isSuperAdmin(false)
+                    .role(ERole.ROLE_USER.name())
                     .build();
             adminService.createNew(request);
         }
