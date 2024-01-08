@@ -1,6 +1,9 @@
 package com.enigma.x_food.feature.city;
 
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
+import com.enigma.x_food.feature.merchant.Merchant;
+import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
+import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
@@ -8,15 +11,21 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.criteria.Predicate;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -74,6 +83,18 @@ public class CityServiceImpl implements CityService {
         return cities.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    @Override
+    public List<CityResponse> getAllJabodetabek() {
+
+        log.info("Start getAll");
+
+        Sort sort = Sort.by(Sort.Direction.fromString("asc"), "cityID");
+        Specification<City> specification = getMerchantSpecification();
+        List<City> cities = cityRepository.findAll(specification, sort);
+        log.info("End getAll");
+        return cities.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
     private City findByIdOrThrowNotFound(String id) {
         return cityRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "city not found"));
@@ -86,5 +107,25 @@ public class CityServiceImpl implements CityService {
                 .createdAt(city.getCreatedAt())
                 .updatedAt(city.getUpdatedAt())
                 .build();
+    }
+
+    private Specification<City> getMerchantSpecification( ) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            List<String> jabodetabek = List.of("Jakarta", "Bogor", "Depok", "Tangerang", "Bekasi");
+            for (String city : jabodetabek) {
+                Predicate predicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("cityName")),
+                        "%" + city.toLowerCase() + "%"
+                );
+                predicates.add(predicate);
+            }
+                Predicate finalQuery = criteriaBuilder.or(predicates.toArray(Predicate[]::new));
+
+                return query
+//                    .where(predicates.toArray(new Predicate[]{}))
+                        .where(finalQuery)
+                        .getRestriction();
+        };
     }
 }

@@ -31,6 +31,19 @@ public class CityController {
                 .status(HttpStatus.OK)
                 .body(response);
     }
+    @PreAuthorize("permitAll")
+    @GetMapping(value = "/jabodetabek",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAllJabodetabek() {
+        List<CityResponse> cityResponse = cityService.getAllJabodetabek();
+        CommonResponse<List<CityResponse>> response = CommonResponse.<List<CityResponse>>builder()
+                .message("successfully get city")
+                .statusCode(HttpStatus.OK.value())
+                .data(cityResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'PARTNERSHIP_HEAD')")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getById(@PathVariable String id) {

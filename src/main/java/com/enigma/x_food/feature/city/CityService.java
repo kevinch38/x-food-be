@@ -7,4 +7,5 @@ import java.util.List;
 public interface CityService {
     CityResponse getById(String id);
     List<CityResponse> getAll();
+    List<CityResponse> getAllJabodetabek();
 }
