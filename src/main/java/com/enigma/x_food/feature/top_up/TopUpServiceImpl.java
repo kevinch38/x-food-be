@@ -62,7 +62,6 @@ public class TopUpServiceImpl implements TopUpService {
                 .topUpAmount(request.getTopUpAmount())
                 .method(methodName)
                 .topUpFee(request.getTopUpFee())
-                .topUpStatusID(request.getTopUpStatusID())
                 .balance(balance)
                 .history(history)
                 .build();
@@ -88,7 +87,6 @@ public class TopUpServiceImpl implements TopUpService {
                 .topUpAmount(topUp.getTopUpAmount())
                 .method(topUp.getMethod().getMethodName().name())
                 .topUpFee(topUp.getTopUpFee())
-                .topUpStatusID(topUp.getTopUpStatusID())
                 .balanceID(topUp.getBalance().getBalanceID())
                 .historyID(topUp.getHistory().getHistoryID())
                 .createdAt(topUp.getCreatedAt())

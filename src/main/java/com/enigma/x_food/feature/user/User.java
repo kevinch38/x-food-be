@@ -5,6 +5,7 @@ import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.loyalty_point.LoyaltyPoint;
 import com.enigma.x_food.feature.otp.OTP;
 import com.enigma.x_food.feature.pin.Pin;
+import com.enigma.x_food.feature.role.Role;
 import com.enigma.x_food.feature.voucher.Voucher;
 import com.enigma.x_food.shared.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -73,6 +74,10 @@ public class User extends BaseEntity {
     @OneToOne
     @JsonBackReference
     private OTP otp;
+
+    @JoinColumn(name = "role_id")
+    @ManyToOne
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     @JsonBackReference

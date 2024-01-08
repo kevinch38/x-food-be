@@ -16,7 +16,7 @@ import javax.validation.ConstraintViolationException;
 public class ErrorController {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> responseStatusException(ResponseStatusException e){
-       CommonResponse commonResponse = CommonResponse.builder()
+       CommonResponse<Object> commonResponse = CommonResponse.builder()
                 .message(e.getReason())
                 .statusCode(e.getRawStatusCode())
                 .build();
@@ -25,7 +25,7 @@ public class ErrorController {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> constraintViolationException(ConstraintViolationException e){
-        CommonResponse commonResponse = CommonResponse.builder()
+        CommonResponse<Object> commonResponse = CommonResponse.builder()
                 .message(e.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .build();
@@ -33,7 +33,7 @@ public class ErrorController {
     }
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<?> maxUploadSizeExceededException(MaxUploadSizeExceededException e){
-        CommonResponse commonResponse = CommonResponse.builder()
+        CommonResponse<Object> commonResponse = CommonResponse.builder()
                 .message("File too big, maximum size is 2MB")
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .build();
@@ -41,7 +41,7 @@ public class ErrorController {
     }
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> authenticationException(AuthenticationException e){
-        CommonResponse commonResponse = CommonResponse.builder()
+        CommonResponse<Object> commonResponse = CommonResponse.builder()
                 .message(e.getMessage())
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .build();
@@ -49,7 +49,7 @@ public class ErrorController {
     }
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> accessDeniedException(AccessDeniedException e){
-        CommonResponse commonResponse = CommonResponse.builder()
+        CommonResponse<Object> commonResponse = CommonResponse.builder()
                 .message(e.getMessage())
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .build();

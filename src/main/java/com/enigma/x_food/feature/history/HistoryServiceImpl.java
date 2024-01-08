@@ -132,7 +132,6 @@ public class HistoryServiceImpl implements HistoryService {
                     .topUpFee(topUp.getTopUpFee())
                     .createdAt(topUp.getCreatedAt())
                     .updatedAt(topUp.getUpdatedAt())
-                    .topUpStatusID(topUp.getTopUpStatusID())
                     .balanceID(topUp.getBalance().getBalanceID())
                     .historyID(topUp.getHistory().getHistoryID())
                     .build();

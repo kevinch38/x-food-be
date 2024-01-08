@@ -14,6 +14,8 @@ import com.enigma.x_food.feature.otp.OTPService;
 import com.enigma.x_food.feature.pin.Pin;
 import com.enigma.x_food.feature.pin.PinService;
 import com.enigma.x_food.feature.pin.dto.request.NewPinRequest;
+import com.enigma.x_food.feature.role.Role;
+import com.enigma.x_food.feature.role.RoleService;
 import com.enigma.x_food.feature.user.dto.request.NewUserRequest;
 import com.enigma.x_food.feature.user.dto.request.UpdateUserProfilePhotoRequest;
 import com.enigma.x_food.feature.user.dto.request.UpdateUserRequest;
@@ -56,6 +58,7 @@ public class UserServiceImpl implements UserService {
     private final BalanceService balanceService;
     private final LoyaltyPointService loyaltyPointService;
     private final ValidationUtil validationUtil;
+    private final RoleService roleService;
     private final Random random;
     private final BCryptUtil bCryptUtil;
 
@@ -75,6 +78,7 @@ public class UserServiceImpl implements UserService {
                     .loyaltyPointAmount(0)
                     .build());
 
+            Role role = roleService.getByRole(ERole.ROLE_USER);
             User user = User.builder()
                     .ktpID("")
                     .accountEmail(bCryptUtil.hash(String.valueOf(random.nextInt())))
@@ -87,6 +91,7 @@ public class UserServiceImpl implements UserService {
                     .balance(balance)
                     .loyaltyPoint(loyaltyPoint)
                     .otp(otp)
+                    .role(role)
                     .build();
 
             balance.setUser(user);
@@ -209,9 +214,8 @@ public class UserServiceImpl implements UserService {
             vouchers = user.getVouchers().stream().filter(voucher -> voucher.getVoucherStatus().getStatus() == EVoucherStatus.ACTIVE
             ).collect(Collectors.toList());
             voucherResponses = vouchers.stream().map(this::mapVoucherToResponse).collect(Collectors.toList());
-        }
-        else {
-            voucherResponses=List.of();
+        } else {
+            voucherResponses = List.of();
         }
         LoyaltyPointResponse loyaltyPointResponse = loyaltyPointService.findById(user.getLoyaltyPoint().getLoyaltyPointID());
 
@@ -276,7 +280,8 @@ public class UserServiceImpl implements UserService {
 
             if (request.getStartCreatedAt() != null && request.getEndCreatedAt() != null) {
                 Timestamp startTimestamp = Timestamp.valueOf(request.getStartCreatedAt().atStartOfDay());
-                Timestamp endTimestamp = Timestamp.valueOf(request.getEndCreatedAt().atStartOfDay());
+                LocalDateTime endOfTheDay = request.getEndCreatedAt().atTime(LocalTime.MAX);
+                Timestamp endTimestamp = Timestamp.valueOf(endOfTheDay);
                 Predicate predicate = criteriaBuilder.between(
                         root.get("createdAt"),
                         startTimestamp,
@@ -287,7 +292,8 @@ public class UserServiceImpl implements UserService {
 
             if (request.getStartUpdatedAt() != null && request.getEndUpdatedAt() != null) {
                 Timestamp startTimestamp = Timestamp.valueOf(request.getStartUpdatedAt().atStartOfDay());
-                Timestamp endTimestamp = Timestamp.valueOf(request.getEndUpdatedAt().atStartOfDay());
+                LocalDateTime endOfTheDay = request.getEndUpdatedAt().atTime(LocalTime.MAX);
+                Timestamp endTimestamp = Timestamp.valueOf(endOfTheDay);
                 Predicate predicate = criteriaBuilder.between(
                         root.get("updatedAt"),
                         startTimestamp,

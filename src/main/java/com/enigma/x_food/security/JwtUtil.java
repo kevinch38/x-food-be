@@ -41,7 +41,7 @@ public class JwtUtil {
                     .withSubject(user.getAccountID())
                     .withExpiresAt(Instant.now().plusSeconds(jwtExpirationInSecond))
                     .withIssuedAt(Instant.now())
-                    .withClaim("role", ERole.ROLE_USER.name())
+                    .withClaim("role", user.getRole().getRole().name())
                     .sign(algorithm);
         } catch (JWTCreationException e) {
             log.error("error while creating jwt token: {}", e.getMessage());
@@ -78,18 +78,18 @@ public class JwtUtil {
     }
 
     public Boolean verifyJwtTokenAdmin(String token) {
-        SecurityContext authentication = SecurityContextHolder.getContext();;
+        SecurityContext authentication = SecurityContextHolder.getContext();
+        ;
         try {
             Algorithm algorithm = Algorithm.HMAC256(jwtSecret.getBytes(StandardCharsets.UTF_8));
             JWTVerifier verifier = JWT.require(algorithm).build();
             DecodedJWT decodedJWT = verifier.verify(token);
             AdminResponse admin = adminService.findById(decodedJWT.getSubject());
             Admin adminTemp;
-            try{
+            try {
                 adminTemp = (Admin) authentication.getAuthentication().getPrincipal();
                 log.info(String.valueOf(adminTemp));
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 authentication.setAuthentication(null);
                 SecurityContextHolder.clearContext();
                 return false;

@@ -37,6 +37,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -296,7 +298,8 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getStartCreatedAt() != null && request.getEndCreatedAt() != null) {
                 Timestamp startTimestamp = Timestamp.valueOf(request.getStartCreatedAt().atStartOfDay());
-                Timestamp endTimestamp = Timestamp.valueOf(request.getEndCreatedAt().atStartOfDay());
+                LocalDateTime endOfTheDay = request.getEndCreatedAt().atTime(LocalTime.MAX);
+                Timestamp endTimestamp = Timestamp.valueOf(endOfTheDay);
                 Predicate predicate = criteriaBuilder.between(
                         root.get("createdAt"),
                         startTimestamp,
@@ -307,7 +310,8 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getStartUpdatedAt() != null && request.getEndUpdatedAt() != null) {
                 Timestamp startTimestamp = Timestamp.valueOf(request.getStartUpdatedAt().atStartOfDay());
-                Timestamp endTimestamp = Timestamp.valueOf(request.getEndUpdatedAt().atStartOfDay());
+                LocalDateTime endOfTheDay = request.getEndUpdatedAt().atTime(LocalTime.MAX);
+                Timestamp endTimestamp = Timestamp.valueOf(endOfTheDay);
                 Predicate predicate = criteriaBuilder.between(
                         root.get("updatedAt"),
                         startTimestamp,
@@ -318,7 +322,8 @@ public class PromotionServiceImpl implements PromotionService {
 
             if (request.getStartExpiredDate() != null && request.getEndExpiredDate() != null) {
                 Timestamp startTimestamp = Timestamp.valueOf(request.getStartExpiredDate().atStartOfDay());
-                Timestamp endTimestamp = Timestamp.valueOf(request.getEndExpiredDate().atStartOfDay());
+                LocalDateTime endOfTheDay = request.getEndExpiredDate().atTime(LocalTime.MAX);
+                Timestamp endTimestamp = Timestamp.valueOf(endOfTheDay);
                 Predicate predicate = criteriaBuilder.between(
                         root.get("expiredDate"),
                         startTimestamp,

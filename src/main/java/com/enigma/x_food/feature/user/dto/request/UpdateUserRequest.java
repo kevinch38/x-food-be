@@ -21,13 +21,11 @@ public class UpdateUserRequest {
     private String ktpID;
     @NotNull(message = "Email is required")
     private String accountEmail;
-    @NotNull(message = "Phone number name is required")
+    @NotNull(message = "Phone number is required")
     private String phoneNumber;
     @NotNull(message = "First name is required")
     private String firstName;
     private String lastName;
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
-//    @NotNull(message = "Profile Photo is required")
-//    private MultipartFile profilePhoto;
 }

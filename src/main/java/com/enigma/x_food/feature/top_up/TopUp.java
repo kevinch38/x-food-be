@@ -31,8 +31,6 @@ public class TopUp extends BaseEntity {
     private Method method;
     @Column(name = "top_up_fee", nullable = false, length = 11)
     private Double topUpFee;
-    @Column(name = "top_up_status_id", nullable = false)
-    private String topUpStatusID;
     @ManyToOne
     @JoinColumn(name = "balance_id", nullable = false)
     private Balance balance;

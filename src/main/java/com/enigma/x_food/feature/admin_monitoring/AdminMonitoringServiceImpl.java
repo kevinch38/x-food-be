@@ -21,6 +21,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,7 +126,8 @@ public class AdminMonitoringServiceImpl implements AdminMonitoringService {
 
             else if (request.getStartUpdatedAt() != null && request.getEndUpdatedAt() != null) {
                 Timestamp startTimestamp = Timestamp.valueOf(request.getStartUpdatedAt().atStartOfDay());
-                Timestamp endTimestamp = Timestamp.valueOf(request.getEndUpdatedAt().atStartOfDay());
+                LocalDateTime endOfTheDay = request.getEndUpdatedAt().atTime(LocalTime.MAX);
+                Timestamp endTimestamp = Timestamp.valueOf(endOfTheDay);
                 Predicate predicate = criteriaBuilder.between(
                         root.get("updatedAt"),
                         startTimestamp,
