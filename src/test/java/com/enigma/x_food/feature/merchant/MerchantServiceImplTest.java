@@ -5,6 +5,7 @@ import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.util.ValidationUtil;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +46,7 @@ class MerchantServiceImplTest {
     }
 
     @Test
-    void testCreateNew() throws IOException {
+    void testCreateNew() throws IOException, AuthenticationException {
         NewMerchantRequest request = new NewMerchantRequest(/* provide necessary parameters */);
 
         doNothing().when(validationUtil).validate(request);
@@ -59,7 +60,7 @@ class MerchantServiceImplTest {
     }
 
     @Test
-    void testUpdate() throws IOException {
+    void testUpdate() throws IOException, AuthenticationException {
         UpdateMerchantRequest request = UpdateMerchantRequest.builder().merchantID("1").build();
 
         doNothing().when(validationUtil).validate(request);
@@ -97,7 +98,7 @@ class MerchantServiceImplTest {
     }
 
     @Test
-    void testDeleteById() {
+    void testDeleteById() throws AuthenticationException {
         String merchantId = "someMerchantId";
         Merchant existingMerchant = Merchant.builder().merchantID("1").build();
         when(merchantRepository.findById(merchantId)).thenReturn(java.util.Optional.of(existingMerchant));

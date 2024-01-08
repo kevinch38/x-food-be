@@ -21,7 +21,6 @@ public class TopUpResponse {
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;
-    private String topUpStatusID;
     private String balanceID;
     private String historyID;
 }
