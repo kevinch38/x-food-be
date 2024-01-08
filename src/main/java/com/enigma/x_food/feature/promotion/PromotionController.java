@@ -142,8 +142,8 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    @PutMapping(value = "/approve/active/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('SUPER_ADMIN', 'MARKETING_HEAD')")
+    @PutMapping("/approve/active/{id}")
     public ResponseEntity<?> approveToActive(@PathVariable String id)  {
         promotionService.approveToActive(id);
 
@@ -157,8 +157,8 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    @PutMapping(value = "/approve/inactive/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('SUPER_ADMIN', 'MARKETING_HEAD')")
+    @PutMapping("/approve/inactive/{id}")
     public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
         promotionService.deleteApprove(id);
 
