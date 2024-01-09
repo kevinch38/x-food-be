@@ -142,7 +142,7 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN', 'MARKETING_HEAD')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_HEAD')")
     @PutMapping("/approve/active/{id}")
     public ResponseEntity<?> approveToActive(@PathVariable String id)  {
         promotionService.approveToActive(id);
@@ -157,13 +157,28 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN', 'MARKETING_HEAD')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_HEAD')")
     @PutMapping("/approve/inactive/{id}")
     public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
         promotionService.deleteApprove(id);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .message("successfully update merchant to inactive")
+                .statusCode(HttpStatus.OK.value())
+                .data("OK")
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_HEAD')")
+    @PutMapping("/reject/update/{id}")
+    public ResponseEntity<?> rejectUpdate(@PathVariable String id)  {
+        promotionService.rejectUpdate(id);
+
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .message("successfully update merchant to active")
                 .statusCode(HttpStatus.OK.value())
                 .data("OK")
                 .build();

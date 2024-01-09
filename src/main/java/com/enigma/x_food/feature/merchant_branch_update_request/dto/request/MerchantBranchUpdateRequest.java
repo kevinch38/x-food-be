@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MerchantBranchRequest {
+public class MerchantBranchUpdateRequest {
     @NotBlank(message = "Merchant ID cannot be empty")
     private String merchantID;
     @NotBlank(message = "Branch name cannot be empty")

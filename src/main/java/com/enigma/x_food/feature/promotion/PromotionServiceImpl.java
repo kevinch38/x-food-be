@@ -15,6 +15,7 @@ import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.feature.promotion_status.PromotionStatus;
 import com.enigma.x_food.feature.promotion_status.PromotionStatusService;
+import com.enigma.x_food.feature.promotion_update_request.PromotionUpdateRequestService;
 import com.enigma.x_food.util.SortingUtil;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,7 @@ public class PromotionServiceImpl implements PromotionService {
     private final PromotionStatusService promotionStatusService;
     private final ValidationUtil validationUtil;
     private final AdminMonitoringService adminMonitoringService;
+    private final PromotionUpdateRequestService promotionUpdateRequestService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -136,6 +138,9 @@ public class PromotionServiceImpl implements PromotionService {
     public PromotionResponse update(UpdatePromotionRequest request) throws AuthenticationException {
         validationUtil.validate(request);
         Promotion promotion = findByIdOrThrowException(request.getPromotionID());
+
+        promotionUpdateRequestService.save(promotion);
+
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.WAITING_FOR_CREATION_APPROVAL);
 
         Admin admin;
@@ -173,6 +178,13 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public void deleteApprove(String id) {
         updateStatus(id, EPromotionStatus.INACTIVE);
+    }
+
+    @Override
+    public void rejectUpdate(String id) {
+        Promotion promotion = promotionUpdateRequestService.getById(id);
+
+        promotionRepository.saveAndFlush(promotion);
     }
 
     @Override
