@@ -251,6 +251,7 @@ public class OrderServiceImpl implements OrderService {
                 .itemName(o.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
                 .quantity(o.getQuantity())
+                .price(o.getItem().getDiscountedPrice())
                 .createdAt(o.getCreatedAt())
                 .updatedAt(o.getUpdatedAt())
                 .build();

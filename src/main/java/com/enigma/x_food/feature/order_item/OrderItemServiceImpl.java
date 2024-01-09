@@ -126,6 +126,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                 .itemName(orderItem.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
                 .quantity(orderItem.getQuantity())
+                .price(orderItem.getItem().getDiscountedPrice())
                 .createdAt(orderItem.getCreatedAt())
                 .updatedAt(orderItem.getUpdatedAt())
                 .build();
