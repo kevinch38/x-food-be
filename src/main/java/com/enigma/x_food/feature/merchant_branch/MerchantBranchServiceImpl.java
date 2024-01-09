@@ -121,6 +121,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         }
 
         MerchantBranch merchantBranch = findByIdOrThrowException(request.getBranchID());
+        merchantBranchUpdateRequestService.save(merchantBranch);
 
         CityResponse cityResponse = cityService.getById(request.getCityID());
         MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.WAITING_FOR_UPDATE_APPROVAL);
@@ -143,10 +144,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .build());
 
         merchantBranchRepository.saveAndFlush(merchantBranch);
-
-        if (!merchantBranchStatus.getStatus().equals(EMerchantBranchStatus.ACTIVE)) {
-            merchantBranchUpdateRequestService.save(merchantBranch);
-        }
 
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_BRANCH.name())

@@ -18,6 +18,7 @@ public class OrderItemResponse {
     private String orderItemID;
     private String orderID;
     private String itemName;
+    private Integer quantity;
     private List<OrderItemSubVarietyResponse> orderItemSubVarieties;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;

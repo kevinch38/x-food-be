@@ -209,6 +209,7 @@ public class HistoryServiceImpl implements HistoryService {
                 .orderID(order.getOrderID())
                 .itemName(o.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
+                .quantity(o.getQuantity())
                 .createdAt(o.getCreatedAt())
                 .updatedAt(o.getUpdatedAt())
                 .build();
