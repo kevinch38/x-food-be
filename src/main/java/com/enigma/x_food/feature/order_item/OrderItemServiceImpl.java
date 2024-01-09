@@ -123,7 +123,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         return OrderItemResponse.builder()
                 .orderItemID(orderItem.getOrderItemID())
                 .orderID(orderItem.getOrder().getOrderID())
-                .itemID(orderItem.getItem().getItemID())
+                .itemName(orderItem.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
                 .build();
     }
