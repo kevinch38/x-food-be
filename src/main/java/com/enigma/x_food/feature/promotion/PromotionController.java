@@ -128,7 +128,7 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_HEAD')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_STAFF', 'MARKETING_HEAD')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) throws AuthenticationException {
         PromotionResponse promotionResponse = promotionService.update(request);
@@ -201,7 +201,7 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_STAFF')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) throws AuthenticationException {
         promotionService.deleteById(id);
