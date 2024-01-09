@@ -210,7 +210,7 @@ public class MerchantController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
     @PutMapping("/approve/active/{id}")
     public ResponseEntity<?> approveToActive(@PathVariable String id)  {
         merchantService.approveToActive(id);
@@ -225,7 +225,7 @@ public class MerchantController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
     @PutMapping("/approve/inactive/{id}")
     public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
         merchantService.deleteApprove(id);

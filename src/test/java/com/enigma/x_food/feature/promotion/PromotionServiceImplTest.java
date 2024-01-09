@@ -8,6 +8,7 @@ import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
 import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.util.ValidationUtil;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -43,7 +44,7 @@ class PromotionServiceImplTest {
     private ValidationUtil validationUtil;
 
     @Test
-    void createNew() {
+    void createNew() throws AuthenticationException {
         String id ="1";
         NewPromotionRequest newPromotionRequest = NewPromotionRequest.builder()
                 .merchantID(id)
@@ -64,7 +65,6 @@ class PromotionServiceImplTest {
                 .picNumber("num")
                 .picEmail("email")
                 .merchantDescription("desc")
-                .adminId("1")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
@@ -78,7 +78,6 @@ class PromotionServiceImplTest {
                 .picNumber(merchantResponse.getPicNumber())
                 .picEmail(merchantResponse.getPicEmail())
                 .merchantDescription(merchantResponse.getMerchantDescription())
-                .adminID(merchantResponse.getAdminId())
                 .createdAt(merchantResponse.getCreatedAt())
                 .updatedAt(merchantResponse.getUpdatedAt())
                 .notes(merchantResponse.getNotes())
@@ -92,7 +91,6 @@ class PromotionServiceImplTest {
                 .promotionDescription(newPromotionRequest.getPromotionDescription())
                 .promotionName(newPromotionRequest.getPromotionName())
                 .quantity(newPromotionRequest.getQuantity())
-                .adminID("adminID")
                 .expiredDate(newPromotionRequest.getExpiredDate())
                 .build();
 
@@ -103,11 +101,10 @@ class PromotionServiceImplTest {
         when(entityManager.merge(any())).thenReturn(merchant);
         PromotionResponse actual = promotionService.createNew(newPromotionRequest);
 
-        assertEquals("adminID", actual.getAdminID());
     }
 
     @Test
-    void update() {
+    void update() throws AuthenticationException {
         String id = "1";
         MerchantResponse merchantResponse = MerchantResponse.builder()
                 .merchantID("1")
@@ -117,7 +114,6 @@ class PromotionServiceImplTest {
                 .picNumber("num")
                 .picEmail("email")
                 .merchantDescription("desc")
-                .adminId("1")
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .updatedAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
@@ -131,7 +127,6 @@ class PromotionServiceImplTest {
                 .picNumber(merchantResponse.getPicNumber())
                 .picEmail(merchantResponse.getPicEmail())
                 .merchantDescription(merchantResponse.getMerchantDescription())
-                .adminID(merchantResponse.getAdminId())
                 .createdAt(merchantResponse.getCreatedAt())
                 .updatedAt(merchantResponse.getUpdatedAt())
                 .notes(merchantResponse.getNotes())
@@ -149,7 +144,6 @@ class PromotionServiceImplTest {
                 .promotionDescription("tes")
                 .promotionName("promotion tes")
                 .quantity(3)
-                .adminID("1")
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
@@ -187,7 +181,6 @@ class PromotionServiceImplTest {
                 .promotionDescription("tes")
                 .promotionName("promotion tes")
                 .quantity(3)
-                .adminID("1")
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
@@ -201,7 +194,7 @@ class PromotionServiceImplTest {
     }
 
     @Test
-    void deleteById() {
+    void deleteById() throws AuthenticationException {
         String id = " 1";
         Promotion promotion = Promotion.builder()
                 .promotionID("1")
@@ -212,7 +205,6 @@ class PromotionServiceImplTest {
                 .promotionDescription("tes")
                 .promotionName("promotion tes")
                 .quantity(3)
-                .adminID("1")
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .notes("note")
