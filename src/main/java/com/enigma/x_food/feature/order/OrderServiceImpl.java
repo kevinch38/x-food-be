@@ -248,7 +248,7 @@ public class OrderServiceImpl implements OrderService {
         return OrderItemResponse.builder()
                 .orderItemID(o.getOrderItemID())
                 .orderID(order.getOrderID())
-                .itemID(o.getItem().getItemID())
+                .itemName(o.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
                 .createdAt(o.getCreatedAt())
                 .updatedAt(o.getUpdatedAt())

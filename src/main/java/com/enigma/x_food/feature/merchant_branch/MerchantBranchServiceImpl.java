@@ -22,6 +22,7 @@ import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranc
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatusService;
+import com.enigma.x_food.feature.merchant_branch_update_request.MerchantBranchUpdateRequestService;
 import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import com.enigma.x_food.feature.variety.dto.response.VarietyResponse;
 import com.enigma.x_food.feature.variety_sub_variety.VarietySubVariety;
@@ -53,6 +54,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     private final MerchantBranchRepository merchantBranchRepository;
     private final MerchantService merchantService;
     private final MerchantBranchStatusService merchantBranchStatusService;
+    private final MerchantBranchUpdateRequestService merchantBranchUpdateRequestService;
     private final ValidationUtil validationUtil;
     private final CityService cityService;
     private final AdminMonitoringService adminMonitoringService;
@@ -140,12 +142,20 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .cityName(cityResponse.getCityName())
                 .build());
 
+        merchantBranchRepository.saveAndFlush(merchantBranch);
+
+        if (!merchantBranchStatus.getStatus().equals(EMerchantBranchStatus.ACTIVE)) {
+            merchantBranchUpdateRequestService.save(merchantBranch);
+        }
+
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_BRANCH.name())
                 .admin(admin)
                 .build();
+
         adminMonitoringService.createNew(adminMonitoringRequest);
-        return mapToResponse(merchantBranchRepository.saveAndFlush(merchantBranch));
+
+        return mapToResponse(merchantBranch);
     }
 
     @Override
@@ -219,6 +229,13 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     @Override
     public void approveToActive(String id) {
         updateStatus(id, EMerchantBranchStatus.ACTIVE);
+    }
+
+    @Override
+    public void rejectUpdate(String id) {
+        MerchantBranch merchantBranch = merchantBranchUpdateRequestService.getById(id);
+
+        merchantBranchRepository.saveAndFlush(merchantBranch);
     }
 
     private void updateStatus(String id, EMerchantBranchStatus inactive) {

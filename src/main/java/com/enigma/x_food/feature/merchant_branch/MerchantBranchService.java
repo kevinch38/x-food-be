@@ -18,8 +18,7 @@ public interface MerchantBranchService {
     MerchantBranch getById(String id);
     List<MerchantBranchResponse> findAllByMerchantId(SearchMerchantBranchRequest request);
     List<MerchantBranchResponse> findAllActiveByMerchantId(SearchActiveMerchantBranchRequest request);
-
     void deleteApprove(String id);
-
     void approveToActive(String id);
+    void rejectUpdate(String id);
 }

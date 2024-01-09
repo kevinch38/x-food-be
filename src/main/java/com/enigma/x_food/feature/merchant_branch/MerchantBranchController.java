@@ -200,7 +200,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
     @PutMapping("/approve/active/{id}")
     public ResponseEntity<?> approveToActive(@PathVariable String id)  {
         merchantBranchService.approveToActive(id);
@@ -215,13 +215,28 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
     @PutMapping("/approve/inactive/{id}")
     public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
         merchantBranchService.deleteApprove(id);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .message("successfully update merchant to inactive")
+                .statusCode(HttpStatus.OK.value())
+                .data("OK")
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
+    @PutMapping("/reject/update/{id}")
+    public ResponseEntity<?> rejectUpdate(@PathVariable String id)  {
+        merchantBranchService.rejectUpdate(id);
+
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .message("successfully reject merchant update")
                 .statusCode(HttpStatus.OK.value())
                 .data("OK")
                 .build();

@@ -17,7 +17,7 @@ import java.util.List;
 public class OrderItemResponse {
     private String orderItemID;
     private String orderID;
-    private String itemID;
+    private String itemName;
     private List<OrderItemSubVarietyResponse> orderItemSubVarieties;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
