@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.friend.dto.response;
 
+import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,12 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FriendResponse {
     private String friendID;
-    private String accountID1;
-    private String accountID2;
-    private String accountFirstName1;
-    private String accountFirstName2;
-    private String accountLastName1;
-    private String accountLastName2;
-    private byte[] imageAccount1;
-    private byte[] imageAccount2;
+    private UserResponse user1;
+    private UserResponse user2;
 }

@@ -5,6 +5,7 @@ import com.enigma.x_food.feature.friend.dto.request.SearchFriendRequest;
 import com.enigma.x_food.feature.friend.dto.response.FriendResponse;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.UserService;
+import com.enigma.x_food.feature.user.dto.response.UserResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,16 +72,13 @@ public class FriendServiceImpl implements FriendService {
     }
 
     private FriendResponse mapToResponse(Friend friend) {
+        UserResponse user1 = userService.getById(friend.getUser1().getAccountID());
+        UserResponse user2 = userService.getById(friend.getUser2().getAccountID());
+
         return FriendResponse.builder()
                 .friendID(friend.getFriendID())
-                .accountID1(friend.getUser1().getAccountID())
-                .accountID2(friend.getUser2().getAccountID())
-                .accountFirstName1(friend.getUser1().getFirstName())
-                .accountFirstName2(friend.getUser2().getFirstName())
-                .accountLastName1(friend.getUser1().getLastName())
-                .accountLastName2(friend.getUser2().getLastName())
-                .imageAccount1(friend.getUser1().getProfilePhoto())
-                .imageAccount2(friend.getUser2().getProfilePhoto())
+                .user1(user1)
+                .user2(user2)
                 .build();
     }
 
