@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface PaymentService {
     Payment createNew(PaymentRequest request);
+    PaymentResponse completeSplitBill(String id);
     List<PaymentResponse> createSplitBill(List<SplitBillRequest> request);
     List<PaymentResponse> findByAccountId(SearchPaymentRequest request);
 }

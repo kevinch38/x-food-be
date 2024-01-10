@@ -37,6 +37,20 @@ public class PaymentController {
     }
 
     @PreAuthorize("hasRole('USER')")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> complete(@PathVariable String id) {
+        PaymentResponse paymentResponse = paymentService.completeSplitBill(id);
+        CommonResponse<PaymentResponse> response = CommonResponse.<PaymentResponse>builder()
+                .message("successfully complete payment for split bill")
+                .statusCode(HttpStatus.CREATED.value())
+                .data(paymentResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public ResponseEntity<?> getAll(@RequestParam String accountID) {
         SearchPaymentRequest request = SearchPaymentRequest.builder()

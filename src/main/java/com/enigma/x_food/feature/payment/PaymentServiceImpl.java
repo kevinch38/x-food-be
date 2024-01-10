@@ -89,6 +89,17 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public PaymentResponse completeSplitBill(String id) {
+        return mapToResponse(findByIdOrThrowException(id));
+    }
+
+    private Payment findByIdOrThrowException(String id) {
+        return paymentRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found")
+        );
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public List<PaymentResponse> createSplitBill(List<SplitBillRequest> splitBillRequests) {
         log.info("Start createNew");
@@ -116,6 +127,14 @@ public class PaymentServiceImpl implements PaymentService {
         }
         log.info("End createNew");
         return payments.stream().map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PaymentResponse> findByAccountId(SearchPaymentRequest request) {
+        Specification<Payment> specification = getPaymentSpecification(request);
+        return paymentRepository.findAll(specification).stream().map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
@@ -171,14 +190,6 @@ public class PaymentServiceImpl implements PaymentService {
                 .friend(friend.get(0))
                 .order(order)
                 .build();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<PaymentResponse> findByAccountId(SearchPaymentRequest request) {
-        Specification<Payment> specification = getPaymentSpecification(request);
-        return paymentRepository.findAll(specification).stream().map(this::mapToResponse)
-                .collect(Collectors.toList());
     }
 
     private PaymentResponse mapToResponse(Payment payment) {
