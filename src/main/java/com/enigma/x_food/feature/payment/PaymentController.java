@@ -1,6 +1,5 @@
 package com.enigma.x_food.feature.payment;
 
-import com.enigma.x_food.feature.payment.dto.request.CompleteSplitBillRequest;
 import com.enigma.x_food.feature.payment.dto.request.SearchPaymentRequest;
 import com.enigma.x_food.feature.payment.dto.request.SplitBillRequest;
 import com.enigma.x_food.feature.payment.dto.response.PaymentResponse;
@@ -38,9 +37,9 @@ public class PaymentController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> complete(@RequestBody CompleteSplitBillRequest request) {
-        PaymentResponse paymentResponse = paymentService.completeSplitBill(request);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> complete(@PathVariable String id) {
+        PaymentResponse paymentResponse = paymentService.completeSplitBill(id);
         CommonResponse<PaymentResponse> response = CommonResponse.<PaymentResponse>builder()
                 .message("successfully complete payment for split bill")
                 .statusCode(HttpStatus.CREATED.value())

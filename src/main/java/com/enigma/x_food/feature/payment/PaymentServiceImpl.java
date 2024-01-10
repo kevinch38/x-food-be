@@ -4,7 +4,6 @@ import com.enigma.x_food.constant.EOrderStatus;
 import com.enigma.x_food.constant.EPaymentStatus;
 import com.enigma.x_food.constant.EPaymentType;
 import com.enigma.x_food.constant.ETransactionType;
-import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.friend.Friend;
 import com.enigma.x_food.feature.friend.FriendService;
 import com.enigma.x_food.feature.friend.dto.request.SearchFriendRequest;
@@ -15,7 +14,6 @@ import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.OrderRepository;
 import com.enigma.x_food.feature.order_status.OrderStatus;
 import com.enigma.x_food.feature.order_status.OrderStatusService;
-import com.enigma.x_food.feature.payment.dto.request.CompleteSplitBillRequest;
 import com.enigma.x_food.feature.payment.dto.request.SearchPaymentRequest;
 import com.enigma.x_food.feature.payment.dto.request.PaymentRequest;
 import com.enigma.x_food.feature.payment.dto.request.SplitBillRequest;
@@ -92,21 +90,24 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PaymentResponse completeSplitBill(CompleteSplitBillRequest request) {
-        validationUtil.validate(request);
-        Payment payment = findByIdOrThrowException(request.getPaymentID());
-        User user = userService.getUserById(request.getAccountID());
+    public PaymentResponse completeSplitBill(String id) {
+        Payment payment = findByIdOrThrowException(id);
 
-        if (user.getBalance().getTotalBalance()<payment.getPaymentAmount()){
+        User friend = userService.getUserById(payment.getUser().getAccountID());
+
+        User user = payment.getFriend().getUser1();;
+
+        if (user.equals(friend))
+            user = payment.getFriend().getUser2();
+
+        if (user.getBalance().getTotalBalance() < payment.getPaymentAmount())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance to process the payment");
-        }
 
-        User paidUser = userService.getUserById(payment.getUser().getAccountID());
         PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.SUCCESS);
 
         payment.setPaymentStatus(paymentStatus);
-        user.getBalance().setTotalBalance(user.getBalance().getTotalBalance()-payment.getPaymentAmount());
-        paidUser.getBalance().setTotalBalance(paidUser.getBalance().getTotalBalance()+payment.getPaymentAmount());
+        user.getBalance().setTotalBalance(user.getBalance().getTotalBalance() - payment.getPaymentAmount());
+        friend.getBalance().setTotalBalance(friend.getBalance().getTotalBalance() + payment.getPaymentAmount());
 
         return mapToResponse(paymentRepository.saveAndFlush(payment));
     }
