@@ -75,6 +75,12 @@ public class FriendServiceImpl implements FriendService {
                 .friendID(friend.getFriendID())
                 .accountID1(friend.getUser1().getAccountID())
                 .accountID2(friend.getUser2().getAccountID())
+                .accountFirstName1(friend.getUser1().getFirstName())
+                .accountFirstName2(friend.getUser2().getFirstName())
+                .accountLastName1(friend.getUser1().getLastName())
+                .accountLastName2(friend.getUser2().getLastName())
+                .imageAccount1(friend.getUser1().getProfilePhoto())
+                .imageAccount2(friend.getUser2().getProfilePhoto())
                 .build();
     }
 
