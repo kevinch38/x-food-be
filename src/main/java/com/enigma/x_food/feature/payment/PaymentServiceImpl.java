@@ -35,6 +35,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.*;
 import java.util.ArrayList;
@@ -95,19 +96,28 @@ public class PaymentServiceImpl implements PaymentService {
 
         User friend = userService.getUserById(payment.getUser().getAccountID());
 
-        User user = payment.getFriend().getUser1();;
+        User user = payment.getFriend().getUser1();
 
         if (user.equals(friend))
             user = payment.getFriend().getUser2();
+
+        if (payment.getPaymentStatus().getStatus().equals(EPaymentStatus.SUCCESS) ||
+                payment.getPaymentStatus().getStatus().equals(EPaymentStatus.EXPIRED) ||
+                payment.getPaymentStatus().getStatus().equals(EPaymentStatus.FAILED))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't proceed the payment");
 
         if (user.getBalance().getTotalBalance() < payment.getPaymentAmount())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance to process the payment");
 
         PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.SUCCESS);
 
+        BigDecimal userBalance = BigDecimal.valueOf(user.getBalance().getTotalBalance());
+        BigDecimal friendBalance = BigDecimal.valueOf(friend.getBalance().getTotalBalance());
+        BigDecimal paymentAmount = BigDecimal.valueOf(payment.getPaymentAmount());
+
         payment.setPaymentStatus(paymentStatus);
-        user.getBalance().setTotalBalance(user.getBalance().getTotalBalance() - payment.getPaymentAmount());
-        friend.getBalance().setTotalBalance(friend.getBalance().getTotalBalance() + payment.getPaymentAmount());
+        user.getBalance().setTotalBalance(userBalance.subtract(paymentAmount).doubleValue());
+        friend.getBalance().setTotalBalance(friendBalance.add(paymentAmount).doubleValue());
 
         return mapToResponse(paymentRepository.saveAndFlush(payment));
     }

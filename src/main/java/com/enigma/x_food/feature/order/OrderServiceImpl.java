@@ -45,6 +45,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,6 +144,11 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse complete(UpdateOrderRequest request) {
         validationUtil.validate(request);
         Order order = getById(request.getOrderID());
+
+        if (order.getOrderStatus().getStatus().equals(EOrderStatus.DONE) ||
+                order.getOrderStatus().getStatus().equals(EOrderStatus.REJECTED))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't complete order");
+
         User user = userService.getUserById(request.getAccountID());
 
         OrderStatus orderStatus = orderStatusService.getByStatus(EOrderStatus.DONE);
@@ -160,8 +166,11 @@ public class OrderServiceImpl implements OrderService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance to place the order");
         }
 
+        BigDecimal userBalance = BigDecimal.valueOf(user.getBalance().getTotalBalance());
+        BigDecimal orderValue = BigDecimal.valueOf(order.getOrderValue());
+
         user.getLoyaltyPoint().setLoyaltyPointAmount((int) (order.getOrderValue() / 10000));
-        user.getBalance().setTotalBalance(user.getBalance().getTotalBalance() - order.getOrderValue());
+        user.getBalance().setTotalBalance(userBalance.subtract(orderValue).doubleValue());
 
         for (OrderItem orderItem : order.getOrderItems()) {
             for (OrderItemSubVariety orderItemSubVariety : orderItem.getOrderItemSubVarieties()) {

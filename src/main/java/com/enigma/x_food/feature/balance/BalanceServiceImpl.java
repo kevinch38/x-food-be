@@ -71,6 +71,8 @@ public class BalanceServiceImpl implements BalanceService {
                 .balanceID(balance.getBalanceID())
                 .accountID(balance.getUser().getAccountID())
                 .totalBalance(balance.getTotalBalance())
+                .createdAt(balance.getCreatedAt())
+                .updatedAt(balance.getUpdatedAt())
                 .build();
     }
 }

@@ -18,10 +18,10 @@ import java.util.List;
 @RequestMapping("/api/top-up")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasRole('USER')")
 public class TopUpController {
     private final TopUpService topUpService;
 
-    @PreAuthorize("hasRole('USER')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(@RequestBody TopUpRequest request) {
         TopUpResponse topUpResponse = topUpService.createNew(request);
@@ -35,7 +35,6 @@ public class TopUpController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public ResponseEntity<?> getAll(@RequestParam String accountID) {
         SearchTopUpRequest request = SearchTopUpRequest.builder()

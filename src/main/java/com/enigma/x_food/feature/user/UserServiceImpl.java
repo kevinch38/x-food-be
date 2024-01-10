@@ -5,6 +5,7 @@ import com.enigma.x_food.constant.EVoucherStatus;
 import com.enigma.x_food.feature.balance.Balance;
 import com.enigma.x_food.feature.balance.BalanceService;
 import com.enigma.x_food.feature.balance.dto.request.NewBalanceRequest;
+import com.enigma.x_food.feature.balance.dto.response.BalanceResponse;
 import com.enigma.x_food.feature.loyalty_point.LoyaltyPoint;
 import com.enigma.x_food.feature.loyalty_point.LoyaltyPointService;
 import com.enigma.x_food.feature.loyalty_point.dto.request.NewLoyaltyPointRequest;
@@ -218,6 +219,7 @@ public class UserServiceImpl implements UserService {
             voucherResponses = List.of();
         }
         LoyaltyPointResponse loyaltyPointResponse = loyaltyPointService.findById(user.getLoyaltyPoint().getLoyaltyPointID());
+        BalanceResponse balanceResponse = balanceService.findById(user.getBalance().getBalanceID());
 
         return UserResponse.builder()
                 .accountID(user.getAccountID())
@@ -231,7 +233,7 @@ public class UserServiceImpl implements UserService {
                 .dateOfBirth(user.getDateOfBirth().toString())
                 .profilePhoto(user.getProfilePhoto())
                 .updatedAt(user.getUpdatedAt())
-                .balanceID(user.getBalance().getBalanceID())
+                .balance(balanceResponse)
                 .loyaltyPoint(loyaltyPointResponse)
                 .otpID(user.getOtp().getOtpID())
                 .vouchers(voucherResponses)

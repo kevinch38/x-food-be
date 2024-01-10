@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.user.dto.response;
 
 import com.enigma.x_food.constant.ERole;
+import com.enigma.x_food.feature.balance.dto.response.BalanceResponse;
 import com.enigma.x_food.feature.loyalty_point.dto.response.LoyaltyPointResponse;
 import com.enigma.x_food.feature.voucher.dto.response.VoucherResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -31,7 +32,7 @@ public class UserResponse {
     private byte[] profilePhoto;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;
-    private String balanceID;
+    private BalanceResponse balance;
     private LoyaltyPointResponse loyaltyPoint;
     private String otpID;
     private List<VoucherResponse> vouchers;
