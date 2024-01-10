@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/loyalty-points")
 @RequiredArgsConstructor
-@PreAuthorize("permitAll")
+@PreAuthorize("hasRole('USER')")
 @SecurityRequirement(name = "Bearer Authentication")
 public class LoyaltyPointController {
     private final LoyaltyPointService loyaltyPointService;

@@ -23,11 +23,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@SecurityRequirement(name = "Bearer Authentication")
 public class UserController {
     private final UserService userService;
 
-    @PreAuthorize("permitAll")
     @PostMapping(path = "/register",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(@RequestBody NewUserRequest request) {
         UserResponse userResponse = userService.createNew(request);
@@ -41,6 +39,7 @@ public class UserController {
                 .body(response);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("permitAll")
     @PutMapping(path = "/profile/photo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateProfilePhoto(
@@ -112,7 +111,7 @@ public class UserController {
                 .body(response);
     }
 
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping(value = "/{phoneNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {
 
@@ -137,7 +136,7 @@ public class UserController {
 
     }
 
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping(value = "/ktp/{ktpID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByKtpID(@PathVariable String ktpID) {
 
@@ -163,7 +162,7 @@ public class UserController {
     }
 
 
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(
             @RequestBody UpdateUserRequest request

@@ -35,7 +35,7 @@ public class TopUpController {
                 .body(response);
     }
 
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public ResponseEntity<?> getAll(@RequestParam String accountID) {
         SearchTopUpRequest request = SearchTopUpRequest.builder()

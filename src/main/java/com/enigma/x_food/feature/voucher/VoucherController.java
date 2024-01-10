@@ -27,6 +27,7 @@ import java.util.List;
 public class VoucherController {
     private final VoucherService voucherService;
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(@RequestBody NewVoucherRequest request) {
         VoucherResponse voucherResponse = voucherService.createNew(request);
@@ -40,6 +41,7 @@ public class VoucherController {
                 .body(response);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,

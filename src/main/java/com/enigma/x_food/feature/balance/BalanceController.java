@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/balances")
 @RequiredArgsConstructor
-@PreAuthorize("permitAll")
+@PreAuthorize("hasRole('USER')")
 @SecurityRequirement(name = "Bearer Authentication")
 public class BalanceController {
     private final BalanceService balanceService;

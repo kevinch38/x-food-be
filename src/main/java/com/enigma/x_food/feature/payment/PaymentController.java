@@ -22,6 +22,7 @@ import java.util.List;
 public class PaymentController {
     private final PaymentService paymentService;
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(@RequestBody List<SplitBillRequest> request) {
         List<PaymentResponse> paymentResponse = paymentService.createSplitBill(request);
@@ -35,6 +36,7 @@ public class PaymentController {
                 .body(response);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public ResponseEntity<?> getAll(@RequestParam String accountID) {
         SearchPaymentRequest request = SearchPaymentRequest.builder()

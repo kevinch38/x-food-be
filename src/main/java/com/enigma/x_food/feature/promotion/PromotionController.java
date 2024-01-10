@@ -128,7 +128,7 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_STAFF', 'MARKETING_HEAD')")
+    @PreAuthorize("hasRole('MARKETING_STAFF')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdatePromotionRequest request) throws AuthenticationException {
         PromotionResponse promotionResponse = promotionService.update(request);
@@ -142,7 +142,7 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_HEAD')")
+    @PreAuthorize("hasRole('MARKETING_HEAD')")
     @PutMapping("/approve/active/{id}")
     public ResponseEntity<?> approveToActive(@PathVariable String id)  {
         promotionService.approveToActive(id);
@@ -157,7 +157,7 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_HEAD')")
+    @PreAuthorize("hasRole('MARKETING_HEAD')")
     @PutMapping("/approve/inactive/{id}")
     public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
         promotionService.deleteApprove(id);
@@ -172,7 +172,7 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_HEAD')")
+    @PreAuthorize("hasRole('MARKETING_HEAD')")
     @PutMapping("/reject/update/{id}")
     public ResponseEntity<?> rejectUpdate(@PathVariable String id)  {
         promotionService.rejectUpdate(id);
@@ -201,7 +201,7 @@ public class PromotionController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_STAFF')")
+    @PreAuthorize("hasRole('MARKETING_STAFF')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) throws AuthenticationException {
         promotionService.deleteById(id);

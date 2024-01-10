@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/pins")
 @RequiredArgsConstructor
-@PreAuthorize("permitAll")
+@PreAuthorize("hasRole('USER')")
 @SecurityRequirement(name = "Bearer Authentication")
 public class PinController {
     private final PinService pinService;

@@ -7,6 +7,7 @@ import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResp
 import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.util.PagingUtil;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,10 +28,11 @@ import java.util.List;
 @RestController
 @RequestMapping("api/merchants/branches")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
 public class MerchantBranchController {
     private final MerchantBranchService merchantBranchService;
 
-    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF','SUPER_ADMIN')")
+    @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(
             @RequestParam String merchantID,
@@ -162,7 +164,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(
             @RequestParam String branchID,
@@ -200,7 +202,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("hasRole('PARTNERSHIP_HEAD')")
     @PutMapping("/approve/active/{id}")
     public ResponseEntity<?> approveToActive(@PathVariable String id)  {
         merchantBranchService.approveToActive(id);
@@ -215,7 +217,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("hasRole('PARTNERSHIP_HEAD')")
     @PutMapping("/approve/inactive/{id}")
     public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
         merchantBranchService.deleteApprove(id);
@@ -230,7 +232,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("hasRole('PARTNERSHIP_HEAD')")
     @PutMapping("/reject/update/{id}")
     public ResponseEntity<?> rejectUpdate(@PathVariable String id)  {
         merchantBranchService.rejectUpdate(id);
@@ -245,7 +247,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF')")
+    @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
     @DeleteMapping("/{branchID}")
     public ResponseEntity<?> delete(@PathVariable String branchID) throws AuthenticationException {
         merchantBranchService.deleteById(branchID);

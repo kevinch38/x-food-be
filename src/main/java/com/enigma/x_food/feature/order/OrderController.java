@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("permitAll")
+@PreAuthorize("hasRole('USER')")
 public class OrderController {
     private final OrderService orderService;
 

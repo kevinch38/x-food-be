@@ -44,7 +44,7 @@ public class CityController {
                 .status(HttpStatus.OK)
                 .body(response);
     }
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("permitAll")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getById(@PathVariable String id) {
         CityResponse cityResponse = cityService.getById(id);

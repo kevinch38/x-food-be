@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/friends")
 @RequiredArgsConstructor
-@PreAuthorize("permitAll")
+@PreAuthorize("hasRole('USER')")
 @SecurityRequirement(name = "Bearer Authentication")
 public class FriendController {
     private final FriendService friendService;
@@ -36,7 +36,7 @@ public class FriendController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll(
+    public ResponseEntity<?> getAllOrGetByFriendID(
             @RequestParam String accountID,
             @RequestParam(required = false) String friendID
     ) {

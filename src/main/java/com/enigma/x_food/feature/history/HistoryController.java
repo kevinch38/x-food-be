@@ -71,7 +71,7 @@ public class HistoryController {
                 .body(response);
 
     }
-    @PreAuthorize("permitAll")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{accountID}")
     public ResponseEntity<?> getAllByAccountID(
             @RequestParam(required = false, defaultValue = "asc") String direction,
