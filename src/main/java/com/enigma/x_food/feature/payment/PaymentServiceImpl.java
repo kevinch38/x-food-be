@@ -91,16 +91,22 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public PaymentResponse completeSplitBill(CompleteSplitBillRequest request) {
         validationUtil.validate(request);
         Payment payment = findByIdOrThrowException(request.getPaymentID());
         User user = userService.getUserById(request.getAccountID());
-        PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.SUCCESS);
 
         if (user.getBalance().getTotalBalance()<payment.getPaymentAmount()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance to process the payment");
         }
+
+        User paidUser = userService.getUserById(payment.getUser().getAccountID());
+        PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.SUCCESS);
+
         payment.setPaymentStatus(paymentStatus);
+        user.getBalance().setTotalBalance(user.getBalance().getTotalBalance()-payment.getPaymentAmount());
+        paidUser.getBalance().setTotalBalance(paidUser.getBalance().getTotalBalance()+payment.getPaymentAmount());
 
         return mapToResponse(paymentRepository.saveAndFlush(payment));
     }
