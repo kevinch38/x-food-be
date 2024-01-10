@@ -152,7 +152,7 @@ public class MerchantBranchController {
     }
 
     @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(
             @RequestParam String branchID,
             @RequestParam String branchName,
