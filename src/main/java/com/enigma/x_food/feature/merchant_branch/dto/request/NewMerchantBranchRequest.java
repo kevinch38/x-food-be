@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.merchant_branch.dto.request;
 
+import com.enigma.x_food.feature.branch_working_hours.dto.request.NewBranchWorkingHoursRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,7 +26,7 @@ public class NewMerchantBranchRequest {
     @NotBlank(message = "Timezone cannot be empty")
     private String timezone;
     @NotBlank(message = "Branch working hours ID cannot be empty")
-    private String branchWorkingHoursID;
+    private List<NewBranchWorkingHoursRequest> branchWorkingHours;
     @NotBlank(message = "City ID cannot be empty")
     private String cityID;
     @NotNull(message = "Image cannot be empty")

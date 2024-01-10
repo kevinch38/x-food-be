@@ -3,8 +3,6 @@ package com.enigma.x_food.feature.branch_working_hours;
 import com.enigma.x_food.feature.branch_working_hours.dto.request.NewBranchWorkingHoursRequest;
 import com.enigma.x_food.feature.branch_working_hours.dto.request.UpdateBranchWorkingHoursRequest;
 import com.enigma.x_food.feature.branch_working_hours.dto.response.BranchWorkingHoursResponse;
-import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
-import com.enigma.x_food.feature.merchant_branch.MerchantBranchService;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,36 +12,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
+import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class BranchWorkingHoursServiceImpl implements BranchWorkingHoursService {
     private final BranchWorkingHoursRepository branchWorkingHoursRepository;
-    private final MerchantBranchService merchantBranchService;
-    private final EntityManager entityManager;
     private final ValidationUtil validationUtil;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BranchWorkingHours createNew(NewBranchWorkingHoursRequest request) {
+    public List<BranchWorkingHours> createNew(List<NewBranchWorkingHoursRequest> request) {
         try {
             log.info("Start createNew");
             validationUtil.validate(request);
 
-            MerchantBranch merchantBranch = merchantBranchService.getById(request.getMerchantBranchID());
+            List<BranchWorkingHours> branchWorkingHours = new ArrayList<>();
+            for (NewBranchWorkingHoursRequest newBranchWorkingHoursRequest : request) {
+                BranchWorkingHours branchWorkingHour = BranchWorkingHours.builder()
+                        .openHour(newBranchWorkingHoursRequest.getOpenHour())
+                        .closeHour(newBranchWorkingHoursRequest.getCloseHour())
+                        .days(DayOfWeek.valueOf(newBranchWorkingHoursRequest.getDays()))
+                        .build();
+                branchWorkingHours.add(branchWorkingHour);
+            }
 
-            BranchWorkingHours branchWorkingHours = BranchWorkingHours.builder()
-                    .openHour(request.getOpenHour())
-                    .closeHour(request.getCloseHour())
-                    .days(request.getDays())
-                    .merchantBranch(entityManager.merge(merchantBranch))
-                    .build();
-
-            branchWorkingHoursRepository.save(branchWorkingHours);
+            List<BranchWorkingHours> branchWorkingHoursList = branchWorkingHoursRepository.saveAll(branchWorkingHours);
             log.info("End createNew");
-            return branchWorkingHours;
+            return branchWorkingHoursList;
         } catch (DataIntegrityViolationException e) {
             log.error("Error createNew: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.CONFLICT, "branchWorkingHours already exist");
@@ -57,7 +56,7 @@ public class BranchWorkingHoursServiceImpl implements BranchWorkingHoursService 
         BranchWorkingHours branchWorkingHours = findByIdOrThrowException(request.getBranchWorkingHoursID());
         branchWorkingHours.setCloseHour(request.getCloseHour());
         branchWorkingHours.setOpenHour(request.getOpenHour());
-        branchWorkingHours.setDays(request.getDays());
+        branchWorkingHours.setDays(DayOfWeek.valueOf(request.getDays()));
 
         return mapToResponse(branchWorkingHoursRepository.saveAndFlush(branchWorkingHours));
     }
@@ -79,8 +78,7 @@ public class BranchWorkingHoursServiceImpl implements BranchWorkingHoursService 
                 .branchWorkingHoursID(branchWorkingHours.getBranchWorkingHoursID())
                 .openHour(branchWorkingHours.getOpenHour())
                 .closeHour(branchWorkingHours.getCloseHour())
-                .days(branchWorkingHours.getDays())
-                .merchantBranchID(branchWorkingHours.getMerchantBranch().getBranchWorkingHoursID())
+                .days(branchWorkingHours.getDays().name())
                 .createdAt(branchWorkingHours.getCreatedAt())
                 .updatedAt(branchWorkingHours.getUpdatedAt())
                 .build();

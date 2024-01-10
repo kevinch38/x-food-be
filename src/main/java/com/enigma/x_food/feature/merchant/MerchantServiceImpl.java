@@ -7,6 +7,7 @@ import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
+import com.enigma.x_food.feature.branch_working_hours.dto.response.BranchWorkingHoursResponse;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
 import com.enigma.x_food.feature.item.Item;
@@ -274,6 +275,17 @@ public class MerchantServiceImpl implements MerchantService {
                 MerchantServiceImpl::getItemResponse
         ).collect(Collectors.toList());
 
+        List<BranchWorkingHoursResponse> branchWorkingHoursResponses = mb.getBranchWorkingHours().stream().map(
+                bwh -> BranchWorkingHoursResponse.builder()
+                        .branchWorkingHoursID(bwh.getBranchWorkingHoursID())
+                        .openHour(bwh.getOpenHour())
+                        .closeHour(bwh.getCloseHour())
+                        .days(bwh.getDays().name())
+                        .createdAt(bwh.getCreatedAt())
+                        .updatedAt(bwh.getUpdatedAt())
+                        .build()
+        ).collect(Collectors.toList());
+
         return MerchantBranchResponse.builder()
                 .branchID(mb.getBranchID())
                 .merchantID(mb.getMerchant().getMerchantID())
@@ -282,7 +294,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .timezone(mb.getTimezone())
                 .createdAt(mb.getCreatedAt())
                 .updatedAt(mb.getUpdatedAt())
-                .branchWorkingHoursID(mb.getBranchWorkingHoursID())
+                .branchWorkingHours(branchWorkingHoursResponses)
                 .city(CityResponse.builder()
                         .cityID(city.getCityID())
                         .cityName(city.getCityName())

@@ -54,7 +54,7 @@ public class MerchantBranchController {
                 .branchName(branchName)
                 .address(address)
                 .timezone(timezone)
-                .branchWorkingHoursID(branchWorkingHoursID)
+//                .branchWorkingHours(branchWorkingHours)
                 .cityID(cityID)
                 .image(image)
                 .picName(picName)

@@ -6,6 +6,9 @@ import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
+import com.enigma.x_food.feature.branch_working_hours.BranchWorkingHours;
+import com.enigma.x_food.feature.branch_working_hours.BranchWorkingHoursService;
+import com.enigma.x_food.feature.branch_working_hours.dto.response.BranchWorkingHoursResponse;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.city.CityService;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
@@ -54,6 +57,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     private final MerchantBranchRepository merchantBranchRepository;
     private final MerchantService merchantService;
     private final MerchantBranchStatusService merchantBranchStatusService;
+    private final BranchWorkingHoursService branchWorkingHoursService;
     private final MerchantBranchUpdateRequestService merchantBranchUpdateRequestService;
     private final ValidationUtil validationUtil;
     private final CityService cityService;
@@ -80,12 +84,14 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
             merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.ACTIVE);
 
+        List<BranchWorkingHours> branchWorkingHours = branchWorkingHoursService.createNew(request.getBranchWorkingHours());
+
         MerchantBranch branch = MerchantBranch.builder()
                 .merchant(merchant)
                 .branchName(request.getBranchName())
                 .address(request.getAddress())
                 .timezone(request.getTimezone())
-                .branchWorkingHoursID(request.getBranchWorkingHoursID())
+                .branchWorkingHours(branchWorkingHours)
                 .picName(request.getPicName())
                 .picNumber(request.getPicNumber())
                 .picEmail(request.getPicEmail())
@@ -98,6 +104,9 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .admin(admin)
                 .joinDate(request.getJoinDate())
                 .build();
+
+        for (BranchWorkingHours branchWorkingHour : branchWorkingHours)
+            branchWorkingHour.setMerchantBranch(branch);
 
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.CREATE_BRANCH.name())
@@ -259,6 +268,17 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
             ).collect(Collectors.toList());
         }
 
+        List<BranchWorkingHoursResponse> branchWorkingHoursResponses = branch.getBranchWorkingHours().stream().map(
+                bwh -> BranchWorkingHoursResponse.builder()
+                        .branchWorkingHoursID(bwh.getBranchWorkingHoursID())
+                        .openHour(bwh.getOpenHour())
+                        .closeHour(bwh.getCloseHour())
+                        .days(bwh.getDays().name())
+                        .createdAt(bwh.getCreatedAt())
+                        .updatedAt(bwh.getUpdatedAt())
+                        .build()
+        ).collect(Collectors.toList());
+
         return MerchantBranchResponse.builder()
                 .branchID(branch.getBranchID())
                 .merchantID(branch.getMerchant().getMerchantID())
@@ -267,7 +287,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .timezone(branch.getTimezone())
                 .createdAt(branch.getCreatedAt())
                 .updatedAt(branch.getUpdatedAt())
-                .branchWorkingHoursID(branch.getBranchWorkingHoursID())
+                .branchWorkingHours(branchWorkingHoursResponses)
                 .city(
                         CityResponse.builder()
                                 .cityID(city.getCityID())

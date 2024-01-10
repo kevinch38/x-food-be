@@ -1,6 +1,7 @@
 package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.feature.admin.Admin;
+import com.enigma.x_food.feature.branch_working_hours.BranchWorkingHours;
 import com.enigma.x_food.feature.city.City;
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.merchant.Merchant;
@@ -64,4 +65,6 @@ public class MerchantBranch extends BaseEntity {
     private MerchantBranchStatus merchantBranchStatus;
     @OneToMany(mappedBy = "merchantBranch")
     List<SubVariety> subVarieties;
+    @OneToMany(mappedBy = "merchantBranch")
+    List<BranchWorkingHours> branchWorkingHours;
 }

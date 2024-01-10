@@ -111,7 +111,6 @@ public class UserController {
                 .body(response);
     }
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping(value = "/{phoneNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByPhoneNumber(@PathVariable String phoneNumber) {
 
@@ -137,6 +136,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('USER')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value = "/ktp/{ktpID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByKtpID(@PathVariable String ktpID) {
 
@@ -163,6 +163,7 @@ public class UserController {
 
 
     @PreAuthorize("hasRole('USER')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(
             @RequestBody UpdateUserRequest request

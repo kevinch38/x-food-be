@@ -4,8 +4,10 @@ import com.enigma.x_food.feature.branch_working_hours.dto.request.NewBranchWorki
 import com.enigma.x_food.feature.branch_working_hours.dto.request.UpdateBranchWorkingHoursRequest;
 import com.enigma.x_food.feature.branch_working_hours.dto.response.BranchWorkingHoursResponse;
 
+import java.util.List;
+
 public interface BranchWorkingHoursService {
-    BranchWorkingHours createNew(NewBranchWorkingHoursRequest request);
+    List<BranchWorkingHours> createNew(List<NewBranchWorkingHoursRequest> request);
     BranchWorkingHoursResponse update(UpdateBranchWorkingHoursRequest request);
     BranchWorkingHoursResponse findById(String id);
 }

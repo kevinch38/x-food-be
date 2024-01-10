@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
@@ -14,10 +15,9 @@ import java.sql.Timestamp;
 @Builder
 public class BranchWorkingHoursResponse {
     private String branchWorkingHoursID;
-    private Timestamp openHour;
-    private Timestamp closeHour;
-    private Timestamp days;
-    private String merchantBranchID;
+    private LocalTime openHour;
+    private LocalTime closeHour;
+    private String days;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")

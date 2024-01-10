@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.merchant_branch.dto.response;
 
+import com.enigma.x_food.feature.branch_working_hours.dto.response.BranchWorkingHoursResponse;
 import com.enigma.x_food.feature.city.dto.response.CityResponse;
 import com.enigma.x_food.feature.item.dto.response.ItemResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -25,7 +26,7 @@ public class MerchantBranchResponse {
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp updatedAt;
-    private String branchWorkingHoursID;
+    private List<BranchWorkingHoursResponse> branchWorkingHours;
     private String status;
     private CityResponse city;
     private List<ItemResponse> items;

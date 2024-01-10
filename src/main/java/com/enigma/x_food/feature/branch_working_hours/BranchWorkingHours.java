@@ -9,7 +9,8 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,12 +25,13 @@ public class BranchWorkingHours extends BaseEntity {
     @Column(name = "branch_working_hours_id")
     private String branchWorkingHoursID;
     @Column(name = "open_hour")
-    private Timestamp openHour;
+    private LocalTime openHour;
     @Column(name = "close_hour")
-    private Timestamp closeHour;
+    private LocalTime closeHour;
     @Column(name = "days")
-    private Timestamp days;
-    @OneToOne
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek days;
+    @ManyToOne
     @JoinColumn(name = "branch_id")
     private MerchantBranch merchantBranch;
 }

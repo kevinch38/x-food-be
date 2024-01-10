@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
@@ -14,11 +15,11 @@ import java.sql.Timestamp;
 @Builder
 public class NewBranchWorkingHoursRequest {
     @NotNull(message = "Open hour cannot be empty")
-    private Timestamp openHour;
+    private LocalTime openHour;
     @NotNull(message = "Close hour cannot be empty")
-    private Timestamp closeHour;
+    private LocalTime closeHour;
     @NotNull(message = "Days cannot be empty")
-    private Timestamp days;
+    private String days;
     @NotNull(message = "Merchant branch ID cannot be empty")
     private String merchantBranchID;
 }
