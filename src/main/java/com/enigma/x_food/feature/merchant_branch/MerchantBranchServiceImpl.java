@@ -2,7 +2,6 @@ package com.enigma.x_food.feature.merchant_branch;
 
 import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EMerchantBranchStatus;
-import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
@@ -44,6 +43,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,9 +78,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
         MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.WAITING_FOR_CREATION_APPROVAL);
 
-        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
-            merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.ACTIVE);
-
         List<BranchWorkingHours> branchWorkingHours = branchWorkingHoursService.createNew(request.getBranchWorkingHours());
 
         MerchantBranch branch = MerchantBranch.builder()
@@ -98,7 +95,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                         .build())
                 .merchantBranchStatus(merchantBranchStatus)
                 .admin(admin)
-                .joinDate(request.getJoinDate())
                 .build();
 
         for (BranchWorkingHours branchWorkingHour : branchWorkingHours)
@@ -131,14 +127,10 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         CityResponse cityResponse = cityService.getById(request.getCityID());
         MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.WAITING_FOR_UPDATE_APPROVAL);
 
-        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
-            merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.ACTIVE);
-
         merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
         merchantBranch.setBranchName(request.getBranchName());
         merchantBranch.setAddress(request.getAddress());
         merchantBranch.setTimezone(request.getTimezone());
-        merchantBranch.setBranchWorkingHoursID(request.getBranchWorkingHoursID());
         merchantBranch.setPicName(request.getPicName());
         merchantBranch.setPicNumber(request.getPicNumber());
         merchantBranch.setPicEmail(request.getPicEmail());
@@ -209,9 +201,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         MerchantBranch merchantBranch = findByIdOrThrowException(id);
         MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.WAITING_FOR_DELETION_APPROVAL);
 
-        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
-            merchantBranchStatus = merchantBranchStatusService.getByStatus(EMerchantBranchStatus.INACTIVE);
-
         merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
 
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
@@ -249,10 +238,14 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         return mapToResponse(merchantBranchRepository.saveAndFlush(merchantBranch));
     }
 
-    private void updateStatus(String id, EMerchantBranchStatus inactive) {
+    private void updateStatus(String id, EMerchantBranchStatus status) {
         MerchantBranch merchantBranch = findByIdOrThrowException(id);
 
-        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(inactive);
+        if (status.equals(EMerchantBranchStatus.ACTIVE) &&
+                merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_CREATION_APPROVAL))
+            merchantBranch.setJoinDate(Timestamp.from(Instant.now()));
+
+        MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(status);
         merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
 
         merchantBranchRepository.saveAndFlush(merchantBranch);

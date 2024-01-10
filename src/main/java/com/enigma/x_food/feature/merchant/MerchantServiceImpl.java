@@ -3,7 +3,6 @@ package com.enigma.x_food.feature.merchant;
 import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EMerchantBranchStatus;
 import com.enigma.x_food.constant.EMerchantStatus;
-import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
@@ -48,6 +47,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.criteria.Predicate;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -78,11 +78,7 @@ public class MerchantServiceImpl implements MerchantService {
 
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL);
 
-        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
-            merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.ACTIVE);
-
         Merchant merchant = Merchant.builder()
-                .joinDate(request.getJoinDate())
                 .merchantName(request.getMerchantName())
                 .picName(request.getPicName())
                 .picNumber(request.getPicNumber())
@@ -154,9 +150,6 @@ public class MerchantServiceImpl implements MerchantService {
 
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_UPDATE_APPROVAL);
 
-        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
-            merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.ACTIVE);
-
         merchant.setMerchantStatus(merchantStatus);
         merchant.setMerchantStatus(merchantStatus);
         merchant.setMerchantName(request.getMerchantName());
@@ -205,8 +198,6 @@ public class MerchantServiceImpl implements MerchantService {
         Merchant merchant = findByIdOrThrowException(id);
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.WAITING_FOR_DELETION_APPROVAL);
 
-        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
-            merchantStatus = merchantStatusService.getByStatus(EMerchantStatus.INACTIVE);
         merchant.setMerchantStatus(merchantStatus);
 
         for (MerchantBranch merchantBranch : merchant.getMerchantBranches()) {
@@ -232,10 +223,14 @@ public class MerchantServiceImpl implements MerchantService {
         updateStatus(id, EMerchantStatus.INACTIVE);
     }
 
-    private void updateStatus(String id, EMerchantStatus active) {
+    private void updateStatus(String id, EMerchantStatus status) {
         Merchant merchant = findByIdOrThrowException(id);
 
-        MerchantStatus merchantStatus = merchantStatusService.getByStatus(active);
+        if (status.equals(EMerchantStatus.ACTIVE) &&
+                merchant.getMerchantStatus().getStatus().equals(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL))
+            merchant.setJoinDate(Timestamp.from(Instant.now()));
+
+        MerchantStatus merchantStatus = merchantStatusService.getByStatus(status);
         merchant.setMerchantStatus(merchantStatus);
 
         merchantRepository.saveAndFlush(merchant);

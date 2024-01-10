@@ -29,7 +29,7 @@ import java.util.List;
 public class PromotionController {
     private final PromotionService promotionService;
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'MARKETING_STAFF')")
+    @PreAuthorize("hasRole('MARKETING_STAFF')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(@RequestBody NewPromotionRequest request) throws AuthenticationException {
         PromotionResponse promotionResponse = promotionService.createNew(request);

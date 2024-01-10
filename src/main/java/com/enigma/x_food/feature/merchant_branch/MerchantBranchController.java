@@ -41,7 +41,7 @@ public class MerchantBranchController {
     }
 
     @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
-    @PostMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateImage(@RequestParam MultipartFile image,
                                          @PathVariable String id) throws IOException {
 

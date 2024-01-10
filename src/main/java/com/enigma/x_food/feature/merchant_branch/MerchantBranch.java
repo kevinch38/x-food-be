@@ -38,8 +38,6 @@ public class MerchantBranch extends BaseEntity {
     private String address;
     @Column(name = "timezone", nullable = false, length = 50)
     private String timezone;
-    @Column(name = "branch_working_hours_id", nullable = false)
-    private String branchWorkingHoursID;
     @Column(name = "pic_name", nullable = false, length = 50)
     private String picName;
     @Column(name = "pic_number", nullable = false, length = 15)
@@ -49,7 +47,7 @@ public class MerchantBranch extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
-    @Column(name = "join_date", nullable = false)
+    @Column(name = "join_date")
     private Timestamp joinDate;
     @Lob
     @Column(name = "image", nullable = false)

@@ -5,11 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -25,7 +23,7 @@ public class NewMerchantBranchRequest {
     private String address;
     @NotBlank(message = "Timezone cannot be empty")
     private String timezone;
-    @NotBlank(message = "Branch working hours ID cannot be empty")
+    @NotNull(message = "Branch working hours ID cannot be empty")
     private List<NewBranchWorkingHoursRequest> branchWorkingHours;
     @NotBlank(message = "City ID cannot be empty")
     private String cityID;
@@ -35,6 +33,4 @@ public class NewMerchantBranchRequest {
     private String picNumber;
     @NotBlank(message = "PIC email cannot be empty")
     private String picEmail;
-    @NotNull(message = "Join date cannot be empty")
-    private Timestamp joinDate;
 }

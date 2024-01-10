@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -34,10 +31,9 @@ import java.util.List;
 public class MerchantController {
     private final MerchantService merchantService;
 
-    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF','SUPER_ADMIN')")
+    @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNew(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String joinDate,
             @RequestParam String merchantName,
             @RequestParam String picName,
             @RequestParam String picNumber,
@@ -47,10 +43,7 @@ public class MerchantController {
             @RequestParam MultipartFile image,
             @RequestParam MultipartFile logoImage
     ) throws IOException, AuthenticationException {
-        Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(joinDate, DateTimeFormatter.ISO_DATE_TIME));
-
         NewMerchantRequest request = NewMerchantRequest.builder()
-                .joinDate(timestamp)
                 .merchantDescription(merchantDescription)
                 .merchantName(merchantName)
                 .picName(picName)
@@ -174,7 +167,7 @@ public class MerchantController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'PARTNERSHIP_HEAD')")
+    @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(
             @RequestParam String merchantID,
@@ -240,7 +233,7 @@ public class MerchantController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF')")
+    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMerchantById(@PathVariable String id) throws AuthenticationException {
         merchantService.deleteById(id);

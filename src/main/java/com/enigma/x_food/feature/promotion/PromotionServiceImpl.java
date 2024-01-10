@@ -71,9 +71,6 @@ public class PromotionServiceImpl implements PromotionService {
         Merchant merchant = merchantService.getById(request.getMerchantID());
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.WAITING_FOR_CREATION_APPROVAL);
 
-        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
-            promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
-
         Promotion promotion = Promotion.builder()
                 .merchant(merchant)
                 .cost(request.getCost())
@@ -151,9 +148,6 @@ public class PromotionServiceImpl implements PromotionService {
             throw new AuthenticationException("Not Authorized");
         }
 
-        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
-            promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.ACTIVE);
-
         Merchant merchant = merchantService.getById(request.getMerchantID());
         promotion.setPromotionStatus(promotionStatus);
         promotion.setQuantity(request.getQuantity());
@@ -215,9 +209,6 @@ public class PromotionServiceImpl implements PromotionService {
         } catch (Exception e) {
             throw new AuthenticationException("Not Authorized");
         }
-
-        if (admin.getRole().getRole().equals(ERole.ROLE_SUPER_ADMIN))
-            promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.INACTIVE);
 
         promotion.setPromotionStatus(promotionStatus);
 
