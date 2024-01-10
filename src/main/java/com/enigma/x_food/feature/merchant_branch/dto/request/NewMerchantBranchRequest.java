@@ -29,8 +29,6 @@ public class NewMerchantBranchRequest {
     private List<NewBranchWorkingHoursRequest> branchWorkingHours;
     @NotBlank(message = "City ID cannot be empty")
     private String cityID;
-    @NotNull(message = "Image cannot be empty")
-    private MultipartFile image;
     @NotBlank(message = "PIC name cannot be empty")
     private String picName;
     @NotBlank(message = "PIC number cannot be empty")

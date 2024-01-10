@@ -1,10 +1,7 @@
 package com.enigma.x_food.feature.merchant_branch;
 
-import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
-import com.enigma.x_food.feature.merchant_branch.dto.request.SearchActiveMerchantBranchRequest;
-import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranchRequest;
+import com.enigma.x_food.feature.merchant_branch.dto.request.*;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
-import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.util.PagingUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -19,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -33,37 +27,30 @@ public class MerchantBranchController {
     private final MerchantBranchService merchantBranchService;
 
     @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNew(
-            @RequestParam String merchantID,
-            @RequestParam String branchName,
-            @RequestParam String address,
-            @RequestParam String timezone,
-            @RequestParam String branchWorkingHoursID,
-            @RequestParam String cityID,
-            @RequestParam String picName,
-            @RequestParam String picNumber,
-            @RequestParam String picEmail,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String joinDate,
-            @RequestParam MultipartFile image
-    ) throws IOException, AuthenticationException {
-        Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(joinDate, DateTimeFormatter.ISO_DATE_TIME));
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createNew(@RequestBody NewMerchantBranchRequest request) throws AuthenticationException, IOException {
+        MerchantBranchResponse merchantBranchResponse = merchantBranchService.createNew(request);
+        CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
+                .message("successfully create new merchant branch")
+                .statusCode(HttpStatus.CREATED.value())
+                .data(merchantBranchResponse)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
 
-        NewMerchantBranchRequest request = NewMerchantBranchRequest.builder()
-                .merchantID(merchantID)
-                .branchName(branchName)
-                .address(address)
-                .timezone(timezone)
-//                .branchWorkingHours(branchWorkingHours)
-                .cityID(cityID)
+    @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
+    @PostMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateImage(@RequestParam MultipartFile image,
+                                         @PathVariable String id) throws IOException {
+
+        UpdateImageMerchantBranchRequest request = UpdateImageMerchantBranchRequest.builder()
+                .merchantID(id)
                 .image(image)
-                .picName(picName)
-                .picNumber(picNumber)
-                .picEmail(picEmail)
-                .joinDate(timestamp)
                 .build();
 
-        MerchantBranchResponse merchantBranchResponse = merchantBranchService.createNew(request);
+        MerchantBranchResponse merchantBranchResponse = merchantBranchService.updateImage(request);
         CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
                 .message("successfully create new merchant branch")
                 .statusCode(HttpStatus.CREATED.value())
@@ -204,7 +191,7 @@ public class MerchantBranchController {
 
     @PreAuthorize("hasRole('PARTNERSHIP_HEAD')")
     @PutMapping("/approve/active/{id}")
-    public ResponseEntity<?> approveToActive(@PathVariable String id)  {
+    public ResponseEntity<?> approveToActive(@PathVariable String id) {
         merchantBranchService.approveToActive(id);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
@@ -219,7 +206,7 @@ public class MerchantBranchController {
 
     @PreAuthorize("hasRole('PARTNERSHIP_HEAD')")
     @PutMapping("/approve/inactive/{id}")
-    public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
+    public ResponseEntity<?> approveToInactive(@PathVariable String id) {
         merchantBranchService.deleteApprove(id);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
@@ -234,7 +221,7 @@ public class MerchantBranchController {
 
     @PreAuthorize("hasRole('PARTNERSHIP_HEAD')")
     @PutMapping("/reject/update/{id}")
-    public ResponseEntity<?> rejectUpdate(@PathVariable String id)  {
+    public ResponseEntity<?> rejectUpdate(@PathVariable String id) {
         merchantBranchService.rejectUpdate(id);
 
         CommonResponse<String> response = CommonResponse.<String>builder()

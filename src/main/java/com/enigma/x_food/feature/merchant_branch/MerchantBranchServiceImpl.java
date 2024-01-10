@@ -18,10 +18,7 @@ import com.enigma.x_food.feature.item_variety.ItemVariety;
 import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
-import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
-import com.enigma.x_food.feature.merchant_branch.dto.request.SearchActiveMerchantBranchRequest;
-import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
-import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranchRequest;
+import com.enigma.x_food.feature.merchant_branch.dto.request.*;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatus;
 import com.enigma.x_food.feature.merchant_branch_status.MerchantBranchStatusService;
@@ -95,7 +92,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .picName(request.getPicName())
                 .picNumber(request.getPicNumber())
                 .picEmail(request.getPicEmail())
-                .image(request.getImage().getBytes())
                 .city(City.builder()
                         .cityID(cityResponse.getCityID())
                         .cityName(cityResponse.getCityName())
@@ -242,6 +238,15 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         MerchantBranch merchantBranch = merchantBranchUpdateRequestService.getById(id);
 
         merchantBranchRepository.saveAndFlush(merchantBranch);
+    }
+
+    @Override
+    public MerchantBranchResponse updateImage(UpdateImageMerchantBranchRequest request) throws IOException {
+        MerchantBranch merchantBranch = merchantBranchUpdateRequestService.getById(request.getMerchantID());
+
+        merchantBranch.setImage(request.getImage().getBytes());
+
+        return mapToResponse(merchantBranchRepository.saveAndFlush(merchantBranch));
     }
 
     private void updateStatus(String id, EMerchantBranchStatus inactive) {

@@ -1,11 +1,10 @@
 package com.enigma.x_food.feature.merchant_branch;
 
-import com.enigma.x_food.feature.merchant_branch.dto.request.NewMerchantBranchRequest;
-import com.enigma.x_food.feature.merchant_branch.dto.request.SearchActiveMerchantBranchRequest;
-import com.enigma.x_food.feature.merchant_branch.dto.request.SearchMerchantBranchRequest;
-import com.enigma.x_food.feature.merchant_branch.dto.request.UpdateMerchantBranchRequest;
+import com.enigma.x_food.feature.merchant_branch.dto.request.*;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
 import org.apache.tomcat.websocket.AuthenticationException;
+import org.hibernate.sql.Update;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,4 +20,5 @@ public interface MerchantBranchService {
     void deleteApprove(String id);
     void approveToActive(String id);
     void rejectUpdate(String id);
+    MerchantBranchResponse updateImage(UpdateImageMerchantBranchRequest request) throws IOException;
 }

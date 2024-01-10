@@ -161,9 +161,6 @@ public class UserController {
 
     }
 
-
-    @PreAuthorize("hasRole('USER')")
-    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(
             @RequestBody UpdateUserRequest request
