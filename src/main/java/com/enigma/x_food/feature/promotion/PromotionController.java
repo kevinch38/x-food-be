@@ -141,7 +141,7 @@ public class PromotionController {
 
     @PreAuthorize("hasRole('MARKETING_HEAD')")
     @PutMapping("/approve/active")
-    public ResponseEntity<?> approveToActive(@RequestBody ApprovalPromotionRequest request)  {
+    public ResponseEntity<?> approveToActive(@RequestBody ApprovalPromotionRequest request) throws AuthenticationException {
         promotionService.approveToActive(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
@@ -156,7 +156,7 @@ public class PromotionController {
 
     @PreAuthorize("hasRole('MARKETING_HEAD')")
     @PutMapping("/approve/inactive")
-    public ResponseEntity<?> approveToInactive(@RequestBody ApprovalPromotionRequest request)  {
+    public ResponseEntity<?> approveToInactive(@RequestBody ApprovalPromotionRequest request) throws AuthenticationException {
         promotionService.deleteApprove(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()

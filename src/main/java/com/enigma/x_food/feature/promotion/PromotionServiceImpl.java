@@ -82,11 +82,7 @@ public class PromotionServiceImpl implements PromotionService {
 
         promotionRepository.saveAndFlush(promotion);
 
-        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
-                .activity(EActivity.CREATE_PROMOTION.name())
-                .admin(admin)
-                .build();
-        adminMonitoringService.createNew(adminMonitoringRequest);
+        saveAdminMonitoring(EActivity.CREATE_PROMOTION, admin);
 
         log.info("End createNew");
         return mapToResponse(promotion);
@@ -154,17 +150,13 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setQuantity(request.getQuantity());
         promotion.setExpiredDate(request.getExpiredDate());
 
-        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
-                .activity(EActivity.UPDATE_PROMOTION.name())
-                .admin(admin)
-                .build();
-        adminMonitoringService.createNew(adminMonitoringRequest);
+        saveAdminMonitoring(EActivity.UPDATE_PROMOTION, admin);
 
         return mapToResponse(promotionRepository.saveAndFlush(promotion));
     }
 
     @Override
-    public void deleteApprove(ApprovalPromotionRequest request) {
+    public void deleteApprove(ApprovalPromotionRequest request) throws AuthenticationException {
         updateStatus(request, EPromotionStatus.INACTIVE);
     }
 
@@ -177,14 +169,46 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public void approveToActive(ApprovalPromotionRequest request) {
+    public void approveToActive(ApprovalPromotionRequest request) throws AuthenticationException {
         updateStatus(request, EPromotionStatus.ACTIVE);
     }
 
-    private void updateStatus(ApprovalPromotionRequest request, EPromotionStatus inactive) {
+    private void updateStatus(ApprovalPromotionRequest request, EPromotionStatus status) throws AuthenticationException {
         Promotion promotion = findByIdOrThrowException(request.getPromotionID());
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
 
-        PromotionStatus promotionStatus = promotionStatusService.getByStatus(inactive);
+        if (status.equals(EPromotionStatus.ACTIVE) &&
+                promotion.getPromotionStatus().getStatus().equals(EPromotionStatus.WAITING_FOR_CREATION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.APPROVE_CREATE_PROMOTION, admin);
+        }
+        else if (status.equals(EPromotionStatus.INACTIVE) &&
+                promotion.getPromotionStatus().getStatus().equals(EPromotionStatus.WAITING_FOR_CREATION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.REJECT_CREATE_PROMOTION, admin);
+        }
+        else if (status.equals(EPromotionStatus.ACTIVE) &&
+                promotion.getPromotionStatus().getStatus().equals(EPromotionStatus.WAITING_FOR_DELETION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.REJECT_DELETE_PROMOTION, admin);
+        }
+        else if (status.equals(EPromotionStatus.INACTIVE) &&
+                promotion.getPromotionStatus().getStatus().equals(EPromotionStatus.WAITING_FOR_DELETION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.APPROVE_DELETE_PROMOTION, admin);
+        }
+        else if (status.equals(EPromotionStatus.ACTIVE) &&
+                promotion.getPromotionStatus().getStatus().equals(EPromotionStatus.WAITING_FOR_UPDATE_APPROVAL)) {
+            saveAdminMonitoring(EActivity.APPROVE_UPDATE_PROMOTION, admin);
+        }
+        else if (status.equals(EPromotionStatus.INACTIVE) &&
+                promotion.getPromotionStatus().getStatus().equals(EPromotionStatus.WAITING_FOR_UPDATE_APPROVAL)) {
+            saveAdminMonitoring(EActivity.REJECT_UPDATE_PROMOTION, admin);
+        }
+
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(status);
         promotion.setPromotionStatus(promotionStatus);
         promotion.setNotes(request.getNotes());
 
@@ -208,12 +232,16 @@ public class PromotionServiceImpl implements PromotionService {
 
         promotion.setPromotionStatus(promotionStatus);
 
+        saveAdminMonitoring(EActivity.DELETE_PROMOTION, admin);
+        promotionRepository.saveAndFlush(promotion);
+    }
+
+    private void saveAdminMonitoring(EActivity updatePromotion, Admin admin) {
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
-                .activity(EActivity.DELETE_PROMOTION.name())
+                .activity(updatePromotion.name())
                 .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
-        promotionRepository.saveAndFlush(promotion);
     }
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "GMT+7")

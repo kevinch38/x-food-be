@@ -89,11 +89,7 @@ public class MerchantServiceImpl implements MerchantService {
         merchantRepository.saveAndFlush(merchant);
 
 
-        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
-                .activity(EActivity.CREATE_MERCHANT.name())
-                .admin(admin)
-                .build();
-        adminMonitoringService.createNew(adminMonitoringRequest);
+        saveAdminMonitoring(EActivity.CREATE_MERCHANT, admin);
         return mapToResponse(merchant);
     }
 
@@ -156,11 +152,7 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setImage(request.getImage().getBytes());
         merchant.setLogoImage(request.getLogoImage().getBytes());
 
-        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
-                .activity(EActivity.UPDATE_MERCHANT.name())
-                .admin(admin)
-                .build();
-        adminMonitoringService.createNew(adminMonitoringRequest);
+        saveAdminMonitoring(EActivity.UPDATE_MERCHANT, admin);
         return mapToResponse(merchantRepository.saveAndFlush(merchant));
     }
 
@@ -200,36 +192,62 @@ public class MerchantServiceImpl implements MerchantService {
             merchantBranch.setMerchantBranchStatus(status);
         }
 
-        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
-                .activity(EActivity.DELETE_MERCHANT.name())
-                .admin(admin)
-                .build();
-        adminMonitoringService.createNew(adminMonitoringRequest);
+        saveAdminMonitoring(EActivity.DELETE_MERCHANT, admin);
         merchantRepository.saveAndFlush(merchant);
     }
 
     @Override
-    public void approveToActive(ApprovalMerchantRequest request) {
+    public void approveToActive(ApprovalMerchantRequest request) throws AuthenticationException {
         updateStatus(request, EMerchantStatus.ACTIVE);
     }
 
     @Override
-    public void deleteApprove(ApprovalMerchantRequest request) {
+    public void deleteApprove(ApprovalMerchantRequest request) throws AuthenticationException {
         updateStatus(request, EMerchantStatus.INACTIVE);
     }
 
-    private void updateStatus(ApprovalMerchantRequest request, EMerchantStatus status) {
+    private void updateStatus(ApprovalMerchantRequest request, EMerchantStatus status) throws AuthenticationException {
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
+
         Merchant merchant = findByIdOrThrowException(request.getMerchantID());
 
         if (status.equals(EMerchantStatus.ACTIVE) &&
-                merchant.getMerchantStatus().getStatus().equals(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL))
+                merchant.getMerchantStatus().getStatus().equals(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL)) {
             merchant.setJoinDate(Timestamp.from(Instant.now()));
+            saveAdminMonitoring(EActivity.APPROVE_CREATE_MERCHANT, admin);
+        }
+        else if (status.equals(EMerchantStatus.INACTIVE) &&
+                merchant.getMerchantStatus().getStatus().equals(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.REJECT_CREATE_MERCHANT, admin);
+        }
+        else if (status.equals(EMerchantStatus.ACTIVE) &&
+                merchant.getMerchantStatus().getStatus().equals(EMerchantStatus.WAITING_FOR_DELETION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.REJECT_DELETE_MERCHANT, admin);
+        }
+        else if (status.equals(EMerchantStatus.INACTIVE) &&
+                merchant.getMerchantStatus().getStatus().equals(EMerchantStatus.WAITING_FOR_DELETION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.APPROVE_DELETE_MERCHANT, admin);
+        }
 
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(status);
         merchant.setMerchantStatus(merchantStatus);
         merchant.setNotes(request.getNotes());
 
         merchantRepository.saveAndFlush(merchant);
+    }
+
+    private void saveAdminMonitoring(EActivity deleteMerchant, Admin admin) {
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(deleteMerchant.name())
+                .admin(admin)
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
     }
 
     private MerchantResponse mapToResponse(Merchant merchant) {

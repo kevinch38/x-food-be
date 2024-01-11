@@ -15,7 +15,7 @@ public interface PromotionService {
     Promotion getPromotionById(String id);
     Page<PromotionResponse> getAll(SearchPromotionRequest request);
     List<PromotionResponse> getAllActive(SearchActivePromotionRequest request);
-    void approveToActive(ApprovalPromotionRequest request);
-    void deleteApprove(ApprovalPromotionRequest request);
+    void approveToActive(ApprovalPromotionRequest request) throws AuthenticationException;
+    void deleteApprove(ApprovalPromotionRequest request) throws AuthenticationException;
     void rejectUpdate(ApprovalPromotionRequest request);
 }

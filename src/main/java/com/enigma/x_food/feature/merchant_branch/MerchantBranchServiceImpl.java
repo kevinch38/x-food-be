@@ -214,12 +214,12 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     }
 
     @Override
-    public void deleteApprove(String id) {
+    public void deleteApprove(String id) throws AuthenticationException {
         updateStatus(id, EMerchantBranchStatus.INACTIVE);
     }
 
     @Override
-    public void approveToActive(String id) {
+    public void approveToActive(String id) throws AuthenticationException {
         updateStatus(id, EMerchantBranchStatus.ACTIVE);
     }
 
@@ -239,12 +239,41 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         return mapToResponse(merchantBranchRepository.saveAndFlush(merchantBranch));
     }
 
-    private void updateStatus(String id, EMerchantBranchStatus status) {
+    private void updateStatus(String id, EMerchantBranchStatus status) throws AuthenticationException {
         MerchantBranch merchantBranch = findByIdOrThrowException(id);
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
 
         if (status.equals(EMerchantBranchStatus.ACTIVE) &&
-                merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_CREATION_APPROVAL))
+                merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_CREATION_APPROVAL)) {
             merchantBranch.setJoinDate(Timestamp.from(Instant.now()));
+            saveAdminMonitoring(EActivity.APPROVE_CREATE_BRANCH, admin);
+        }
+        else if (status.equals(EMerchantBranchStatus.INACTIVE) &&
+                merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_CREATION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.REJECT_CREATE_BRANCH, admin);
+        }
+        else if (status.equals(EMerchantBranchStatus.ACTIVE) &&
+                merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_DELETION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.REJECT_DELETE_BRANCH, admin);
+        }
+        else if (status.equals(EMerchantBranchStatus.INACTIVE) &&
+                merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_DELETION_APPROVAL)) {
+            saveAdminMonitoring(EActivity.APPROVE_DELETE_BRANCH, admin);
+        }
+        else if (status.equals(EMerchantBranchStatus.ACTIVE) &&
+                merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_UPDATE_APPROVAL)) {
+            saveAdminMonitoring(EActivity.APPROVE_UPDATE_BRANCH, admin);
+        }
+        else if (status.equals(EMerchantBranchStatus.INACTIVE) &&
+                merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_UPDATE_APPROVAL)) {
+            saveAdminMonitoring(EActivity.REJECT_UPDATE_BRANCH, admin);
+        }
 
         MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(status);
         merchantBranch.setMerchantBranchStatus(merchantBranchStatus);
@@ -255,6 +284,14 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     private MerchantBranch findByIdOrThrowException(String id) {
         return merchantBranchRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Merchant branch not found"));
+    }
+
+    private void saveAdminMonitoring(EActivity deleteMerchant, Admin admin) {
+        AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
+                .activity(deleteMerchant.name())
+                .admin(admin)
+                .build();
+        adminMonitoringService.createNew(adminMonitoringRequest);
     }
 
     private MerchantBranchResponse mapToResponse(MerchantBranch branch) {
