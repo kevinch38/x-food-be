@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface BranchWorkingHoursService {
     List<BranchWorkingHours> createNew(List<NewBranchWorkingHoursRequest> request);
-    BranchWorkingHoursResponse update(UpdateBranchWorkingHoursRequest request);
+    List<BranchWorkingHoursResponse> update(List<UpdateBranchWorkingHoursRequest> request);
     BranchWorkingHoursResponse findById(String id);
 }

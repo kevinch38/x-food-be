@@ -41,12 +41,12 @@ public class MerchantBranchController {
     }
 
     @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{merchantBranchID}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateImage(@RequestParam MultipartFile image,
-                                         @PathVariable String id) throws IOException {
+                                         @PathVariable String merchantBranchID) throws IOException {
 
         UpdateImageMerchantBranchRequest request = UpdateImageMerchantBranchRequest.builder()
-                .merchantID(id)
+                .merchantBranchID(merchantBranchID)
                 .image(image)
                 .build();
 
@@ -152,32 +152,8 @@ public class MerchantBranchController {
     }
 
     @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
-    @PutMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> update(
-            @RequestParam String branchID,
-            @RequestParam String branchName,
-            @RequestParam String address,
-            @RequestParam String timezone,
-            @RequestParam String branchWorkingHoursID,
-            @RequestParam String cityID,
-            @RequestParam String picName,
-            @RequestParam String picNumber,
-            @RequestParam String picEmail,
-            @RequestParam MultipartFile image
-    ) throws IOException, AuthenticationException {
-        UpdateMerchantBranchRequest request = UpdateMerchantBranchRequest.builder()
-                .branchID(branchID)
-                .branchName(branchName)
-                .address(address)
-                .timezone(timezone)
-                .branchWorkingHoursID(branchWorkingHoursID)
-                .cityID(cityID)
-                .image(image)
-                .picName(picName)
-                .picNumber(picNumber)
-                .picEmail(picEmail)
-                .build();
-
+    @PutMapping("/image")
+    public ResponseEntity<?> update(@RequestBody UpdateMerchantBranchRequest request) throws IOException, AuthenticationException {
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.update(request);
         CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()
                 .message("successfully update merchant branch")

@@ -77,8 +77,14 @@ public class FriendServiceImpl implements FriendService {
 
         return FriendResponse.builder()
                 .friendID(friend.getFriendID())
-                .user1(user1)
-                .user2(user2)
+                .accountID1(user1.getAccountID())
+                .accountFirstName1(user1.getFirstName())
+                .accountLastName1(user1.getLastName())
+                .imageAccount1(user1.getProfilePhoto())
+                .accountID2(user2.getAccountID())
+                .accountFirstName2(user2.getFirstName())
+                .accountLastName2(user2.getLastName())
+                .imageAccount2(user2.getProfilePhoto())
                 .build();
     }
 

@@ -12,6 +12,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FriendResponse {
     private String friendID;
-    private UserResponse user1;
-    private UserResponse user2;
+    private String accountID1;
+    private String accountID2;
+    private String accountFirstName1;
+    private String accountFirstName2;
+    private String accountLastName1;
+    private String accountLastName2;
+    private byte[] imageAccount1;
+    private byte[] imageAccount2;
 }

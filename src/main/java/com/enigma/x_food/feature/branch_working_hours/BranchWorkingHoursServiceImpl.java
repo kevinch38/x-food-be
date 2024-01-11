@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,14 +52,21 @@ public class BranchWorkingHoursServiceImpl implements BranchWorkingHoursService 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BranchWorkingHoursResponse update(UpdateBranchWorkingHoursRequest request) {
+    public List<BranchWorkingHoursResponse> update(List<UpdateBranchWorkingHoursRequest> request) {
         validationUtil.validate(request);
-        BranchWorkingHours branchWorkingHours = findByIdOrThrowException(request.getBranchWorkingHoursID());
-        branchWorkingHours.setCloseHour(request.getCloseHour());
-        branchWorkingHours.setOpenHour(request.getOpenHour());
-        branchWorkingHours.setDays(DayOfWeek.valueOf(request.getDays()));
+        List<BranchWorkingHours> branchWorkingHours = new ArrayList<>();
+        for (UpdateBranchWorkingHoursRequest updateBranchWorkingHoursRequest : request) {
+            BranchWorkingHours branchWorkingHour = findByIdOrThrowException(updateBranchWorkingHoursRequest.getBranchWorkingHoursID());
+            branchWorkingHour.setCloseHour(updateBranchWorkingHoursRequest.getCloseHour());
+            branchWorkingHour.setOpenHour(updateBranchWorkingHoursRequest.getOpenHour());
+            branchWorkingHour.setDays(DayOfWeek.valueOf(updateBranchWorkingHoursRequest.getDays()));
 
-        return mapToResponse(branchWorkingHoursRepository.saveAndFlush(branchWorkingHours));
+            branchWorkingHours.add(branchWorkingHour);
+        }
+
+        return branchWorkingHoursRepository.saveAllAndFlush(branchWorkingHours).stream().map(
+                this::mapToResponse
+        ).collect(Collectors.toList());
     }
 
     @Override

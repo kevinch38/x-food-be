@@ -134,12 +134,12 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         merchantBranch.setPicName(request.getPicName());
         merchantBranch.setPicNumber(request.getPicNumber());
         merchantBranch.setPicEmail(request.getPicEmail());
-        merchantBranch.setImage(request.getImage().getBytes());
         merchantBranch.setCity(City.builder()
                 .cityID(cityResponse.getCityID())
                 .cityName(cityResponse.getCityName())
                 .build());
 
+        branchWorkingHoursService.update(request.getBranchWorkingHours());
         merchantBranchRepository.saveAndFlush(merchantBranch);
 
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
@@ -231,7 +231,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
 
     @Override
     public MerchantBranchResponse updateImage(UpdateImageMerchantBranchRequest request) throws IOException {
-        MerchantBranch merchantBranch = merchantBranchUpdateRequestService.getById(request.getMerchantID());
+        MerchantBranch merchantBranch = findByIdOrThrowException(request.getMerchantBranchID());
 
         merchantBranch.setImage(request.getImage().getBytes());
 

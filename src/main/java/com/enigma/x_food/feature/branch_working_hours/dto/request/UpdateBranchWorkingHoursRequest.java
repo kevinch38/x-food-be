@@ -22,6 +22,4 @@ public class UpdateBranchWorkingHoursRequest {
     private LocalTime closeHour;
     @NotNull(message = "Day cannot be empty")
     private String days;
-    @NotBlank(message = "Merchant branch ID cannot be empty")
-    private String merchantBranchID;
 }

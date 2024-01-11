@@ -14,8 +14,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Builder
 public class UpdateImageMerchantBranchRequest {
-    @NotBlank(message = "Merchant ID cannot be empty")
-    private String merchantID;
+    @NotBlank(message = "Merchant Branch ID cannot be empty")
+    private String merchantBranchID;
     @NotNull(message = "Image cannot be empty")
     private MultipartFile image;
 }
