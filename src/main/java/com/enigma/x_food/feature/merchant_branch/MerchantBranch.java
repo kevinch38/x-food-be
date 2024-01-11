@@ -50,7 +50,7 @@ public class MerchantBranch extends BaseEntity {
     @Column(name = "join_date")
     private Timestamp joinDate;
     @Lob
-    @Column(name = "image", nullable = false)
+    @Column(name = "image")
     @Type(type = "org.hibernate.type.BinaryType")
     private byte[] image;
     @ManyToOne
