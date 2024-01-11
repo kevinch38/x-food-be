@@ -171,7 +171,7 @@ public class PromotionController {
 
     @PreAuthorize("hasRole('MARKETING_HEAD')")
     @PutMapping("/reject/update")
-    public ResponseEntity<?> rejectUpdate(@RequestBody ApprovalPromotionRequest request)  {
+    public ResponseEntity<?> rejectUpdate(@RequestBody ApprovalPromotionRequest request) throws AuthenticationException {
         promotionService.rejectUpdate(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()

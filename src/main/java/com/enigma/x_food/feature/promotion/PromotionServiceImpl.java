@@ -129,7 +129,7 @@ public class PromotionServiceImpl implements PromotionService {
 
         promotionUpdateRequestService.save(promotion);
 
-        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.WAITING_FOR_CREATION_APPROVAL);
+        PromotionStatus promotionStatus = promotionStatusService.getByStatus(EPromotionStatus.WAITING_FOR_UPDATE_APPROVAL);
 
         Admin admin;
         try {
@@ -161,8 +161,18 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public void rejectUpdate(ApprovalPromotionRequest request) {
+    public void rejectUpdate(ApprovalPromotionRequest request) throws AuthenticationException {
         Promotion promotion = promotionUpdateRequestService.getById(request.getPromotionID());
+
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
+
+        saveAdminMonitoring(EActivity.REJECT_UPDATE_PROMOTION, admin);
 
         promotion.setNotes(request.getNotes());
         promotionRepository.saveAndFlush(promotion);
@@ -202,10 +212,6 @@ public class PromotionServiceImpl implements PromotionService {
         else if (status.equals(EPromotionStatus.ACTIVE) &&
                 promotion.getPromotionStatus().getStatus().equals(EPromotionStatus.WAITING_FOR_UPDATE_APPROVAL)) {
             saveAdminMonitoring(EActivity.APPROVE_UPDATE_PROMOTION, admin);
-        }
-        else if (status.equals(EPromotionStatus.INACTIVE) &&
-                promotion.getPromotionStatus().getStatus().equals(EPromotionStatus.WAITING_FOR_UPDATE_APPROVAL)) {
-            saveAdminMonitoring(EActivity.REJECT_UPDATE_PROMOTION, admin);
         }
 
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(status);
@@ -277,17 +283,18 @@ public class PromotionServiceImpl implements PromotionService {
     private PromotionResponse mapToResponse(Promotion promotion) {
         return PromotionResponse.builder()
                 .promotionID(promotion.getPromotionID())
+                .merchantID(promotion.getMerchant().getMerchantID())
                 .merchantName(promotion.getMerchant().getMerchantName())
                 .cost(promotion.getCost())
                 .maxRedeem(promotion.getMaxRedeem())
                 .promotionValue(promotion.getPromotionValue())
                 .promotionDescription(promotion.getPromotionDescription())
                 .promotionName(promotion.getPromotionName())
-                .merchantImage(promotion.getMerchant().getImage())
                 .quantity(promotion.getQuantity())
-                .adminName(promotion.getAdmin().getAdminName())
                 .expiredDate(promotion.getExpiredDate())
+                .adminName(promotion.getAdmin().getAdminName())
                 .status(promotion.getPromotionStatus().getStatus().name())
+                .merchantImage(promotion.getMerchant().getImage())
                 .createdAt(promotion.getCreatedAt())
                 .updatedAt(promotion.getUpdatedAt())
                 .notes(promotion.getNotes())

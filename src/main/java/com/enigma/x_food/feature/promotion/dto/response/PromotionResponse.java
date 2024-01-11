@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 @Builder
 public class PromotionResponse {
     private String promotionID;
+    private String merchantID;
     private String merchantName;
     private Integer cost;
     private Integer maxRedeem;

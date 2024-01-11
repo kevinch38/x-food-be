@@ -17,5 +17,5 @@ public interface PromotionService {
     List<PromotionResponse> getAllActive(SearchActivePromotionRequest request);
     void approveToActive(ApprovalPromotionRequest request) throws AuthenticationException;
     void deleteApprove(ApprovalPromotionRequest request) throws AuthenticationException;
-    void rejectUpdate(ApprovalPromotionRequest request);
+    void rejectUpdate(ApprovalPromotionRequest request) throws AuthenticationException;
 }

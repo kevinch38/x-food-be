@@ -167,7 +167,7 @@ public class MerchantBranchController {
 
     @PreAuthorize("hasRole('PARTNERSHIP_HEAD')")
     @PutMapping("/approve/active/{id}")
-    public ResponseEntity<?> approveToActive(@PathVariable String id) {
+    public ResponseEntity<?> approveToActive(@PathVariable String id) throws AuthenticationException {
         merchantBranchService.approveToActive(id);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
@@ -182,7 +182,7 @@ public class MerchantBranchController {
 
     @PreAuthorize("hasRole('PARTNERSHIP_HEAD')")
     @PutMapping("/approve/inactive/{id}")
-    public ResponseEntity<?> approveToInactive(@PathVariable String id) {
+    public ResponseEntity<?> approveToInactive(@PathVariable String id) throws AuthenticationException {
         merchantBranchService.deleteApprove(id);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
@@ -197,7 +197,7 @@ public class MerchantBranchController {
 
     @PreAuthorize("hasRole('PARTNERSHIP_HEAD')")
     @PutMapping("/reject/update/{id}")
-    public ResponseEntity<?> rejectUpdate(@PathVariable String id) {
+    public ResponseEntity<?> rejectUpdate(@PathVariable String id) throws AuthenticationException {
         merchantBranchService.rejectUpdate(id);
 
         CommonResponse<String> response = CommonResponse.<String>builder()

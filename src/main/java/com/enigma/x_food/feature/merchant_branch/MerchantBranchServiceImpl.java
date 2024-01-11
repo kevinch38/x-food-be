@@ -224,8 +224,18 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
     }
 
     @Override
-    public void rejectUpdate(String id) {
+    public void rejectUpdate(String id) throws AuthenticationException {
         MerchantBranch merchantBranch = merchantBranchUpdateRequestService.getById(id);
+
+        Admin admin;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            admin = (Admin) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new AuthenticationException("Not Authorized");
+        }
+
+        saveAdminMonitoring(EActivity.REJECT_UPDATE_BRANCH, admin);
 
         merchantBranchRepository.saveAndFlush(merchantBranch);
     }
@@ -269,10 +279,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
         else if (status.equals(EMerchantBranchStatus.ACTIVE) &&
                 merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_UPDATE_APPROVAL)) {
             saveAdminMonitoring(EActivity.APPROVE_UPDATE_BRANCH, admin);
-        }
-        else if (status.equals(EMerchantBranchStatus.INACTIVE) &&
-                merchantBranch.getMerchantBranchStatus().getStatus().equals(EMerchantBranchStatus.WAITING_FOR_UPDATE_APPROVAL)) {
-            saveAdminMonitoring(EActivity.REJECT_UPDATE_BRANCH, admin);
         }
 
         MerchantBranchStatus merchantBranchStatus = merchantBranchStatusService.getByStatus(status);

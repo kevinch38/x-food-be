@@ -19,6 +19,6 @@ public interface MerchantBranchService {
     List<MerchantBranchResponse> findAllActiveByMerchantId(SearchActiveMerchantBranchRequest request);
     void deleteApprove(String id) throws AuthenticationException;
     void approveToActive(String id) throws AuthenticationException;
-    void rejectUpdate(String id);
+    void rejectUpdate(String id) throws AuthenticationException;
     MerchantBranchResponse updateImage(UpdateImageMerchantBranchRequest request) throws IOException;
 }

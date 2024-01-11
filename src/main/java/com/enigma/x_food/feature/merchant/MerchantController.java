@@ -198,7 +198,7 @@ public class MerchantController {
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
     @PutMapping("/approve/active")
-    public ResponseEntity<?> approveToActive(@RequestBody ApprovalMerchantRequest request)  {
+    public ResponseEntity<?> approveToActive(@RequestBody ApprovalMerchantRequest request) throws AuthenticationException {
         merchantService.approveToActive(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
@@ -213,7 +213,7 @@ public class MerchantController {
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
     @PutMapping("/approve/inactive")
-    public ResponseEntity<?> approveToInactive(@RequestBody ApprovalMerchantRequest request)  {
+    public ResponseEntity<?> approveToInactive(@RequestBody ApprovalMerchantRequest request) throws AuthenticationException {
         merchantService.deleteApprove(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()

@@ -134,7 +134,6 @@ class PromotionControllerTest {
                 .promotionName("promotion tes")
                 .quantity(3)
                 .expiredDate(new Timestamp(System.currentTimeMillis()))
-                .notes("note")
                 .build();
 
         PromotionResponse promotionResponse = PromotionResponse.builder()
