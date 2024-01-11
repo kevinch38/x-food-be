@@ -39,7 +39,6 @@ public class MerchantController {
             @RequestParam String picNumber,
             @RequestParam String picEmail,
             @RequestParam String merchantDescription,
-            @RequestParam String notes,
             @RequestParam MultipartFile image,
             @RequestParam MultipartFile logoImage
     ) throws IOException, AuthenticationException {
@@ -49,7 +48,6 @@ public class MerchantController {
                 .picName(picName)
                 .picEmail(picEmail)
                 .picNumber(picNumber)
-                .notes(notes)
                 .image(image)
                 .logoImage(logoImage)
                 .build();
@@ -176,7 +174,6 @@ public class MerchantController {
             @RequestParam String picNumber,
             @RequestParam String picEmail,
             @RequestParam String merchantDescription,
-            @RequestParam String notes,
             @RequestParam MultipartFile image,
             @RequestParam MultipartFile logoImage
     ) throws IOException, AuthenticationException {
@@ -187,7 +184,6 @@ public class MerchantController {
                 .picName(picName)
                 .picEmail(picEmail)
                 .picNumber(picNumber)
-                .notes(notes)
                 .image(image)
                 .logoImage(logoImage)
                 .build();

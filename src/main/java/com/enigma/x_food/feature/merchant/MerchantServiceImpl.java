@@ -86,7 +86,6 @@ public class MerchantServiceImpl implements MerchantService {
                 .merchantDescription(request.getMerchantDescription())
                 .admin(admin)
                 .merchantStatus(merchantStatus)
-                .notes(request.getNotes())
                 .image(request.getImage().getBytes())
                 .logoImage(request.getLogoImage().getBytes())
                 .build();
@@ -157,7 +156,6 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setPicNumber(request.getPicNumber());
         merchant.setPicEmail(request.getPicEmail());
         merchant.setMerchantDescription(request.getMerchantDescription());
-        merchant.setNotes(request.getNotes());
         merchant.setImage(request.getImage().getBytes());
         merchant.setLogoImage(request.getLogoImage().getBytes());
 

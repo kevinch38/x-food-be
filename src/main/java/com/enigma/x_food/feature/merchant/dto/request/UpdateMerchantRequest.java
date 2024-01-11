@@ -26,8 +26,6 @@ public class UpdateMerchantRequest {
     private String picEmail;
     @NotBlank(message = "Merchant description cannot be empty")
     private String merchantDescription;
-    @NotBlank(message = "Notes cannot be empty")
-    private String notes;
     @NotNull(message = "Image cannot be empty")
     private MultipartFile image;
     @NotNull(message = "Logo image cannot be empty")

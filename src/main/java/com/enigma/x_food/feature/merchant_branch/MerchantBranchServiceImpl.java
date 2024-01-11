@@ -97,6 +97,8 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .admin(admin)
                 .build();
 
+        merchantBranchRepository.saveAndFlush(branch);
+
         for (BranchWorkingHours branchWorkingHour : branchWorkingHours)
             branchWorkingHour.setMerchantBranch(branch);
 
@@ -105,7 +107,6 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .admin(admin)
                 .build();
         adminMonitoringService.createNew(adminMonitoringRequest);
-        merchantBranchRepository.saveAndFlush(branch);
         return mapToResponse(branch);
     }
 
@@ -138,7 +139,7 @@ public class MerchantBranchServiceImpl implements MerchantBranchService {
                 .cityID(cityResponse.getCityID())
                 .cityName(cityResponse.getCityName())
                 .build());
-
+        
         branchWorkingHoursService.update(request.getBranchWorkingHours());
         merchantBranchRepository.saveAndFlush(merchantBranch);
 

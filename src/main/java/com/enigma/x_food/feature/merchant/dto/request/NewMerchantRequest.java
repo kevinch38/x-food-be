@@ -28,5 +28,4 @@ public class NewMerchantRequest {
     private MultipartFile image;
     @NotNull(message = "Logo image cannot be empty")
     private MultipartFile logoImage;
-    private String notes;
 }

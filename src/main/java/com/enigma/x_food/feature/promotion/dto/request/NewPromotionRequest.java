@@ -30,5 +30,4 @@ public class NewPromotionRequest {
     private Integer quantity;
     @NotNull(message = "Expired date cannot be empty")
     private Timestamp expiredDate;
-    private String notes;
 }

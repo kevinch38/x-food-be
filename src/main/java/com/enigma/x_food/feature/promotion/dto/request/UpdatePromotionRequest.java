@@ -32,6 +32,4 @@ public class UpdatePromotionRequest {
     private Integer quantity;
     @NotNull(message = "Expired date cannot be empty")
     private Timestamp expiredDate;
-    @NotBlank(message = "Notes cannot be empty")
-    private String notes;
 }

@@ -15,7 +15,9 @@ import java.time.LocalTime;
 @Builder
 public class BranchWorkingHoursResponse {
     private String branchWorkingHoursID;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime openHour;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime closeHour;
     private String days;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")

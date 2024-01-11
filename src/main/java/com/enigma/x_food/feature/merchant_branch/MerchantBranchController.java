@@ -152,7 +152,7 @@ public class MerchantBranchController {
     }
 
     @PreAuthorize("hasRole('PARTNERSHIP_STAFF')")
-    @PutMapping("/image")
+    @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdateMerchantBranchRequest request) throws IOException, AuthenticationException {
         MerchantBranchResponse merchantBranchResponse = merchantBranchService.update(request);
         CommonResponse<MerchantBranchResponse> response = CommonResponse.<MerchantBranchResponse>builder()

@@ -2,7 +2,6 @@ package com.enigma.x_food.feature.promotion;
 
 import com.enigma.x_food.constant.EActivity;
 import com.enigma.x_food.constant.EPromotionStatus;
-import com.enigma.x_food.constant.ERole;
 import com.enigma.x_food.feature.admin.Admin;
 import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
@@ -82,7 +81,6 @@ public class PromotionServiceImpl implements PromotionService {
                 .admin(admin)
                 .expiredDate(request.getExpiredDate())
                 .promotionStatus(promotionStatus)
-                .notes(request.getNotes())
                 .build();
 
         promotionRepository.saveAndFlush(promotion);
@@ -158,7 +156,6 @@ public class PromotionServiceImpl implements PromotionService {
         promotion.setPromotionName(request.getPromotionName());
         promotion.setQuantity(request.getQuantity());
         promotion.setExpiredDate(request.getExpiredDate());
-        promotion.setNotes(request.getNotes());
 
         AdminMonitoringRequest adminMonitoringRequest = AdminMonitoringRequest.builder()
                 .activity(EActivity.UPDATE_PROMOTION.name())
