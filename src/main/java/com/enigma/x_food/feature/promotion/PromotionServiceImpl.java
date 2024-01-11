@@ -7,10 +7,7 @@ import com.enigma.x_food.feature.admin_monitoring.AdminMonitoringService;
 import com.enigma.x_food.feature.admin_monitoring.dto.request.AdminMonitoringRequest;
 import com.enigma.x_food.feature.merchant.Merchant;
 import com.enigma.x_food.feature.merchant.MerchantService;
-import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
-import com.enigma.x_food.feature.promotion.dto.request.SearchActivePromotionRequest;
-import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
-import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.*;
 import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.feature.promotion_status.PromotionStatus;
 import com.enigma.x_food.feature.promotion_status.PromotionStatusService;
@@ -167,27 +164,29 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public void deleteApprove(String id) {
-        updateStatus(id, EPromotionStatus.INACTIVE);
+    public void deleteApprove(ApprovalPromotionRequest request) {
+        updateStatus(request, EPromotionStatus.INACTIVE);
     }
 
     @Override
-    public void rejectUpdate(String id) {
-        Promotion promotion = promotionUpdateRequestService.getById(id);
+    public void rejectUpdate(ApprovalPromotionRequest request) {
+        Promotion promotion = promotionUpdateRequestService.getById(request.getPromotionID());
 
+        promotion.setNotes(request.getNotes());
         promotionRepository.saveAndFlush(promotion);
     }
 
     @Override
-    public void approveToActive(String id) {
-        updateStatus(id, EPromotionStatus.ACTIVE);
+    public void approveToActive(ApprovalPromotionRequest request) {
+        updateStatus(request, EPromotionStatus.ACTIVE);
     }
 
-    private void updateStatus(String id, EPromotionStatus inactive) {
-        Promotion promotion = findByIdOrThrowException(id);
+    private void updateStatus(ApprovalPromotionRequest request, EPromotionStatus inactive) {
+        Promotion promotion = findByIdOrThrowException(request.getPromotionID());
 
         PromotionStatus promotionStatus = promotionStatusService.getByStatus(inactive);
         promotion.setPromotionStatus(promotionStatus);
+        promotion.setNotes(request.getNotes());
 
         promotionRepository.saveAndFlush(promotion);
     }

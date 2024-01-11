@@ -1,9 +1,6 @@
 package com.enigma.x_food.feature.merchant;
 
-import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
-import com.enigma.x_food.feature.merchant.dto.request.SearchActiveMerchantRequest;
-import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
-import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
+import com.enigma.x_food.feature.merchant.dto.request.*;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.shared.PagingResponse;
@@ -200,9 +197,9 @@ public class MerchantController {
     }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
-    @PutMapping("/approve/active/{id}")
-    public ResponseEntity<?> approveToActive(@PathVariable String id)  {
-        merchantService.approveToActive(id);
+    @PutMapping("/approve/active")
+    public ResponseEntity<?> approveToActive(@RequestBody ApprovalMerchantRequest request)  {
+        merchantService.approveToActive(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .message("successfully update merchant to active")
@@ -215,9 +212,9 @@ public class MerchantController {
     }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_HEAD')")
-    @PutMapping("/approve/inactive/{id}")
-    public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
-        merchantService.deleteApprove(id);
+    @PutMapping("/approve/inactive")
+    public ResponseEntity<?> approveToInactive(@RequestBody ApprovalMerchantRequest request)  {
+        merchantService.deleteApprove(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .message("successfully update merchant to inactive")

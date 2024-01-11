@@ -13,10 +13,7 @@ import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.item.dto.response.ItemResponse;
 import com.enigma.x_food.feature.item_variety.ItemVariety;
 import com.enigma.x_food.feature.item_variety.dto.response.ItemVarietyResponse;
-import com.enigma.x_food.feature.merchant.dto.request.NewMerchantRequest;
-import com.enigma.x_food.feature.merchant.dto.request.SearchActiveMerchantRequest;
-import com.enigma.x_food.feature.merchant.dto.request.SearchMerchantRequest;
-import com.enigma.x_food.feature.merchant.dto.request.UpdateMerchantRequest;
+import com.enigma.x_food.feature.merchant.dto.request.*;
 import com.enigma.x_food.feature.merchant.dto.response.MerchantResponse;
 import com.enigma.x_food.feature.merchant_branch.MerchantBranch;
 import com.enigma.x_food.feature.merchant_branch.dto.response.MerchantBranchResponse;
@@ -212,17 +209,17 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public void approveToActive(String id) {
-        updateStatus(id, EMerchantStatus.ACTIVE);
+    public void approveToActive(ApprovalMerchantRequest request) {
+        updateStatus(request, EMerchantStatus.ACTIVE);
     }
 
     @Override
-    public void deleteApprove(String id) {
-        updateStatus(id, EMerchantStatus.INACTIVE);
+    public void deleteApprove(ApprovalMerchantRequest request) {
+        updateStatus(request, EMerchantStatus.INACTIVE);
     }
 
-    private void updateStatus(String id, EMerchantStatus status) {
-        Merchant merchant = findByIdOrThrowException(id);
+    private void updateStatus(ApprovalMerchantRequest request, EMerchantStatus status) {
+        Merchant merchant = findByIdOrThrowException(request.getMerchantID());
 
         if (status.equals(EMerchantStatus.ACTIVE) &&
                 merchant.getMerchantStatus().getStatus().equals(EMerchantStatus.WAITING_FOR_CREATION_APPROVAL))
@@ -230,6 +227,7 @@ public class MerchantServiceImpl implements MerchantService {
 
         MerchantStatus merchantStatus = merchantStatusService.getByStatus(status);
         merchant.setMerchantStatus(merchantStatus);
+        merchant.setNotes(request.getNotes());
 
         merchantRepository.saveAndFlush(merchant);
     }

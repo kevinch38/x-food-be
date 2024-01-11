@@ -1,9 +1,6 @@
 package com.enigma.x_food.feature.promotion;
 
-import com.enigma.x_food.feature.promotion.dto.request.NewPromotionRequest;
-import com.enigma.x_food.feature.promotion.dto.request.SearchActivePromotionRequest;
-import com.enigma.x_food.feature.promotion.dto.request.SearchPromotionRequest;
-import com.enigma.x_food.feature.promotion.dto.request.UpdatePromotionRequest;
+import com.enigma.x_food.feature.promotion.dto.request.*;
 import com.enigma.x_food.feature.promotion.dto.response.PromotionResponse;
 import com.enigma.x_food.shared.CommonResponse;
 import com.enigma.x_food.shared.PagingResponse;
@@ -143,9 +140,9 @@ public class PromotionController {
     }
 
     @PreAuthorize("hasRole('MARKETING_HEAD')")
-    @PutMapping("/approve/active/{id}")
-    public ResponseEntity<?> approveToActive(@PathVariable String id)  {
-        promotionService.approveToActive(id);
+    @PutMapping("/approve/active")
+    public ResponseEntity<?> approveToActive(@RequestBody ApprovalPromotionRequest request)  {
+        promotionService.approveToActive(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .message("successfully update merchant to active")
@@ -158,9 +155,9 @@ public class PromotionController {
     }
 
     @PreAuthorize("hasRole('MARKETING_HEAD')")
-    @PutMapping("/approve/inactive/{id}")
-    public ResponseEntity<?> approveToInactive(@PathVariable String id)  {
-        promotionService.deleteApprove(id);
+    @PutMapping("/approve/inactive")
+    public ResponseEntity<?> approveToInactive(@RequestBody ApprovalPromotionRequest request)  {
+        promotionService.deleteApprove(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .message("successfully update merchant to inactive")
@@ -173,9 +170,9 @@ public class PromotionController {
     }
 
     @PreAuthorize("hasRole('MARKETING_HEAD')")
-    @PutMapping("/reject/update/{id}")
-    public ResponseEntity<?> rejectUpdate(@PathVariable String id)  {
-        promotionService.rejectUpdate(id);
+    @PutMapping("/reject/update")
+    public ResponseEntity<?> rejectUpdate(@RequestBody ApprovalPromotionRequest request)  {
+        promotionService.rejectUpdate(request);
 
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .message("successfully update merchant to active")
