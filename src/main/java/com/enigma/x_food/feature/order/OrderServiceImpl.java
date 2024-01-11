@@ -169,7 +169,10 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal userBalance = BigDecimal.valueOf(user.getBalance().getTotalBalance());
         BigDecimal orderValue = BigDecimal.valueOf(order.getOrderValue());
 
-        user.getLoyaltyPoint().setLoyaltyPointAmount((int) (order.getOrderValue() / 10000));
+        user.getLoyaltyPoint().setLoyaltyPointAmount(
+                user.getLoyaltyPoint().getLoyaltyPointAmount() +
+                        (int) (order.getOrderValue() / 10000)
+        );
         user.getBalance().setTotalBalance(userBalance.subtract(orderValue).doubleValue());
 
         for (OrderItem orderItem : order.getOrderItems()) {
