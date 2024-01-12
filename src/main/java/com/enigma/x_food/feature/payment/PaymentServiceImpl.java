@@ -239,7 +239,6 @@ public class PaymentServiceImpl implements PaymentService {
         FriendResponse friendResponse = null;
 
         if (payment.getFriend() != null) {
-
             SearchFriendRequest request = SearchFriendRequest.builder()
                     .accountID(payment.getFriend().getUser1().getAccountID())
                     .friendAccountID(payment.getFriend().getUser2().getAccountID())
