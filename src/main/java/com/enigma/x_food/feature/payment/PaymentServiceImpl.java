@@ -195,7 +195,10 @@ public class PaymentServiceImpl implements PaymentService {
                 .friendAccountID(request.getFriendAccountID())
                 .accountID(request.getAccountID())
                 .build();
-        List<Friend> friend = friendService.findByFriendId(friendRequest);
+        List<Friend> friend = friendService.getFriendById(friendRequest);
+
+        if (friend.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not a friend with this account");
 
         for (String id : request.getOrderItems()) {
             OrderItem orderItem = orderItemService.findById(id);

@@ -9,5 +9,6 @@ import java.util.List;
 public interface FriendService {
     FriendResponse createNew(FriendRequest request);
     List<FriendResponse> findByAccountId(SearchFriendRequest request);
-    List<Friend> findByFriendId(SearchFriendRequest request);
+    List<FriendResponse> findByFriendId(SearchFriendRequest request);
+    List<Friend> getFriendById(SearchFriendRequest request);
 }
