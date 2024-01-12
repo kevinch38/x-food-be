@@ -289,11 +289,11 @@ public class PaymentServiceImpl implements PaymentService {
 
                 predicate = criteriaBuilder.or(
                         criteriaBuilder.equal(
-                                criteriaBuilder.lower(paymentHistoryJoin.get("friend").get("user1")),
+                                criteriaBuilder.lower(root.get("friend").get("user1").get("accountID")),
                                 request.getAccountID().toLowerCase()
                         ),
                         criteriaBuilder.equal(
-                                criteriaBuilder.lower(paymentHistoryJoin.get("friend").get("user2")),
+                                criteriaBuilder.lower(root.get("friend").get("user2").get("accountID")),
                                 request.getAccountID().toLowerCase()
                         ));
                 predicates.add(predicate);
