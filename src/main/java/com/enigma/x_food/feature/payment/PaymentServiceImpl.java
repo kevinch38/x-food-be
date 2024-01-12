@@ -223,14 +223,15 @@ public class PaymentServiceImpl implements PaymentService {
 
     private PaymentResponse mapToResponse(Payment payment) {
         String friendID = null;
-        if (payment.getFriend() != null)
-            friendID = payment.getFriend().getFriendID();
+        byte[] friendImage = new byte[0];
 
-        byte[] friendImage;
-        if (!payment.getFriend().getUser1().equals(payment.getUser()))
-            friendImage = payment.getFriend().getUser1().getProfilePhoto();
-        else
-            friendImage = payment.getFriend().getUser2().getProfilePhoto();
+        if (payment.getFriend() != null) {
+            friendID = payment.getFriend().getFriendID();
+            if (!payment.getFriend().getUser1().equals(payment.getUser()))
+                friendImage = payment.getFriend().getUser1().getProfilePhoto();
+            else
+                friendImage = payment.getFriend().getUser2().getProfilePhoto();
+        }
 
         return PaymentResponse.builder()
                 .paymentID(payment.getPaymentID())
