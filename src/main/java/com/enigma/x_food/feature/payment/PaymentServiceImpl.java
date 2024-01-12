@@ -196,7 +196,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .friendAccountID(request.getFriendAccountID())
                 .accountID(request.getAccountID())
                 .build();
-        List<Friend> friend = friendService.getFriendById(friendRequest);
+        List<Friend> friend = friendService.getByFriendId(friendRequest);
 
         if (friend.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not a friend with this account");
@@ -238,14 +238,8 @@ public class PaymentServiceImpl implements PaymentService {
     private PaymentResponse mapToResponse(Payment payment) {
         FriendResponse friendResponse = null;
 
-        if (payment.getFriend() != null) {
-            SearchFriendRequest request = SearchFriendRequest.builder()
-                    .accountID(payment.getFriend().getUser1().getAccountID())
-                    .friendAccountID(payment.getFriend().getUser2().getAccountID())
-                    .build();
-            List<FriendResponse> friendResponses = friendService.findByFriendId(request);
-            friendResponse = friendResponses.get(0);
-        }
+        if (payment.getFriend() != null)
+            friendResponse = friendService.findById(payment.getFriend().getFriendID());
 
         return PaymentResponse.builder()
                 .paymentID(payment.getPaymentID())

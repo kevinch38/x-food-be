@@ -57,6 +57,13 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
+    public FriendResponse findById(String id) {
+        return mapToResponse(friendRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Friend not found")
+        ));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<FriendResponse> findByAccountId(SearchFriendRequest request) {
         Specification<Friend> specification = getAllFriendSpecification(request);
@@ -72,7 +79,7 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
-    public List<Friend> getFriendById(SearchFriendRequest request) {
+    public List<Friend> getByFriendId(SearchFriendRequest request) {
         Specification<Friend> specification = getFriendSpecification(request);
         return friendRepository.findAll(specification);
     }

@@ -21,7 +21,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -36,8 +35,6 @@ class PromotionServiceImplTest {
     private PromotionService promotionService;
     @MockBean
     private MerchantService merchantService;
-    @MockBean
-    private EntityManager entityManager;
     @MockBean
     private PromotionRepository promotionRepository;
     @MockBean
@@ -98,7 +95,6 @@ class PromotionServiceImplTest {
         when(merchantService.findById(id)).thenReturn(merchantResponse);
         when(promotionRepository.saveAndFlush(promotion))
                 .thenReturn(promotion);
-        when(entityManager.merge(any())).thenReturn(merchant);
         PromotionResponse actual = promotionService.createNew(newPromotionRequest);
 
     }
@@ -152,7 +148,6 @@ class PromotionServiceImplTest {
         doNothing().when(validationUtil).validate(request);
         when(merchantService.findById(id)).thenReturn(merchantResponse);
         when(promotionRepository.findById(id)).thenReturn(Optional.of(promotion));
-        when(entityManager.merge(any())).thenReturn(merchant);
         when(promotionRepository.saveAndFlush(any()))
                 .thenReturn(promotion);
 
