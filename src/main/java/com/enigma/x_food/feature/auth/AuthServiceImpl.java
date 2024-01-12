@@ -75,6 +75,58 @@ public class AuthServiceImpl implements AuthService {
                     .build();
             adminService.createNew(request);
         }
+
+        Optional<Admin> optionalAdmin3 = adminRepository.findByAdminEmail("partnershipstaff@gmail.com");
+
+        if (optionalAdmin3.isEmpty()){
+            NewAdminRequest request = NewAdminRequest.builder()
+                    .adminName("Staff")
+                    .adminEmail("partnershipstaff@gmail.com")
+                    .password(bCryptUtil.hash("123"))
+                    .isSuperAdmin(false)
+                    .role(ERole.ROLE_PARTNERSHIP_STAFF.name())
+                    .build();
+            adminService.createNew(request);
+        }
+
+        Optional<Admin> optionalAdmin4 = adminRepository.findByAdminEmail("partnershiphead@gmail.com");
+
+        if (optionalAdmin4.isEmpty()){
+            NewAdminRequest request = NewAdminRequest.builder()
+                    .adminName("Head")
+                    .adminEmail("partnershiphead@gmail.com")
+                    .password(bCryptUtil.hash("123"))
+                    .isSuperAdmin(false)
+                    .role(ERole.ROLE_PARTNERSHIP_HEAD.name())
+                    .build();
+            adminService.createNew(request);
+        }
+
+        Optional<Admin> optionalAdmin5 = adminRepository.findByAdminEmail("marketinghead@gmail.com");
+
+        if (optionalAdmin5.isEmpty()){
+            NewAdminRequest request = NewAdminRequest.builder()
+                    .adminName("Head")
+                    .adminEmail("marketinghead@gmail.com")
+                    .password(bCryptUtil.hash("123"))
+                    .isSuperAdmin(false)
+                    .role(ERole.ROLE_MARKETING_HEAD.name())
+                    .build();
+            adminService.createNew(request);
+        }
+
+        Optional<Admin> optionalAdmin6 = adminRepository.findByAdminEmail("marketingstaff@gmail.com");
+
+        if (optionalAdmin6.isEmpty()){
+            NewAdminRequest request = NewAdminRequest.builder()
+                    .adminName("Staff")
+                    .adminEmail("marketingstaff@gmail.com")
+                    .password(bCryptUtil.hash("123"))
+                    .isSuperAdmin(false)
+                    .role(ERole.ROLE_MARKETING_STAFF.name())
+                    .build();
+            adminService.createNew(request);
+        }
     }
     @Override
     public LoginResponse loginUser(AuthRequest request) {
