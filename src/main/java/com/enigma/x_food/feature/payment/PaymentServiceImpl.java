@@ -192,7 +192,7 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
 
         SearchFriendRequest friendRequest = SearchFriendRequest.builder()
-                .friendID(request.getFriendID())
+                .friendAccountID(request.getFriendAccountID())
                 .accountID(request.getAccountID())
                 .build();
         List<Friend> friend = friendService.findByFriendId(friendRequest);

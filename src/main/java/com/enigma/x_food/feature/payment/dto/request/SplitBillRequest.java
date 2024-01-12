@@ -18,8 +18,8 @@ public class SplitBillRequest {
     private String accountID;
     @NotNull(message = "Payment amount cannot be empty")
     private Double paymentAmount;
-    @NotBlank(message = "Friend ID cannot be empty")
-    private String friendID;
+    @NotBlank(message = "Friend Account ID cannot be empty")
+    private String friendAccountID;
     @NotBlank(message = "Order ID cannot be empty")
     private String orderID;
     @NotNull(message = "Order items cannot be empty")

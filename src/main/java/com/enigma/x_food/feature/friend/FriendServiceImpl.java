@@ -35,7 +35,7 @@ public class FriendServiceImpl implements FriendService {
         validationUtil.validate(request);
         SearchFriendRequest searchFriendRequest = SearchFriendRequest.builder()
                 .accountID(request.getAccountID1())
-                .friendID(request.getAccountID2())
+                .friendAccountID(request.getAccountID2())
                 .build();
         List<Friend> friends = findByFriendId(searchFriendRequest);
 
@@ -122,7 +122,7 @@ public class FriendServiceImpl implements FriendService {
                                         request.getAccountID().toLowerCase()),
                                 criteriaBuilder.equal(
                                         criteriaBuilder.lower(root.get("user2").get("accountID")),
-                                        request.getFriendID().toLowerCase())
+                                        request.getAccountID().toLowerCase())
                         ),
                         criteriaBuilder.and(
                                 criteriaBuilder.equal(
@@ -130,7 +130,7 @@ public class FriendServiceImpl implements FriendService {
                                         request.getAccountID().toLowerCase()),
                                 criteriaBuilder.equal(
                                         criteriaBuilder.lower(root.get("user1").get("accountID")),
-                                        request.getFriendID().toLowerCase())
+                                        request.getAccountID().toLowerCase())
                         )
                 );
                 predicates.add(predicate);

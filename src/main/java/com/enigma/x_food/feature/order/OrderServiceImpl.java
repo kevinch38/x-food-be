@@ -17,6 +17,7 @@ import com.enigma.x_food.feature.order.dto.request.UpdateOrderRequest;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
 import com.enigma.x_food.feature.order_item.OrderItem;
 import com.enigma.x_food.feature.order_item.OrderItemService;
+import com.enigma.x_food.feature.order_item.dto.request.OrderItemRequest;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
 import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
 import com.enigma.x_food.feature.order_status.OrderStatus;
@@ -84,6 +85,16 @@ public class OrderServiceImpl implements OrderService {
                 .isSplit(false)
                 .orderValue(request.getOrderValue())
                 .build();
+
+        for (OrderItemRequest orderItem : request.getOrderItems()) {
+            Item item = itemService.findById(orderItem.getItemID());
+            if (item.getItemStock() <= 0)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item stock is empty");
+            if (item.getItemStock() < orderItem.getQuantity())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity exceeds stock");
+
+            item.setItemStock(item.getItemStock() - orderItem.getQuantity());
+        }
 
         HistoryRequest historyRequest = HistoryRequest.builder()
                 .transactionType(ETransactionType.ORDER.name())
