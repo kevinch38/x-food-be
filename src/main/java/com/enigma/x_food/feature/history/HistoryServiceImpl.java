@@ -147,7 +147,7 @@ public class HistoryServiceImpl implements HistoryService {
                     .branchID(order.getMerchantBranch().getBranchID())
                     .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
                     .image(order.getMerchantBranch().getImage())
-                    .quantity(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
+                    .quantity(order.getOrderItems().size())
                     .orderItems(order.getOrderItems().stream().map(
                                     o -> getOrderItemResponse(order, o)
                             ).collect(Collectors.toList()))
@@ -209,7 +209,6 @@ public class HistoryServiceImpl implements HistoryService {
                 .orderID(order.getOrderID())
                 .itemName(o.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
-                .quantity(o.getQuantity())
                 .price(o.getItem().getDiscountedPrice())
                 .createdAt(o.getCreatedAt())
                 .updatedAt(o.getUpdatedAt())

@@ -12,6 +12,8 @@ import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.OrderRepository;
+import com.enigma.x_food.feature.order_item.OrderItem;
+import com.enigma.x_food.feature.order_item.OrderItemService;
 import com.enigma.x_food.feature.order_status.OrderStatus;
 import com.enigma.x_food.feature.order_status.OrderStatusService;
 import com.enigma.x_food.feature.payment.dto.request.SearchPaymentRequest;
@@ -49,6 +51,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentStatusService paymentStatusService;
     private final FriendService friendService;
+    private final OrderItemService orderItemService;
     private final UserService userService;
     private final HistoryService historyService;
     private final OrderRepository orderRepository;
@@ -91,6 +94,38 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public List<PaymentResponse> createSplitBill(List<SplitBillRequest> splitBillRequests) {
+        log.info("Start createNew");
+        validationUtil.validate(splitBillRequests);
+
+        List<Payment> payments = splitBillRequests.stream().map(
+                this::getPayment
+        ).collect(Collectors.toList());
+
+        paymentRepository.saveAllAndFlush(payments);
+        for (Payment payment : payments) {
+            User user = userService.getUserById(payment.getUser().getAccountID());
+            HistoryRequest historyRequest = HistoryRequest.builder()
+                    .transactionType(ETransactionType.PAYMENT.name())
+                    .historyValue(payment.getPaymentAmount())
+                    .transactionDate(LocalDate.now())
+                    .credit(true)
+                    .debit(false)
+                    .accountID(user.getAccountID())
+                    .build();
+            History history = historyService.createNew(historyRequest);
+            history.setPayment(payment);
+
+            payment.setHistory(history);
+
+        }
+        log.info("End createNew");
+        return payments.stream().map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public PaymentResponse completeSplitBill(String id) {
         Payment payment = findByIdOrThrowException(id);
 
@@ -129,37 +164,6 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public List<PaymentResponse> createSplitBill(List<SplitBillRequest> splitBillRequests) {
-        log.info("Start createNew");
-        validationUtil.validate(splitBillRequests);
-
-        List<Payment> payments = splitBillRequests.stream().map(
-                this::getPayment
-        ).collect(Collectors.toList());
-
-        paymentRepository.saveAllAndFlush(payments);
-        for (Payment payment : payments) {
-            User user = userService.getUserById(payment.getUser().getAccountID());
-            HistoryRequest historyRequest = HistoryRequest.builder()
-                    .transactionType(ETransactionType.PAYMENT.name())
-                    .historyValue(payment.getPaymentAmount())
-                    .transactionDate(LocalDate.now())
-                    .credit(true)
-                    .debit(false)
-                    .accountID(user.getAccountID())
-                    .build();
-            History history = historyService.createNew(historyRequest);
-            history.setPayment(payment);
-
-            payment.setHistory(history);
-        }
-        log.info("End createNew");
-        return payments.stream().map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<PaymentResponse> findByAccountId(SearchPaymentRequest request) {
         Specification<Payment> specification = getPaymentSpecification(request);
@@ -192,6 +196,12 @@ public class PaymentServiceImpl implements PaymentService {
                 .accountID(request.getAccountID())
                 .build();
         List<Friend> friend = friendService.findByFriendId(friendRequest);
+
+        for (String id : request.getOrderItems()) {
+            OrderItem orderItem = orderItemService.findById(id);
+
+            orderItem.setFriend(friend.get(0));
+        }
 
         User user = userService.getUserById(request.getAccountID());
         Order order = orderRepository.findById(request.getOrderID())

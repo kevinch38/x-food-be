@@ -58,34 +58,42 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public OrderItem createNew(OrderItemRequest request) {
+    public List<OrderItem> createNew(List<OrderItemRequest> request) {
         validationUtil.validate(request);
-        Item item = itemService.findById(request.getItemID());
 
-        OrderItem orderItem = orderItemRepository.save(OrderItem.builder()
-                .item(item)
-                .quantity(request.getQuantity())
-                .build());
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (OrderItemRequest orderItemRequest : request) {
+            for (int i = 0; i < orderItemRequest.getQuantity(); i++) {
+                Item item = itemService.findById(orderItemRequest.getItemID());
 
-        List<OrderItemSubVariety> orderItemSubVarieties = new ArrayList<>();
-        if (request.getSubVarieties() != null) {
-            for (OrderSubVarietyRequest subVariety : request.getSubVarieties()) {
-                SubVariety subVarietyServiceById = subVarietyService.getById(subVariety.getSubVarietyID());
+                OrderItem orderItem = orderItemRepository.save(OrderItem.builder()
+                        .item(item)
+                        .build());
 
-                OrderItemSubVarietyRequest orderItemSubVarietyRequest = OrderItemSubVarietyRequest.builder()
-                        .subVariety(subVarietyServiceById)
-                        .orderItem(orderItem)
-                        .build();
+                List<OrderItemSubVariety> orderItemSubVarieties = new ArrayList<>();
+                if (orderItemRequest.getSubVarieties() != null) {
+                    for (OrderSubVarietyRequest subVariety : orderItemRequest.getSubVarieties()) {
+                        SubVariety subVarietyServiceById = subVarietyService.getById(subVariety.getSubVarietyID());
 
-                OrderItemSubVariety orderItemSubVariety = orderItemSubVarietyService.createNew(orderItemSubVarietyRequest);
+                        OrderItemSubVarietyRequest orderItemSubVarietyRequest = OrderItemSubVarietyRequest.builder()
+                                .subVariety(subVarietyServiceById)
+                                .orderItem(orderItem)
+                                .build();
 
-                orderItemSubVarieties.add(orderItemSubVariety);
+                        OrderItemSubVariety orderItemSubVariety = orderItemSubVarietyService.createNew(orderItemSubVarietyRequest);
+
+                        orderItemSubVarieties.add(orderItemSubVariety);
+                    }
+                }
+
+                orderItem.setOrderItemSubVarieties(orderItemSubVarieties);
+
+                orderItems.add(orderItem);
             }
         }
 
-        orderItem.setOrderItemSubVarieties(orderItemSubVarieties);
         log.info("End createNew");
-        return orderItem;
+        return orderItems;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -102,33 +110,35 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     private OrderItemResponse mapToResponse(OrderItem orderItem) {
-        List<OrderItemSubVarietyResponse> orderItemSubVarietyResponses = orderItem.getOrderItemSubVarieties().stream().map(
-                        o -> {
-                            SubVariety subVariety = o.getSubVariety();
-                            SubVarietyResponse subVarietyResponse = SubVarietyResponse.builder()
-                                    .subVarietyID(subVariety.getSubVarietyID())
-                                    .branchID(subVariety.getMerchantBranch().getBranchID())
-                                    .subVarName(subVariety.getSubVarName())
-                                    .subVarStock(subVariety.getSubVarStock())
-                                    .subVarPrice(subVariety.getSubVarPrice())
-                                    .build();
+        List<OrderItemSubVarietyResponse> orderItemSubVarietyResponses =
+                orderItem.getOrderItemSubVarieties().stream().map(
+                        OrderItemServiceImpl::getOrderItemSubVarietyResponse
+                ).collect(Collectors.toList());
 
-                            return OrderItemSubVarietyResponse.builder()
-                                    .orderItemSubVarietyID(o.getOrderItemSubVarietyID())
-                                    .subVariety(subVarietyResponse)
-                                    .build();
-                        }
-                )
-                .collect(Collectors.toList());
         return OrderItemResponse.builder()
                 .orderItemID(orderItem.getOrderItemID())
                 .orderID(orderItem.getOrder().getOrderID())
                 .itemName(orderItem.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
-                .quantity(orderItem.getQuantity())
                 .price(orderItem.getItem().getDiscountedPrice())
                 .createdAt(orderItem.getCreatedAt())
                 .updatedAt(orderItem.getUpdatedAt())
+                .build();
+    }
+
+    private static OrderItemSubVarietyResponse getOrderItemSubVarietyResponse(OrderItemSubVariety o) {
+        SubVariety subVariety = o.getSubVariety();
+        SubVarietyResponse subVarietyResponse = SubVarietyResponse.builder()
+                .subVarietyID(subVariety.getSubVarietyID())
+                .branchID(subVariety.getMerchantBranch().getBranchID())
+                .subVarName(subVariety.getSubVarName())
+                .subVarStock(subVariety.getSubVarStock())
+                .subVarPrice(subVariety.getSubVarPrice())
+                .build();
+
+        return OrderItemSubVarietyResponse.builder()
+                .orderItemSubVarietyID(o.getOrderItemSubVarietyID())
+                .subVariety(subVarietyResponse)
                 .build();
     }
 

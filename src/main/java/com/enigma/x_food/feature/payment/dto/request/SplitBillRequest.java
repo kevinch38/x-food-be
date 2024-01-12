@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,4 +22,6 @@ public class SplitBillRequest {
     private String friendID;
     @NotBlank(message = "Order ID cannot be empty")
     private String orderID;
+    @NotNull(message = "Order items cannot be empty")
+    private List<String> orderItems;
 }

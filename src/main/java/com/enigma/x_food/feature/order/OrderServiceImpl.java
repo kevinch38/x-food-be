@@ -17,7 +17,6 @@ import com.enigma.x_food.feature.order.dto.request.UpdateOrderRequest;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
 import com.enigma.x_food.feature.order_item.OrderItem;
 import com.enigma.x_food.feature.order_item.OrderItemService;
-import com.enigma.x_food.feature.order_item.dto.request.OrderItemRequest;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
 import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
 import com.enigma.x_food.feature.order_status.OrderStatus;
@@ -100,25 +99,7 @@ public class OrderServiceImpl implements OrderService {
         order.setHistory(history);
         orderRepository.save(order);
 
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (OrderItemRequest orderItem : request.getOrderItems()) {
-            Item item = itemService.findById(orderItem.getItemID());
-
-            if (item.getItemStock() <= 0)
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
-            if (orderItem.getQuantity() > item.getItemStock())
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is not enough");
-
-            OrderItemRequest orderItemRequest = OrderItemRequest.builder()
-                    .itemID(orderItem.getItemID())
-                    .quantity(orderItem.getQuantity())
-                    .subVarieties(orderItem.getSubVarieties())
-                    .build();
-            OrderItem newOrderItem = orderItemService.createNew(orderItemRequest);
-
-            orderItems.add(newOrderItem);
-            newOrderItem.setOrder(order);
-        }
+        List<OrderItem> orderItems = orderItemService.createNew(request.getOrderItems());
 
         order.setOrderItems(orderItems);
         history.setOrder(order);
@@ -157,9 +138,7 @@ public class OrderServiceImpl implements OrderService {
             Item item = itemService.findById(orderItem.getItem().getItemID());
             if (item.getItemStock() <= 0)
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
-            if (orderItem.getQuantity() > item.getItemStock())
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is not enough");
-            item.setItemStock(item.getItemStock() - orderItem.getQuantity());
+            item.setItemStock(item.getItemStock() - 1);
         }
 
         if (user.getBalance().getTotalBalance() < order.getOrderValue()) {
@@ -230,7 +209,7 @@ public class OrderServiceImpl implements OrderService {
                 .branchID(order.getMerchantBranch().getBranchID())
                 .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
                 .image(order.getMerchantBranch().getImage())
-                .quantity(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
+                .quantity(order.getOrderItems().size())
                 .isSplit(order.getIsSplit())
                 .pointAmount((int) (order.getOrderValue() / 10000))
                 .orderItems(orderItemResponses)
@@ -262,7 +241,6 @@ public class OrderServiceImpl implements OrderService {
                 .orderID(order.getOrderID())
                 .itemName(o.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
-                .quantity(o.getQuantity())
                 .price(o.getItem().getDiscountedPrice())
                 .createdAt(o.getCreatedAt())
                 .updatedAt(o.getUpdatedAt())

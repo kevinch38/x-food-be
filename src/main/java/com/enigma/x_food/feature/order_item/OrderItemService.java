@@ -10,5 +10,5 @@ public interface OrderItemService {
     void deleteById(String id);
     OrderItem findById(String id);
     List<OrderItemResponse> getAll(SearchOrderItemRequest request);
-    OrderItem createNew(OrderItemRequest request);
+    List<OrderItem> createNew(List<OrderItemRequest> reques);
 }
