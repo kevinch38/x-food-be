@@ -283,6 +283,17 @@ public class PaymentServiceImpl implements PaymentService {
                                 "order"
                         ));
                 predicates.add(predicate);
+
+                predicate = criteriaBuilder.or(
+                        criteriaBuilder.equal(
+                                criteriaBuilder.lower(paymentHistoryJoin.get("friend").get("user1")),
+                                request.getAccountID().toLowerCase()
+                        ),
+                        criteriaBuilder.equal(
+                                criteriaBuilder.lower(paymentHistoryJoin.get("friend").get("user2")),
+                                request.getAccountID().toLowerCase()
+                        ));
+                predicates.add(predicate);
             }
             return query
                     .where(predicates.toArray(new Predicate[]{}))
