@@ -7,6 +7,7 @@ import com.enigma.x_food.constant.ETransactionType;
 import com.enigma.x_food.feature.friend.Friend;
 import com.enigma.x_food.feature.friend.FriendService;
 import com.enigma.x_food.feature.friend.dto.request.SearchFriendRequest;
+import com.enigma.x_food.feature.friend.dto.response.FriendResponse;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
@@ -235,15 +236,16 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private PaymentResponse mapToResponse(Payment payment) {
-        String friendID = null;
-        byte[] friendImage = new byte[0];
+        FriendResponse friendResponse = null;
 
         if (payment.getFriend() != null) {
-            friendID = payment.getFriend().getFriendID();
-            if (!payment.getFriend().getUser1().equals(payment.getUser()))
-                friendImage = payment.getFriend().getUser1().getProfilePhoto();
-            else
-                friendImage = payment.getFriend().getUser2().getProfilePhoto();
+
+            SearchFriendRequest request = SearchFriendRequest.builder()
+                    .accountID(payment.getFriend().getUser1().getAccountID())
+                    .friendAccountID(payment.getFriend().getUser2().getAccountID())
+                    .build();
+            List<FriendResponse> friendResponses = friendService.findByFriendId(request);
+            friendResponse = friendResponses.get(0);
         }
 
         return PaymentResponse.builder()
@@ -255,8 +257,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .expiredAt(payment.getExpiredAt())
                 .paymentStatus(payment.getPaymentStatus().getStatus().name())
                 .historyID(payment.getHistory().getHistoryID())
-                .friendID(friendID)
-                .friendImage(friendImage)
+                .friend(friendResponse)
                 .orderID(payment.getOrder().getOrderID())
                 .createdAt(payment.getCreatedAt())
                 .updatedAt(payment.getUpdatedAt())

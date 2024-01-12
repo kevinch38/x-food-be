@@ -1,5 +1,6 @@
 package com.enigma.x_food.feature.payment.dto.response;
 
+import com.enigma.x_food.feature.friend.dto.response.FriendResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +22,7 @@ public class PaymentResponse {
     private Timestamp expiredAt;
     private String paymentStatus;
     private String historyID;
-    private String friendID;
-    private byte[] friendImage;
+    private FriendResponse friend;
     private String orderID;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
