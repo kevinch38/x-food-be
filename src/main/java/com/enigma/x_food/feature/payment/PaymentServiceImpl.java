@@ -264,9 +264,21 @@ public class PaymentServiceImpl implements PaymentService {
             if (request.getAccountID() != null) {
                 Join<Payment, History> paymentHistoryJoin = root.join("history", JoinType.INNER);
 
-                Predicate predicate = criteriaBuilder.equal(
-                        criteriaBuilder.lower(root.get("user").get("accountID")),
-                        request.getAccountID().toLowerCase()
+                Predicate predicate = criteriaBuilder.or(
+                        criteriaBuilder.equal(
+                                criteriaBuilder.lower(root.get("user").get("accountID")),
+                                request.getAccountID().toLowerCase()
+                        ),
+                        criteriaBuilder.or(
+                                criteriaBuilder.equal(
+                                        criteriaBuilder.lower(root.get("friend").get("user1").get("accountID")),
+                                        request.getAccountID().toLowerCase()
+                                ),
+                                criteriaBuilder.equal(
+                                        criteriaBuilder.lower(root.get("friend").get("user2").get("accountID")),
+                                        request.getAccountID().toLowerCase()
+                                )
+                        )
                 );
                 predicates.add(predicate);
 
@@ -278,17 +290,6 @@ public class PaymentServiceImpl implements PaymentService {
                         criteriaBuilder.equal(
                                 criteriaBuilder.lower(paymentHistoryJoin.get("transactionType")),
                                 "order"
-                        ));
-                predicates.add(predicate);
-
-                predicate = criteriaBuilder.or(
-                        criteriaBuilder.equal(
-                                criteriaBuilder.lower(root.get("friend").get("user1").get("accountID")),
-                                request.getAccountID().toLowerCase()
-                        ),
-                        criteriaBuilder.equal(
-                                criteriaBuilder.lower(root.get("friend").get("user2").get("accountID")),
-                                request.getAccountID().toLowerCase()
                         ));
                 predicates.add(predicate);
             }
