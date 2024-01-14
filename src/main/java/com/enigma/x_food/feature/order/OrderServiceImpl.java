@@ -86,16 +86,6 @@ public class OrderServiceImpl implements OrderService {
                 .orderValue(request.getOrderValue())
                 .build();
 
-        for (OrderItemRequest orderItem : request.getOrderItems()) {
-            Item item = itemService.findById(orderItem.getItemID());
-            if (item.getItemStock() <= 0)
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item stock is empty");
-            if (item.getItemStock() < orderItem.getQuantity())
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity exceeds stock");
-
-            item.setItemStock(item.getItemStock() - orderItem.getQuantity());
-        }
-
         HistoryRequest historyRequest = HistoryRequest.builder()
                 .transactionType(ETransactionType.ORDER.name())
                 .historyValue(request.getOrderValue())
@@ -110,7 +100,20 @@ public class OrderServiceImpl implements OrderService {
         order.setHistory(history);
         orderRepository.save(order);
 
+        for (OrderItemRequest orderItem : request.getOrderItems()) {
+            Item item = itemService.findById(orderItem.getItemID());
+            if (item.getItemStock() <= 0)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item stock is empty");
+            if (item.getItemStock() < orderItem.getQuantity())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity exceeds stock");
+
+            item.setItemStock(item.getItemStock() - orderItem.getQuantity());
+        }
+
         List<OrderItem> orderItems = orderItemService.createNew(request.getOrderItems());
+        for (OrderItem orderItem : orderItems) {
+            orderItem.setOrder(order);
+        }
 
         order.setOrderItems(orderItems);
         history.setOrder(order);
