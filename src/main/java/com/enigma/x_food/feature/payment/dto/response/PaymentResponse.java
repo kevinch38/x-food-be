@@ -27,6 +27,7 @@ public class PaymentResponse {
     private String historyID;
     private FriendResponse friend;
     private String orderID;
+    private OrderResponse order;
     private List<OrderItemResponse> orderItems;
     private List<String> orderItemSplits;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")

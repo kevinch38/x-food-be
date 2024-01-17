@@ -13,6 +13,7 @@ import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.OrderRepository;
+import com.enigma.x_food.feature.order.dto.response.OrderResponse;
 import com.enigma.x_food.feature.order_item.OrderItem;
 import com.enigma.x_food.feature.order_item.OrderItemService;
 import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
@@ -297,12 +298,39 @@ public class PaymentServiceImpl implements PaymentService {
                 .historyID(payment.getHistory().getHistoryID())
                 .friend(friendResponse)
                 .orderID(payment.getOrder().getOrderID())
+                .order(mapToResponse2(payment.getOrder()))
                 .orderItems(mapToResponse(payment.getOrder()))
                 .orderItemSplits(orderItemSplitResponse)
                 .createdAt(payment.getCreatedAt())
                 .updatedAt(payment.getUpdatedAt())
                 .build();
     }
+
+
+    private OrderResponse mapToResponse2(Order order) {
+            List<OrderItemResponse> orderItemResponses = order.getOrderItems().stream().map(
+                            o -> getOrderItemResponse(order, o))
+                    .collect(Collectors.toList());
+
+            return OrderResponse.builder()
+                    .orderID(order.getOrderID())
+                    .accountID(order.getUser().getAccountID())
+                    .historyID(order.getHistory().getHistoryID())
+                    .orderValue(order.getOrderValue())
+                    .notes(order.getNotes())
+                    .tableNumber(order.getTableNumber())
+                    .orderStatus(order.getOrderStatus().getStatus().name())
+                    .branchID(order.getMerchantBranch().getBranchID())
+                    .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
+                    .image(order.getMerchantBranch().getImage())
+                    .quantity(order.getOrderItems().size())
+                    .isSplit(order.getIsSplit())
+                    .pointAmount((int) (order.getOrderValue() / 10000))
+                    .orderItems(orderItemResponses)
+                    .createdAt(order.getCreatedAt())
+                    .updatedAt(order.getUpdatedAt())
+                    .build();
+        }
 
     private List<OrderItemResponse> mapToResponse(Order order) {
         return order.getOrderItems().stream().map(
