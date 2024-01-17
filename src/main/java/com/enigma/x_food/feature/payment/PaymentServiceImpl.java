@@ -266,14 +266,37 @@ public class PaymentServiceImpl implements PaymentService {
 
     private List<OrderItemResponse> mapToResponse(Order order) {
         return order.getOrderItems().stream().map(
-                        PaymentServiceImpl::getOrderItemResponse)
+                        o -> getOrderItemResponse(order, o))
                 .collect(Collectors.toList());
 
     }
 
-    private static OrderItemResponse getOrderItemResponse(OrderItem o) {
+    private static OrderItemResponse getOrderItemResponse(Order order, OrderItem o) {
+        List<OrderItemSubVarietyResponse> orderItemSubVarietyResponses = new ArrayList<>();
+        if (o.getOrderItemSubVarieties() != null) {
+            List<OrderItemSubVariety> orderItemSubVarieties = o.getOrderItemSubVarieties();
+            orderItemSubVarietyResponses = orderItemSubVarieties.stream().map(
+                            oisv -> OrderItemSubVarietyResponse.builder()
+                                    .orderItemSubVarietyID(oisv.getOrderItemSubVarietyID())
+                                    .subVariety(SubVarietyResponse.builder()
+                                            .subVarietyID(oisv.getSubVariety().getSubVarietyID())
+                                            .branchID(oisv.getSubVariety().getMerchantBranch().getBranchID())
+                                            .subVarName(oisv.getSubVariety().getSubVarName())
+                                            .subVarStock(oisv.getSubVariety().getSubVarStock())
+                                            .subVarPrice(oisv.getSubVariety().getSubVarPrice())
+                                            .build())
+                                    .build()
+                    )
+                    .collect(Collectors.toList());
+        }
         return OrderItemResponse.builder()
                 .orderItemID(o.getOrderItemID())
+                .orderID(order.getOrderID())
+                .itemName(o.getItem().getItemName())
+                .orderItemSubVarieties(orderItemSubVarietyResponses)
+                .price(o.getItem().getDiscountedPrice())
+                .createdAt(o.getCreatedAt())
+                .updatedAt(o.getUpdatedAt())
                 .build();
     }
 
