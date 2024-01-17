@@ -28,6 +28,7 @@ public class PaymentResponse {
     private FriendResponse friend;
     private String orderID;
     private List<OrderItemResponse> orderItems;
+    private List<String> orderItemSplits;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")

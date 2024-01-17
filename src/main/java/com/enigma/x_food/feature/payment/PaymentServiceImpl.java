@@ -13,10 +13,11 @@ import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.OrderRepository;
-import com.enigma.x_food.feature.order.dto.response.OrderResponse;
 import com.enigma.x_food.feature.order_item.OrderItem;
 import com.enigma.x_food.feature.order_item.OrderItemService;
 import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
+import com.enigma.x_food.feature.order_item_split.order.OrderItemSplit;
+import com.enigma.x_food.feature.order_item_split.order.OrderItemSplitService;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
 import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
 import com.enigma.x_food.feature.order_status.OrderStatus;
@@ -58,6 +59,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentStatusService paymentStatusService;
     private final FriendService friendService;
     private final OrderItemService orderItemService;
+    private final OrderItemSplitService orderItemSplitService;
     private final UserService userService;
     private final HistoryService historyService;
     private final OrderRepository orderRepository;
@@ -229,6 +231,16 @@ public class PaymentServiceImpl implements PaymentService {
                 .withNano(0);
         Timestamp expiredAt = Timestamp.from(expiredTimeGmtPlus7.toInstant());
 
+        List<OrderItem> orderItemForSplit = new ArrayList<>();
+        for (String id : request.getOrderItems()) {
+            OrderItem orderItem = orderItemService.findById(id);
+
+            orderItemForSplit.add(orderItem);
+        }
+        OrderItemSplit orderItemSplit = OrderItemSplit.builder()
+                .orderItems(orderItemForSplit)
+                .build();
+
         return Payment.builder()
                 .paymentAmount(request.getPaymentAmount())
                 .user(user)
@@ -238,6 +250,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentStatus(paymentStatus)
                 .friend(friend.get(0))
                 .order(order)
+                .orderItemSplit(orderItemSplit)
                 .build();
     }
 
@@ -259,16 +272,21 @@ public class PaymentServiceImpl implements PaymentService {
                 .friend(friendResponse)
                 .orderID(payment.getOrder().getOrderID())
                 .orderItems(mapToResponse(payment.getOrder()))
+                .orderItemSplits(mapToResponse(payment.getOrderItemSplit()))
                 .createdAt(payment.getCreatedAt())
                 .updatedAt(payment.getUpdatedAt())
                 .build();
     }
 
+    private List<String> mapToResponse(OrderItemSplit order) {
+        return order.getOrderItems().stream().map(
+                        o -> o.getOrderItemID())
+                .collect(Collectors.toList());
+    }
     private List<OrderItemResponse> mapToResponse(Order order) {
         return order.getOrderItems().stream().map(
                         o -> getOrderItemResponse(order, o))
                 .collect(Collectors.toList());
-
     }
 
     private static OrderItemResponse getOrderItemResponse(Order order, OrderItem o) {
