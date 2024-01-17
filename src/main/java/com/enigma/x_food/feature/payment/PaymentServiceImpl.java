@@ -116,6 +116,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
             History history = historyService.createNew(historyRequest);
             history.setPayment(payment);
+            history.setOrder(payment.getOrder());
 
             payment.setHistory(history);
 

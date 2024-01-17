@@ -158,7 +158,8 @@ public class HistoryServiceImpl implements HistoryService {
                     .createdAt(order.getCreatedAt())
                     .updatedAt(order.getUpdatedAt())
                     .build();
-        } else if (payment != null) {
+        }
+        if (payment != null) {
             FriendResponse friendResponse = null;
             if (payment.getFriend() != null)
                 friendResponse = friendService.findById(payment.getFriend().getFriendID());
