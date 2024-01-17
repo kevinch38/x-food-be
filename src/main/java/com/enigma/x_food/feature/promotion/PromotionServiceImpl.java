@@ -294,7 +294,7 @@ public class PromotionServiceImpl implements PromotionService {
                 .expiredDate(promotion.getExpiredDate())
                 .adminName(promotion.getAdmin().getAdminName())
                 .status(promotion.getPromotionStatus().getStatus().name())
-                .merchantImage(promotion.getMerchant().getImage())
+                .merchantLogo(promotion.getMerchant().getLogoImage())
                 .createdAt(promotion.getCreatedAt())
                 .updatedAt(promotion.getUpdatedAt())
                 .notes(promotion.getNotes())
