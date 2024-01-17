@@ -30,6 +30,8 @@ public class OrderItemSplit extends BaseEntity {
     @GeneratedValue(generator = "uuid")
     @Column(name = "order_item_split_id")
     private String orderItemSplitID;
-    @OneToMany
-    private List<OrderItem> orderItems;
+    @Column(name = "order_item_split_item")
+    private String orderItemID;
+    @ManyToOne
+    private Payment payment;
 }

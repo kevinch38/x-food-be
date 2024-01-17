@@ -15,6 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class NewOrderItemSplitRequest {
-    @NotNull(message = "Order item cannot be empty")
-    private List<OrderItem> orderItems;
+    @NotNull(message = "Order item ID cannot be empty")
+    private String orderItemID;
 }

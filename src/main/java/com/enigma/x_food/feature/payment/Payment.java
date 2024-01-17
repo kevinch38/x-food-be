@@ -4,6 +4,7 @@ import com.enigma.x_food.feature.friend.Friend;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order_item_split.order.OrderItemSplit;
+import com.enigma.x_food.feature.order_item_split.order.dto.response.OrderItemSplitResponse;
 import com.enigma.x_food.feature.payment_status.PaymentStatus;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.shared.BaseEntity;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -49,7 +51,6 @@ public class Payment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
-    @OneToMany
-    @JoinColumn(name = "order_item_split_id", nullable = false)
-    private OrderItemSplit orderItemSplit;
+    @OneToMany(mappedBy = "payment")
+    private List<OrderItemSplit> orderItemSplits;
 }

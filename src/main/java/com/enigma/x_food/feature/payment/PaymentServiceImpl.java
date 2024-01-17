@@ -18,6 +18,8 @@ import com.enigma.x_food.feature.order_item.OrderItemService;
 import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
 import com.enigma.x_food.feature.order_item_split.order.OrderItemSplit;
 import com.enigma.x_food.feature.order_item_split.order.OrderItemSplitService;
+import com.enigma.x_food.feature.order_item_split.order.dto.request.NewOrderItemSplitRequest;
+import com.enigma.x_food.feature.order_item_split.order.dto.response.OrderItemSplitResponse;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
 import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
 import com.enigma.x_food.feature.order_status.OrderStatus;
@@ -110,6 +112,20 @@ public class PaymentServiceImpl implements PaymentService {
                 this::getPayment
         ).collect(Collectors.toList());
 
+//        for (SplitBillRequest splitBillRequest : splitBillRequests) {
+//            splitBillRequest.getOrderItems()
+//        }
+//
+//        List<OrderItem> orderItemForSplit = new ArrayList<>();
+//        for (String id : splitBillRequests.getOrderItems()) {
+//            OrderItem orderItem = orderItemService.findById(id);
+//
+//            orderItemForSplit.add(orderItem);
+//        }
+//        NewOrderItemSplitRequest orderItemSplit = NewOrderItemSplitRequest.builder()
+//                .orderItems(orderItemForSplit)
+//                .build();
+
         paymentRepository.saveAllAndFlush(payments);
         for (Payment payment : payments) {
             User user = userService.getUserById(payment.getUser().getAccountID());
@@ -126,6 +142,9 @@ public class PaymentServiceImpl implements PaymentService {
             history.setOrder(payment.getOrder());
 
             payment.setHistory(history);
+            for (OrderItemSplit orderItemSplit : payment.getOrderItemSplits()) {
+                orderItemSplit.setPayment(payment);
+            }
 
         }
         log.info("End createNew");
@@ -231,15 +250,14 @@ public class PaymentServiceImpl implements PaymentService {
                 .withNano(0);
         Timestamp expiredAt = Timestamp.from(expiredTimeGmtPlus7.toInstant());
 
-        List<OrderItem> orderItemForSplit = new ArrayList<>();
+        List<NewOrderItemSplitRequest> orderItemSplitRequests = new ArrayList<>();
         for (String id : request.getOrderItems()) {
-            OrderItem orderItem = orderItemService.findById(id);
-
-            orderItemForSplit.add(orderItem);
+            orderItemSplitRequests.add(NewOrderItemSplitRequest.builder().orderItemID(id).build());
         }
-        OrderItemSplit orderItemSplit = OrderItemSplit.builder()
-                .orderItems(orderItemForSplit)
-                .build();
+        List<OrderItemSplit> aNew = orderItemSplitService.createNew(orderItemSplitRequests);
+//        NewOrderItemSplitRequest orderItemSplit = NewOrderItemSplitRequest.builder()
+//                .orderItems(orderItemForSplit)
+//                .build();
 
         return Payment.builder()
                 .paymentAmount(request.getPaymentAmount())
@@ -250,7 +268,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentStatus(paymentStatus)
                 .friend(friend.get(0))
                 .order(order)
-                .orderItemSplit(orderItemSplit)
+                .orderItemSplits(aNew)
                 .build();
     }
 
@@ -259,6 +277,13 @@ public class PaymentServiceImpl implements PaymentService {
 
         if (payment.getFriend() != null)
             friendResponse = friendService.findById(payment.getFriend().getFriendID());
+
+        List<String> orderItemSplitResponse = null;
+
+        if (payment.getOrderItemSplits() != null)
+            for (OrderItemSplit orderItemSplit : payment.getOrderItemSplits()) {
+                orderItemSplitResponse.add(orderItemSplit.getOrderItemID());
+            }
 
         return PaymentResponse.builder()
                 .paymentID(payment.getPaymentID())
@@ -272,17 +297,12 @@ public class PaymentServiceImpl implements PaymentService {
                 .friend(friendResponse)
                 .orderID(payment.getOrder().getOrderID())
                 .orderItems(mapToResponse(payment.getOrder()))
-                .orderItemSplits(mapToResponse(payment.getOrderItemSplit()))
+                .orderItemSplits(orderItemSplitResponse)
                 .createdAt(payment.getCreatedAt())
                 .updatedAt(payment.getUpdatedAt())
                 .build();
     }
 
-    private List<String> mapToResponse(OrderItemSplit order) {
-        return order.getOrderItems().stream().map(
-                        o -> o.getOrderItemID())
-                .collect(Collectors.toList());
-    }
     private List<OrderItemResponse> mapToResponse(Order order) {
         return order.getOrderItems().stream().map(
                         o -> getOrderItemResponse(order, o))

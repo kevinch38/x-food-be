@@ -24,63 +24,35 @@ public class OrderItemSplitServiceImpl implements OrderItemSplitService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderItemSplitResponse createNew(NewOrderItemSplitRequest request) {
+    public List<OrderItemSplit> createNew(List<NewOrderItemSplitRequest> request) {
         log.info("Start createNew");
         validationUtil.validate(request);
 
-//        List<OrderItem> orderItems = new ArrayList<>();
-//        for (OrderItemRequest orderItem : request.getOrderItems()) {
-//            orderItems.add(OrderItem.builder()
-//                    .orderItemID(orderItem.getItemID())
-//
-//                    .build());
-//        }
-        OrderItemSplit orderItemSplit = OrderItemSplit.builder().orderItems(request.getOrderItems()).build();
-        orderItemSplitRepository.saveAndFlush(orderItemSplit);
+        List<OrderItemSplit> orderItemSplits = new ArrayList<>();
+        for (NewOrderItemSplitRequest newOrderItemSplitRequest : request) {
+            OrderItemSplit orderItemSplit = OrderItemSplit.builder()
+                    .orderItemID(newOrderItemSplitRequest.getOrderItemID())
+                    .build();
+            orderItemSplits.add(orderItemSplit);
+        }
+        orderItemSplitRepository.saveAllAndFlush(orderItemSplits);
 
         log.info("End createNew");
-        return mapToResponse(orderItemSplit);
+        return mapToResponse(orderItemSplits);
     }
 
-    private OrderItemSplitResponse mapToResponse(OrderItemSplit order) {
-        List<OrderItemResponse> orderItemResponses = order.getOrderItems().stream().map(
-                        OrderItemSplitServiceImpl::getOrderItemResponse)
-                .collect(Collectors.toList());
-
-        return OrderItemSplitResponse.builder()
-                .orderItemSplitID(order.getOrderItemSplitID())
-                .orderItems(orderItemResponses)
-                .createdAt(order.getCreatedAt())
-                .updatedAt(order.getUpdatedAt())
-                .build();
-    }
-
-    private static OrderItemResponse getOrderItemResponse(OrderItem o) {
-        List<OrderItemSubVarietyResponse> orderItemSubVarietyResponses = new ArrayList<>();
-        if (o.getOrderItemSubVarieties() != null) {
-            List<OrderItemSubVariety> orderItemSubVarieties = o.getOrderItemSubVarieties();
-            orderItemSubVarietyResponses = orderItemSubVarieties.stream().map(
-                            oisv -> OrderItemSubVarietyResponse.builder()
-                                    .orderItemSubVarietyID(oisv.getOrderItemSubVarietyID())
-                                    .subVariety(SubVarietyResponse.builder()
-                                            .subVarietyID(oisv.getSubVariety().getSubVarietyID())
-                                            .branchID(oisv.getSubVariety().getMerchantBranch().getBranchID())
-                                            .subVarName(oisv.getSubVariety().getSubVarName())
-                                            .subVarStock(oisv.getSubVariety().getSubVarStock())
-                                            .subVarPrice(oisv.getSubVariety().getSubVarPrice())
-                                            .build())
-                                    .build()
-                    )
-                    .collect(Collectors.toList());
+    private List<OrderItemSplit> mapToResponse(List<OrderItemSplit> order) {
+        List<OrderItemSplit> orderItemSplitResponses = new ArrayList<>();
+        for (OrderItemSplit orderItemSplit : order) {
+            OrderItemSplit build = OrderItemSplit.builder()
+                    .orderItemSplitID(orderItemSplit.getOrderItemSplitID())
+                    .orderItemID(orderItemSplit.getOrderItemID())
+                    .createdAt(orderItemSplit.getCreatedAt())
+                    .updatedAt(orderItemSplit.getUpdatedAt())
+                    .build();
+            orderItemSplitResponses.add(build);
         }
-        return OrderItemResponse.builder()
-                .orderItemID(o.getOrderItemID())
-                .itemName(o.getItem().getItemName())
-                .orderItemSubVarieties(orderItemSubVarietyResponses)
-                .price(o.getItem().getDiscountedPrice())
-                .createdAt(o.getCreatedAt())
-                .updatedAt(o.getUpdatedAt())
-                .build();
+        return orderItemSplitResponses;
     }
 
 }
