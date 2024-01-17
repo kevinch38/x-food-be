@@ -13,8 +13,12 @@ import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.OrderRepository;
+import com.enigma.x_food.feature.order.dto.response.OrderResponse;
 import com.enigma.x_food.feature.order_item.OrderItem;
 import com.enigma.x_food.feature.order_item.OrderItemService;
+import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
+import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
+import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
 import com.enigma.x_food.feature.order_status.OrderStatus;
 import com.enigma.x_food.feature.order_status.OrderStatusService;
 import com.enigma.x_food.feature.payment.dto.request.SearchPaymentRequest;
@@ -23,6 +27,7 @@ import com.enigma.x_food.feature.payment.dto.request.SplitBillRequest;
 import com.enigma.x_food.feature.payment.dto.response.PaymentResponse;
 import com.enigma.x_food.feature.payment_status.PaymentStatus;
 import com.enigma.x_food.feature.payment_status.PaymentStatusService;
+import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import com.enigma.x_food.feature.user.User;
 import com.enigma.x_food.feature.user.UserService;
 import com.enigma.x_food.util.ValidationUtil;
@@ -253,8 +258,63 @@ public class PaymentServiceImpl implements PaymentService {
                 .historyID(payment.getHistory().getHistoryID())
                 .friend(friendResponse)
                 .orderID(payment.getOrder().getOrderID())
+                .order(mapToResponse(payment.getOrder()))
                 .createdAt(payment.getCreatedAt())
                 .updatedAt(payment.getUpdatedAt())
+                .build();
+    }
+
+    private OrderResponse mapToResponse(Order order) {
+        List<OrderItemResponse> orderItemResponses = order.getOrderItems().stream().map(
+                        o -> getOrderItemResponse(order, o))
+                .collect(Collectors.toList());
+
+        return OrderResponse.builder()
+                .orderID(order.getOrderID())
+                .accountID(order.getUser().getAccountID())
+                .historyID(order.getHistory().getHistoryID())
+                .orderValue(order.getOrderValue())
+                .notes(order.getNotes())
+                .tableNumber(order.getTableNumber())
+                .orderStatus(order.getOrderStatus().getStatus().name())
+                .branchID(order.getMerchantBranch().getBranchID())
+                .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
+                .image(order.getMerchantBranch().getImage())
+                .quantity(order.getOrderItems().size())
+                .isSplit(order.getIsSplit())
+                .pointAmount((int) (order.getOrderValue() / 10000))
+                .orderItems(orderItemResponses)
+                .createdAt(order.getCreatedAt())
+                .updatedAt(order.getUpdatedAt())
+                .build();
+    }
+
+    private static OrderItemResponse getOrderItemResponse(Order order, OrderItem o) {
+        List<OrderItemSubVarietyResponse> orderItemSubVarietyResponses = new ArrayList<>();
+        if (o.getOrderItemSubVarieties() != null) {
+            List<OrderItemSubVariety> orderItemSubVarieties = o.getOrderItemSubVarieties();
+            orderItemSubVarietyResponses = orderItemSubVarieties.stream().map(
+                            oisv -> OrderItemSubVarietyResponse.builder()
+                                    .orderItemSubVarietyID(oisv.getOrderItemSubVarietyID())
+                                    .subVariety(SubVarietyResponse.builder()
+                                            .subVarietyID(oisv.getSubVariety().getSubVarietyID())
+                                            .branchID(oisv.getSubVariety().getMerchantBranch().getBranchID())
+                                            .subVarName(oisv.getSubVariety().getSubVarName())
+                                            .subVarStock(oisv.getSubVariety().getSubVarStock())
+                                            .subVarPrice(oisv.getSubVariety().getSubVarPrice())
+                                            .build())
+                                    .build()
+                    )
+                    .collect(Collectors.toList());
+        }
+        return OrderItemResponse.builder()
+                .orderItemID(o.getOrderItemID())
+                .orderID(order.getOrderID())
+                .itemName(o.getItem().getItemName())
+                .orderItemSubVarieties(orderItemSubVarietyResponses)
+                .price(o.getItem().getDiscountedPrice())
+                .createdAt(o.getCreatedAt())
+                .updatedAt(o.getUpdatedAt())
                 .build();
     }
 

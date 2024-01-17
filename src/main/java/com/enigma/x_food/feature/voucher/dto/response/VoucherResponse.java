@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 public class VoucherResponse {
     private String voucherID;
     private String promotionID;
+    private String merchantID;
     private String userID;
     private Integer voucherValue;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
