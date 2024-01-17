@@ -100,24 +100,19 @@ public class OrderServiceImpl implements OrderService {
         order.setHistory(history);
         orderRepository.save(order);
 
-        List<OrderItem> orderItems = new ArrayList<>();
         for (OrderItemRequest orderItem : request.getOrderItems()) {
             Item item = itemService.findById(orderItem.getItemID());
-
             if (item.getItemStock() <= 0)
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
-            if (orderItem.getQuantity() > item.getItemStock())
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is not enough");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item stock is empty");
+            if (item.getItemStock() < orderItem.getQuantity())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity exceeds stock");
 
-            OrderItemRequest orderItemRequest = OrderItemRequest.builder()
-                    .itemID(orderItem.getItemID())
-                    .quantity(orderItem.getQuantity())
-                    .subVarieties(orderItem.getSubVarieties())
-                    .build();
-            OrderItem newOrderItem = orderItemService.createNew(orderItemRequest);
+            item.setItemStock(item.getItemStock() - orderItem.getQuantity());
+        }
 
-            orderItems.add(newOrderItem);
-            newOrderItem.setOrder(order);
+        List<OrderItem> orderItems = orderItemService.createNew(request.getOrderItems());
+        for (OrderItem orderItem : orderItems) {
+            orderItem.setOrder(order);
         }
 
         order.setOrderItems(orderItems);
@@ -157,9 +152,7 @@ public class OrderServiceImpl implements OrderService {
             Item item = itemService.findById(orderItem.getItem().getItemID());
             if (item.getItemStock() <= 0)
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is empty");
-            if (orderItem.getQuantity() > item.getItemStock())
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock is not enough");
-            item.setItemStock(item.getItemStock() - orderItem.getQuantity());
+            item.setItemStock(item.getItemStock() - 1);
         }
 
         if (user.getBalance().getTotalBalance() < order.getOrderValue()) {
@@ -230,7 +223,7 @@ public class OrderServiceImpl implements OrderService {
                 .branchID(order.getMerchantBranch().getBranchID())
                 .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
                 .image(order.getMerchantBranch().getImage())
-                .quantity(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
+                .quantity(order.getOrderItems().size())
                 .isSplit(order.getIsSplit())
                 .pointAmount((int) (order.getOrderValue() / 10000))
                 .orderItems(orderItemResponses)
@@ -262,7 +255,6 @@ public class OrderServiceImpl implements OrderService {
                 .orderID(order.getOrderID())
                 .itemName(o.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
-                .quantity(o.getQuantity())
                 .price(o.getItem().getDiscountedPrice())
                 .createdAt(o.getCreatedAt())
                 .updatedAt(o.getUpdatedAt())

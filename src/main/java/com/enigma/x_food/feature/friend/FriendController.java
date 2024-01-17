@@ -38,17 +38,17 @@ public class FriendController {
     @GetMapping
     public ResponseEntity<?> getAllOrGetByFriendID(
             @RequestParam String accountID,
-            @RequestParam(required = false) String friendID
+            @RequestParam(required = false) String friendAccountID
     ) {
         SearchFriendRequest request = SearchFriendRequest.builder()
                 .accountID(accountID)
-                .friendID(friendID)
+                .friendAccountID(friendAccountID)
                 .build();
 
-        if (friendID != null) {
-            List<Friend> friendResponses = friendService.findByFriendId(request);
+        if (friendAccountID != null) {
+            List<FriendResponse> friendResponses = friendService.findByFriendId(request);
 
-            CommonResponse<List<Friend>> response = CommonResponse.<List<Friend>>builder()
+            CommonResponse<List<FriendResponse>> response = CommonResponse.<List<FriendResponse>>builder()
                     .message("successfully get friend")
                     .statusCode(HttpStatus.OK.value())
                     .data(friendResponses)

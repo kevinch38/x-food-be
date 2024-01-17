@@ -1,6 +1,8 @@
 package com.enigma.x_food.feature.history;
 
 import com.enigma.x_food.constant.ETransactionType;
+import com.enigma.x_food.feature.friend.FriendService;
+import com.enigma.x_food.feature.friend.dto.response.FriendResponse;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.history.dto.request.SearchAccountHistoryRequest;
 import com.enigma.x_food.feature.history.dto.request.SearchHistoryRequest;
@@ -47,6 +49,7 @@ import java.util.stream.Collectors;
 public class HistoryServiceImpl implements HistoryService {
     private final HistoryRepository historyRepository;
     private final UserService userService;
+    private final FriendService friendService;
     private final ValidationUtil validationUtil;
 
     @Override
@@ -147,15 +150,19 @@ public class HistoryServiceImpl implements HistoryService {
                     .branchID(order.getMerchantBranch().getBranchID())
                     .merchantName(order.getMerchantBranch().getMerchant().getMerchantName())
                     .image(order.getMerchantBranch().getImage())
-                    .quantity(order.getOrderItems().stream().mapToInt(OrderItem::getQuantity).sum())
+                    .quantity(order.getOrderItems().size())
                     .orderItems(order.getOrderItems().stream().map(
-                                    o -> getOrderItemResponse(order, o)
-                            ).collect(Collectors.toList()))
+                            o -> getOrderItemResponse(order, o)
+                    ).collect(Collectors.toList()))
                     .isSplit(order.getIsSplit())
                     .createdAt(order.getCreatedAt())
                     .updatedAt(order.getUpdatedAt())
                     .build();
         } else if (payment != null) {
+            FriendResponse friendResponse = null;
+            if (payment.getFriend() != null)
+                friendResponse = friendService.findById(payment.getFriend().getFriendID());
+
             paymentResponse = PaymentResponse.builder()
                     .paymentID(payment.getPaymentID())
                     .accountID(payment.getUser().getAccountID())
@@ -164,7 +171,7 @@ public class HistoryServiceImpl implements HistoryService {
                     .paymentStatus(payment.getPaymentStatus().getStatus().name())
                     .paymentType(payment.getPaymentType())
                     .historyID(payment.getHistory().getHistoryID())
-                    .friendID(payment.getFriend().getFriendID())
+                    .friend(friendResponse)
                     .orderID(payment.getOrder().getOrderID())
                     .createdAt(payment.getCreatedAt())
                     .updatedAt(payment.getUpdatedAt())
@@ -209,7 +216,6 @@ public class HistoryServiceImpl implements HistoryService {
                 .orderID(order.getOrderID())
                 .itemName(o.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
-                .quantity(o.getQuantity())
                 .price(o.getItem().getDiscountedPrice())
                 .createdAt(o.getCreatedAt())
                 .updatedAt(o.getUpdatedAt())

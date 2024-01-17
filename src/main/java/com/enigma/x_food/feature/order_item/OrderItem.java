@@ -1,9 +1,9 @@
 package com.enigma.x_food.feature.order_item;
 
+import com.enigma.x_food.feature.friend.Friend;
 import com.enigma.x_food.feature.item.Item;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
-import com.enigma.x_food.feature.sub_variety.SubVariety;
 import com.enigma.x_food.shared.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,6 +34,7 @@ public class OrderItem extends BaseEntity {
     private Item item;
     @OneToMany(mappedBy = "orderItem")
     private List<OrderItemSubVariety> orderItemSubVarieties;
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+    @ManyToOne
+    @JoinColumn(name = "friend_id")
+    private Friend friend;
 }

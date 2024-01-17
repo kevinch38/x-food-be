@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface FriendService {
     FriendResponse createNew(FriendRequest request);
+    FriendResponse findById(String id);
     List<FriendResponse> findByAccountId(SearchFriendRequest request);
-    List<Friend> findByFriendId(SearchFriendRequest request);
+    List<FriendResponse> findByFriendId(SearchFriendRequest request);
+    List<Friend> getByFriendId(SearchFriendRequest request);
 }

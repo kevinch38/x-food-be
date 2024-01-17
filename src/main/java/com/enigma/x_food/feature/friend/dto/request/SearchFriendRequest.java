@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SearchFriendRequest {
     private String accountID;
-    private String friendID;
+    private String friendAccountID;
 }

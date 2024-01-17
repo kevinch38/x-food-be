@@ -7,11 +7,14 @@ import com.enigma.x_food.constant.ETransactionType;
 import com.enigma.x_food.feature.friend.Friend;
 import com.enigma.x_food.feature.friend.FriendService;
 import com.enigma.x_food.feature.friend.dto.request.SearchFriendRequest;
+import com.enigma.x_food.feature.friend.dto.response.FriendResponse;
 import com.enigma.x_food.feature.history.History;
 import com.enigma.x_food.feature.history.HistoryService;
 import com.enigma.x_food.feature.history.dto.request.HistoryRequest;
 import com.enigma.x_food.feature.order.Order;
 import com.enigma.x_food.feature.order.OrderRepository;
+import com.enigma.x_food.feature.order_item.OrderItem;
+import com.enigma.x_food.feature.order_item.OrderItemService;
 import com.enigma.x_food.feature.order_status.OrderStatus;
 import com.enigma.x_food.feature.order_status.OrderStatusService;
 import com.enigma.x_food.feature.payment.dto.request.SearchPaymentRequest;
@@ -49,6 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentStatusService paymentStatusService;
     private final FriendService friendService;
+    private final OrderItemService orderItemService;
     private final UserService userService;
     private final HistoryService historyService;
     private final OrderRepository orderRepository;
@@ -91,6 +95,38 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public List<PaymentResponse> createSplitBill(List<SplitBillRequest> splitBillRequests) {
+        log.info("Start createNew");
+        validationUtil.validate(splitBillRequests);
+
+        List<Payment> payments = splitBillRequests.stream().map(
+                this::getPayment
+        ).collect(Collectors.toList());
+
+        paymentRepository.saveAllAndFlush(payments);
+        for (Payment payment : payments) {
+            User user = userService.getUserById(payment.getUser().getAccountID());
+            HistoryRequest historyRequest = HistoryRequest.builder()
+                    .transactionType(ETransactionType.PAYMENT.name())
+                    .historyValue(payment.getPaymentAmount())
+                    .transactionDate(LocalDate.now())
+                    .credit(true)
+                    .debit(false)
+                    .accountID(user.getAccountID())
+                    .build();
+            History history = historyService.createNew(historyRequest);
+            history.setPayment(payment);
+
+            payment.setHistory(history);
+
+        }
+        log.info("End createNew");
+        return payments.stream().map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public PaymentResponse completeSplitBill(String id) {
         Payment payment = findByIdOrThrowException(id);
 
@@ -129,37 +165,6 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public List<PaymentResponse> createSplitBill(List<SplitBillRequest> splitBillRequests) {
-        log.info("Start createNew");
-        validationUtil.validate(splitBillRequests);
-
-        List<Payment> payments = splitBillRequests.stream().map(
-                this::getPayment
-        ).collect(Collectors.toList());
-
-        paymentRepository.saveAllAndFlush(payments);
-        for (Payment payment : payments) {
-            User user = userService.getUserById(payment.getUser().getAccountID());
-            HistoryRequest historyRequest = HistoryRequest.builder()
-                    .transactionType(ETransactionType.PAYMENT.name())
-                    .historyValue(payment.getPaymentAmount())
-                    .transactionDate(LocalDate.now())
-                    .credit(true)
-                    .debit(false)
-                    .accountID(user.getAccountID())
-                    .build();
-            History history = historyService.createNew(historyRequest);
-            history.setPayment(payment);
-
-            payment.setHistory(history);
-        }
-        log.info("End createNew");
-        return payments.stream().map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<PaymentResponse> findByAccountId(SearchPaymentRequest request) {
         Specification<Payment> specification = getPaymentSpecification(request);
@@ -188,10 +193,19 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentStatus paymentStatus = paymentStatusService.getByStatus(EPaymentStatus.PENDING);
 
         SearchFriendRequest friendRequest = SearchFriendRequest.builder()
-                .friendID(request.getFriendID())
+                .friendAccountID(request.getFriendAccountID())
                 .accountID(request.getAccountID())
                 .build();
-        List<Friend> friend = friendService.findByFriendId(friendRequest);
+        List<Friend> friend = friendService.getByFriendId(friendRequest);
+
+        if (friend.isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not a friend with this account");
+
+        for (String id : request.getOrderItems()) {
+            OrderItem orderItem = orderItemService.findById(id);
+
+            orderItem.setFriend(friend.get(0));
+        }
 
         User user = userService.getUserById(request.getAccountID());
         Order order = orderRepository.findById(request.getOrderID())
@@ -222,16 +236,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private PaymentResponse mapToResponse(Payment payment) {
-        String friendID = null;
-        byte[] friendImage = new byte[0];
+        FriendResponse friendResponse = null;
 
-        if (payment.getFriend() != null) {
-            friendID = payment.getFriend().getFriendID();
-            if (!payment.getFriend().getUser1().equals(payment.getUser()))
-                friendImage = payment.getFriend().getUser1().getProfilePhoto();
-            else
-                friendImage = payment.getFriend().getUser2().getProfilePhoto();
-        }
+        if (payment.getFriend() != null)
+            friendResponse = friendService.findById(payment.getFriend().getFriendID());
 
         return PaymentResponse.builder()
                 .paymentID(payment.getPaymentID())
@@ -242,8 +250,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .expiredAt(payment.getExpiredAt())
                 .paymentStatus(payment.getPaymentStatus().getStatus().name())
                 .historyID(payment.getHistory().getHistoryID())
-                .friendID(friendID)
-                .friendImage(friendImage)
+                .friend(friendResponse)
                 .orderID(payment.getOrder().getOrderID())
                 .createdAt(payment.getCreatedAt())
                 .updatedAt(payment.getUpdatedAt())
@@ -257,9 +264,21 @@ public class PaymentServiceImpl implements PaymentService {
             if (request.getAccountID() != null) {
                 Join<Payment, History> paymentHistoryJoin = root.join("history", JoinType.INNER);
 
-                Predicate predicate = criteriaBuilder.equal(
-                        criteriaBuilder.lower(root.get("user").get("accountID")),
-                        request.getAccountID().toLowerCase()
+                Predicate predicate = criteriaBuilder.or(
+                        criteriaBuilder.equal(
+                                criteriaBuilder.lower(root.get("user").get("accountID")),
+                                request.getAccountID().toLowerCase()
+                        ),
+                        criteriaBuilder.or(
+                                criteriaBuilder.equal(
+                                        criteriaBuilder.lower(root.get("friend").get("user1").get("accountID")),
+                                        request.getAccountID().toLowerCase()
+                                ),
+                                criteriaBuilder.equal(
+                                        criteriaBuilder.lower(root.get("friend").get("user2").get("accountID")),
+                                        request.getAccountID().toLowerCase()
+                                )
+                        )
                 );
                 predicates.add(predicate);
 
@@ -271,17 +290,6 @@ public class PaymentServiceImpl implements PaymentService {
                         criteriaBuilder.equal(
                                 criteriaBuilder.lower(paymentHistoryJoin.get("transactionType")),
                                 "order"
-                        ));
-                predicates.add(predicate);
-
-                predicate = criteriaBuilder.or(
-                        criteriaBuilder.equal(
-                                criteriaBuilder.lower(paymentHistoryJoin.get("friend").get("user1")),
-                                request.getAccountID().toLowerCase()
-                        ),
-                        criteriaBuilder.equal(
-                                criteriaBuilder.lower(paymentHistoryJoin.get("friend").get("user2")),
-                                request.getAccountID().toLowerCase()
                         ));
                 predicates.add(predicate);
             }

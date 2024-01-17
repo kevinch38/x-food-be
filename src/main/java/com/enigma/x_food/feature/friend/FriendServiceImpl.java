@@ -35,9 +35,9 @@ public class FriendServiceImpl implements FriendService {
         validationUtil.validate(request);
         SearchFriendRequest searchFriendRequest = SearchFriendRequest.builder()
                 .accountID(request.getAccountID1())
-                .friendID(request.getAccountID2())
+                .friendAccountID(request.getAccountID2())
                 .build();
-        List<Friend> friends = findByFriendId(searchFriendRequest);
+        List<FriendResponse> friends = findByFriendId(searchFriendRequest);
 
         if (friends.size() > 0 || request.getAccountID1().equalsIgnoreCase(request.getAccountID2())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Friend already exist");
@@ -54,7 +54,13 @@ public class FriendServiceImpl implements FriendService {
         friendRepository.saveAndFlush(friend);
 
         return mapToResponse(friend);
+    }
 
+    @Override
+    public FriendResponse findById(String id) {
+        return mapToResponse(friendRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Friend not found")
+        ));
     }
 
     @Override
@@ -66,7 +72,14 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
-    public List<Friend> findByFriendId(SearchFriendRequest request) {
+    public List<FriendResponse> findByFriendId(SearchFriendRequest request) {
+        Specification<Friend> specification = getFriendSpecification(request);
+        return friendRepository.findAll(specification).stream().map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Friend> getByFriendId(SearchFriendRequest request) {
         Specification<Friend> specification = getFriendSpecification(request);
         return friendRepository.findAll(specification);
     }
@@ -122,7 +135,7 @@ public class FriendServiceImpl implements FriendService {
                                         request.getAccountID().toLowerCase()),
                                 criteriaBuilder.equal(
                                         criteriaBuilder.lower(root.get("user2").get("accountID")),
-                                        request.getFriendID().toLowerCase())
+                                        request.getFriendAccountID().toLowerCase())
                         ),
                         criteriaBuilder.and(
                                 criteriaBuilder.equal(
@@ -130,7 +143,7 @@ public class FriendServiceImpl implements FriendService {
                                         request.getAccountID().toLowerCase()),
                                 criteriaBuilder.equal(
                                         criteriaBuilder.lower(root.get("user1").get("accountID")),
-                                        request.getFriendID().toLowerCase())
+                                        request.getFriendAccountID().toLowerCase())
                         )
                 );
                 predicates.add(predicate);
