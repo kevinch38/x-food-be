@@ -5,12 +5,16 @@ import com.enigma.x_food.feature.order_item_split.order.dto.request.NewOrderItem
 import com.enigma.x_food.feature.order_item_split.order.dto.response.OrderItemSplitResponse;
 import com.enigma.x_food.feature.order_item_sub_variety.OrderItemSubVariety;
 import com.enigma.x_food.feature.order_item_sub_variety.dto.response.OrderItemSubVarietyResponse;
+import com.enigma.x_food.feature.payment.Payment;
 import com.enigma.x_food.feature.sub_variety.dto.response.SubVarietyResponse;
 import com.enigma.x_food.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +43,17 @@ public class OrderItemSplitServiceImpl implements OrderItemSplitService {
 
         log.info("End createNew");
         return mapToResponse(orderItemSplits);
+    }
+
+    @Override
+    public OrderItemSplit getById(String id) {
+        return findByIdOrThrowException(id);
+    }
+
+    private OrderItemSplit findByIdOrThrowException(String id) {
+        return orderItemSplitRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found")
+        );
     }
 
     private List<OrderItemSplit> mapToResponse(List<OrderItemSplit> order) {

@@ -143,7 +143,8 @@ public class PaymentServiceImpl implements PaymentService {
 
             payment.setHistory(history);
             for (OrderItemSplit orderItemSplit : payment.getOrderItemSplits()) {
-                orderItemSplit.setPayment(payment);
+                OrderItemSplit byId = orderItemSplitService.getById(orderItemSplit.getOrderItemSplitID());
+                byId.setPayment(payment);
             }
 
         }
@@ -278,7 +279,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment.getFriend() != null)
             friendResponse = friendService.findById(payment.getFriend().getFriendID());
 
-        List<String> orderItemSplitResponse = null;
+        List<String> orderItemSplitResponse = new ArrayList<>();
 
         if (payment.getOrderItemSplits() != null)
             for (OrderItemSplit orderItemSplit : payment.getOrderItemSplits()) {

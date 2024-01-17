@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface OrderItemSplitService {
     List<OrderItemSplit> createNew(List<NewOrderItemSplitRequest> request);
+    OrderItemSplit getById(String id);
 }
