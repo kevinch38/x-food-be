@@ -2,6 +2,7 @@ package com.enigma.x_food.feature.payment.dto.response;
 
 import com.enigma.x_food.feature.friend.dto.response.FriendResponse;
 import com.enigma.x_food.feature.order.dto.response.OrderResponse;
+import com.enigma.x_food.feature.order_item.dto.response.OrderItemResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +27,7 @@ public class PaymentResponse {
     private String historyID;
     private FriendResponse friend;
     private String orderID;
-    private OrderResponse order;
+    private List<OrderItemResponse> orderItems;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private Timestamp createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
