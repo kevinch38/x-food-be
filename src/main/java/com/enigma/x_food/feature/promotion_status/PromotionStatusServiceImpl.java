@@ -23,7 +23,7 @@ public class PromotionStatusServiceImpl implements PromotionStatusService {
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
-    private void init() {
+    public void init() {
         List<PromotionStatus> promotionStatus = new ArrayList<>();
         for (EPromotionStatus value : EPromotionStatus.values()) {
             Optional<PromotionStatus> status = promotionStatusRepository.findByStatus(value);

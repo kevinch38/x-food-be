@@ -23,7 +23,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
-    private void init() {
+    public void init() {
         List<OrderStatus> orderStatus = new ArrayList<>();
         for (EOrderStatus value : EOrderStatus.values()) {
             Optional<OrderStatus> status = orderStatusRepository.findByStatus(value);

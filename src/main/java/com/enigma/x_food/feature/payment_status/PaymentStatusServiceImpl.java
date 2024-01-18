@@ -23,7 +23,7 @@ public class PaymentStatusServiceImpl implements PaymentStatusService {
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
-    private void init() {
+    public void init() {
         List<PaymentStatus> paymentStatus = new ArrayList<>();
         for (EPaymentStatus value : EPaymentStatus.values()) {
             Optional<PaymentStatus> status = paymentStatusRepository.findByStatus(value);

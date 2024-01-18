@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
-    private void init() {
+    public void init() {
         Optional<Admin> optionalAdmin = adminRepository.findByAdminEmail(superAdminEmail);
 
         if (optionalAdmin.isEmpty()){

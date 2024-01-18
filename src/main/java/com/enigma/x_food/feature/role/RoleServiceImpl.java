@@ -23,7 +23,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
-    private void init() {
+    public void init() {
         List<Role> role = new ArrayList<>();
         for (ERole value : ERole.values()) {
             Optional<Role> status = roleRepository.findByRole(value);

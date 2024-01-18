@@ -23,7 +23,7 @@ public class MerchantBranchStatusServiceImpl implements MerchantBranchStatusServ
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
-    private void init() {
+    public void init() {
         List<MerchantBranchStatus> merchantBranchStatus = new ArrayList<>();
         for (EMerchantBranchStatus value : EMerchantBranchStatus.values()) {
             Optional<MerchantBranchStatus> status = merchantBranchStatusRepository.findByStatus(value);

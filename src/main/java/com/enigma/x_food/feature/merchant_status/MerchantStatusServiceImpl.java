@@ -23,7 +23,7 @@ public class MerchantStatusServiceImpl implements MerchantStatusService {
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
-    private void init() {
+    public void init() {
         List<MerchantStatus> merchantStatus = new ArrayList<>();
         for (EMerchantStatus value : EMerchantStatus.values()) {
             Optional<MerchantStatus> status = merchantStatusRepository.findByStatus(value);

@@ -23,7 +23,7 @@ public class MethodServiceImpl implements MethodService {
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
-    private void init() {
+    public void init() {
         List<Method> method = new ArrayList<>();
         for (EMethod value : EMethod.values()) {
             Optional<Method> name = methodRepository.findByMethodName(value);

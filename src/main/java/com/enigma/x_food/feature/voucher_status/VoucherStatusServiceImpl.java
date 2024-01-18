@@ -23,7 +23,7 @@ public class VoucherStatusServiceImpl implements VoucherStatusService {
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
-    private void init() {
+    public void init() {
         List<VoucherStatus> voucherStatus = new ArrayList<>();
         for (EVoucherStatus value : EVoucherStatus.values()) {
             Optional<VoucherStatus> status = voucherStatusRepository.findByStatus(value);
