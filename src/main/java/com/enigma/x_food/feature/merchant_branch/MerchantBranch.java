@@ -47,7 +47,7 @@ public class MerchantBranch extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
-    @Column(name = "join_date")
+    @Column(name = "join_date", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private Timestamp joinDate;
     @Lob
     @Column(name = "image")

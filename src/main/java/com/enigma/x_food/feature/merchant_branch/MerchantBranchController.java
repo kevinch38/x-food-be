@@ -61,7 +61,7 @@ public class MerchantBranchController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF','SUPER_ADMIN', 'PARTNERSHIP_HEAD', 'MARKETING_STAFF')")
+    @PreAuthorize("hasAnyRole('PARTNERSHIP_STAFF','SUPER_ADMIN', 'PARTNERSHIP_HEAD', 'MARKETING_STAFF', 'MARKETING_HEAD')")
     @GetMapping
     public ResponseEntity<?> findAll(@RequestParam String merchantID,
                                      @RequestParam(required = false, defaultValue = "asc") String direction,

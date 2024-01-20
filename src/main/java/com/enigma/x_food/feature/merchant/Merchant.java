@@ -26,7 +26,7 @@ public class Merchant extends BaseEntity {
     @GeneratedValue(generator = "uuid")
     @Column(name = "merchant_id")
     private String merchantID;
-    @Column(name = "join_date")
+    @Column(name = "join_date", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private Timestamp joinDate;
     @Column(name = "merchant_name", nullable = false, length = 50)
     private String merchantName;

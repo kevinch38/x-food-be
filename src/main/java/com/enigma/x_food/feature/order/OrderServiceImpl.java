@@ -107,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
             if (item.getItemStock() < orderItem.getQuantity())
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity exceeds stock");
 
-            item.setItemStock(item.getItemStock() - orderItem.getQuantity());
+//            item.setItemStock(item.getItemStock() - orderItem.getQuantity());
         }
 
         List<OrderItem> orderItems = orderItemService.createNew(request.getOrderItems());

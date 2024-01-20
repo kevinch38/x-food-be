@@ -61,7 +61,7 @@ public class UserController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_STAFF')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_STAFF', 'PARTNERSHIP_HEAD', 'MARKETING_HEAD')")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping
     public ResponseEntity<?> getAll(

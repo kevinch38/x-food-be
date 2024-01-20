@@ -24,7 +24,7 @@ import java.util.List;
 @SecurityRequirement(name = "Bearer Authentication")
 public class HistoryController {
     private final HistoryService historyService;
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_STAFF')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'PARTNERSHIP_STAFF', 'MARKETING_STAFF', 'PARTNERSHIP_HEAD', 'MARKETING_HEAD')")
     @GetMapping
     public ResponseEntity<?> getAll(
             @RequestParam(required = false, defaultValue = "1") Integer page,

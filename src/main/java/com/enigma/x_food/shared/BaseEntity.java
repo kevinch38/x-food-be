@@ -16,9 +16,10 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class BaseEntity {
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(updatable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private Timestamp createdAt;
 
     @UpdateTimestamp
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private Timestamp updatedAt;
 }
