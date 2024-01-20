@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -37,11 +38,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CityServiceImpl implements CityService {
     private final CityRepository cityRepository;
+    @Value("${app.x-food.location}")
+    String location;
 
     @Transactional(rollbackFor = Exception.class)
     @PostConstruct
     private void init() throws IOException {
-        InputStream inp = new FileInputStream("src/main/java/com/enigma/x_food/shared/Status and City List.xlsx");
+        InputStream inp = new FileInputStream(location+"StatusandCityList.xlsx");
         Workbook workbook = new XSSFWorkbook(inp);
         Sheet sheet = workbook.getSheet("List of City");
 
