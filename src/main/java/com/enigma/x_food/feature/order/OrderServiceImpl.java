@@ -250,12 +250,19 @@ public class OrderServiceImpl implements OrderService {
                     )
                     .collect(Collectors.toList());
         }
+        Double subVarPrice=0.0;
+        if (o.getOrderItemSubVarieties() != null) {
+            List<OrderItemSubVariety> orderItemSubVarieties = o.getOrderItemSubVarieties();
+            for (OrderItemSubVariety orderItemSubVariety : orderItemSubVarieties) {
+                subVarPrice+=orderItemSubVariety.getSubVariety().getSubVarPrice();
+            }
+        }
         return OrderItemResponse.builder()
                 .orderItemID(o.getOrderItemID())
                 .orderID(order.getOrderID())
                 .itemName(o.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
-                .price(o.getItem().getDiscountedPrice())
+                .price(o.getItem().getDiscountedPrice()+subVarPrice)
                 .createdAt(o.getCreatedAt())
                 .updatedAt(o.getUpdatedAt())
                 .build();
