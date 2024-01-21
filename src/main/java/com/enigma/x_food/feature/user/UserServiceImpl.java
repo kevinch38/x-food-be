@@ -245,6 +245,7 @@ public class UserServiceImpl implements UserService {
         return VoucherResponse.builder()
                 .voucherID(voucher.getVoucherID())
                 .promotionID(voucher.getPromotion().getPromotionID())
+                .merchantID(voucher.getPromotion().getMerchant().getMerchantID())
                 .userID(voucher.getUser().getAccountID())
                 .voucherValue(voucher.getVoucherValue())
                 .expiredDate(voucher.getExpiredDate())

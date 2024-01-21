@@ -115,12 +115,19 @@ public class OrderItemServiceImpl implements OrderItemService {
                         OrderItemServiceImpl::getOrderItemSubVarietyResponse
                 ).collect(Collectors.toList());
 
+        Double price;
+        if(orderItem.getItem().getIsDiscounted()){
+            price = orderItem.getItem().getDiscountedPrice();
+        }
+        else{
+            price = orderItem.getItem().getInitialPrice();
+        }
         return OrderItemResponse.builder()
                 .orderItemID(orderItem.getOrderItemID())
                 .orderID(orderItem.getOrder().getOrderID())
                 .itemName(orderItem.getItem().getItemName())
                 .orderItemSubVarieties(orderItemSubVarietyResponses)
-                .price(orderItem.getItem().getDiscountedPrice())
+                .price(price)
                 .createdAt(orderItem.getCreatedAt())
                 .updatedAt(orderItem.getUpdatedAt())
                 .build();
